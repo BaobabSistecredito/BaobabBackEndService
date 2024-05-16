@@ -17,14 +17,13 @@ namespace BaobabBackEndSerice.Controllers
             _context = context;
         }
 
-
         [HttpGet]
         public async Task<ActionResult<ResponseUtils<Coupon>>> GetCoupons()
         {
             try
             {
                 var result = await _context.Coupons.ToListAsync();
-                return new ResponseUtils<Coupon>(true, result, null, "todo oki");
+                return new ResponseUtils<Coupon>(true, result, null, "res");
             }
             catch (Exception ex)
             {
