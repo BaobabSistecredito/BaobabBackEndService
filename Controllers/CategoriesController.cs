@@ -32,37 +32,37 @@ namespace BaobabBackEndSerice.Controllers
 
         //function para actualizar una categoria se le agg el id al httpPut para indicar que este recibe uno como param
         [HttpPut("{id}")]
-        public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(int id, Category category)
+        public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(string id, Category category)
         {
             try
             {
                 // Validaciones de entrada por id
-                if (id <= 0)
+                if (!int.TryParse(id, out int num) || num <= 0  )
                 {
-                    return BadRequest(new ResponseUtils<Category>(false, null, null, "ID de categoría no válido."));
+                    return StatusCode(422,new ResponseUtils<Category>(false, null, null, "ID de categoría no válido."));
                 }
 
                 // Validaciones de entrada por campos de cat
                 if (category == null)
                 {
-                    return BadRequest(new ResponseUtils<Category>(false, null, null, "El objeto de categoría es nulo."));
+                    return StatusCode(422,new ResponseUtils<Category>(false, null, null, "El objeto de categoría es nulo."));
                 }
 
                 // Validaciones de entrada por campos que no sean vacios 
                 if (string.IsNullOrWhiteSpace(category.CategoryName))
                 {
-                    return BadRequest(new ResponseUtils<Category>(false, null, null, "El nombre de categoría es requerido."));
+                    return StatusCode(422,new ResponseUtils<Category>(false, null, null, "El nombre de categoría es requerido."));
                 }
 
                 // Validaciones de entrada por campos que no sean vacios 
                 if (string.IsNullOrWhiteSpace(category.Status))
                 {
-                    return BadRequest(new ResponseUtils<Category>(false, null, null, "El estado de la categoría es requerido."));
+                    return StatusCode(422,new ResponseUtils<Category>(false, null, null, "El estado de la categoría es requerido."));
                 }
         
 
                 // Buscar la categoría en la base de datos
-                var result = await _context.Categories.FindAsync(id);
+                var result = await _context.Categories.FindAsync(num);
                 if (result == null)
                 {
                     return NotFound(new ResponseUtils<Category>(true, null, null, "No se encontró la categoría para actualizar."));
