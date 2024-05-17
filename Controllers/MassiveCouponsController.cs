@@ -19,8 +19,6 @@ namespace BaobabBackEndSerice.Controllers
 
 
         [HttpGet]
-
-
         public async Task<ActionResult<ResponseUtils<MassiveCoupon>>> GetMassiveCoupons()
         {
             try
