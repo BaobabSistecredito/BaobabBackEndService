@@ -32,7 +32,7 @@ namespace BaobabBackEndSerice.Controllers
         }
         // ----------------------- SEARCH ACTION:
         [HttpGet]
-        [Route("Search/{category}")]
+        [Route("Search/{category?}")]
         public async Task<ActionResult<ResponseUtils<Category>>> SearchCategory(string category)
         {
             // Se trae la información de la entidad 'Categories':
@@ -44,22 +44,36 @@ namespace BaobabBackEndSerice.Controllers
                 {
                     // Se convierte la búsqueda a minúscula para hacerla case-insensitive:
                     var loweredCategory = category.ToLower();
-                    // Se confirma que la información enviada coincida con algún campo de la entidad 'Categories':
-                    categories = categories.Where(c => c.CategoryName.ToLower().Contains(loweredCategory) 
-                    || c.Status.ToLower().Contains(loweredCategory));
+                    // Se inicializa variable con los datos que coincidan con algún campo de la entidad 'Categories':
+                    var categoriesFiltered = categories.Where(c => c.CategoryName.ToLower().Contains(loweredCategory) || c.Status.ToLower().Contains(loweredCategory));
+                    // Se inicializa variable con la información filtrada:
+                    var categoriesList = await categoriesFiltered.ToListAsync();
+                    // Se confirma si se han encontrado datos que coincidan con el filtrado:
+                    if(categoriesList.Any())
+                    {
+                        // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                        return Ok(new ResponseUtils<Category>(true, categoriesList, null, "¡Búsqueda éxitosa!"));
+                    }
+                    else
+                    {
+                        // Retorno de la respuesta fallida con la estructura de la clase 'ResponseUtils':
+                        return StatusCode(404, new ResponseUtils<Category>(false, null, null, "¡Dato no encontrado!"));
+                    }
                 }
-                // Se inicializa variable con la información filtrada:
-                var categoriesList = await categories.ToListAsync();
-                // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                return Ok(new ResponseUtils<Category>(true, categoriesList, null, "¡Búsqueda éxitosa!"));
+                else
+                {
+                    // Retorno de la respuesta fallida con la estructura de la clase 'ResponseUtils':
+                    return StatusCode(422, new ResponseUtils<Category>(false, null, null, "¡No se han ingresado datos!"));
+                }
             }
             catch (Exception ex)
             {
-                // Se inicializa variable con la respuesta de error:
-                var errorResponse = new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
-                return StatusCode(400, errorResponse);
+                return StatusCode(400, new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}"));
             }
         }
-        
+
+        // ----------------------- VALIDATE ACTION:
+
+
     }
 }
