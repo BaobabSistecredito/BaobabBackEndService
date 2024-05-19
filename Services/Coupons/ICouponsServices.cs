@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 
-namespace BaobabBackEndService.BusinessLogic.Coupons
+namespace BaobabBackEndService.Services.Coupons
 {
-    public interface ICouponsService
+    public interface ICouponsServices
     {
         IEnumerable<Coupon> GetCoupons();
 
