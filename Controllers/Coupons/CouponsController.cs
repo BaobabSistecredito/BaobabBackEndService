@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
-using BaobabBackEndService.Services.Coupons;
 using System.Collections.Generic;
+using BaobabBackEndService.BusinessLogic;
 
 namespace BaobabBackEndSerice.Controllers
 {
@@ -27,11 +27,11 @@ namespace BaobabBackEndSerice.Controllers
 
         Continuemos con el siguiente paso...
         */
-        private readonly ICouponsRepository _couponsRepository;
+        private readonly ICouponsService _couponsService;
 
-        public CouponsController(ICouponsRepository couponsRepository)
+        public CouponsController(ICouponsService couponsService)
         {
-            _couponsRepository = couponsRepository;
+            _couponsService = couponsService;
         }
 
 
@@ -51,7 +51,7 @@ namespace BaobabBackEndSerice.Controllers
         3. El servicio redirige la solicitud al repositorio correspondiente.
         4. El repositorio maneja la lógica de acceso a datos (en este caso, recupera los cupones).
 
-        Para ver la implementación del repositorio, consulta el archivo Service/Coupons/CouponsRepository.
+        Para ver la implementación del repositorio, consulta el archivo BusinessLogic/CouponsRepository.
         Continuemos con el siguiente paso Alli en este archivo...
         */
 
@@ -60,7 +60,7 @@ namespace BaobabBackEndSerice.Controllers
         {
             try
             {
-                var result = _couponsRepository.GetCoupons();
+                var result = _couponsService.GetAllCoupons();
                 return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "todo oki");
             }
             catch (Exception ex)

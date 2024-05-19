@@ -17,13 +17,13 @@ namespace BaobabBackEndService.Services.Coupons
             _context = context;
         }
         /*
-        Parte 2:
+        Parte 3:
 
         Hola,
 
         En esta parte, nos comunicamos directamente con la base de datos a través de CouponsRepository.
         CouponsRepository es el único responsable de interactuar con la base de datos, 
-        liberando al controlador de realizar lógica de negocio y consultas a la DB.
+        liberando al controlador  y el businessLogic de consultas a la DB.
 
         - El objetivo es mantener el controlador limpio y enfocado únicamente en manejar las solicitudes HTTP.
         - Aquí, en el repositorio, realizamos todas las consultas necesarias a la base de datos.
@@ -43,7 +43,7 @@ namespace BaobabBackEndService.Services.Coupons
             return _context.Coupons.ToList();
         }
         /*
-        Parte 4:
+        Parte 5:
 
         ¡Atención! Si no has leído la Parte 3, por favor, regresa y léela antes de continuar con esta parte.
 

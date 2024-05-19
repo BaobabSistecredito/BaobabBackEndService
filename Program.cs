@@ -1,4 +1,5 @@
 using BaobabBackEndSerice.Data;
+using BaobabBackEndService.BusinessLogic;
 using BaobabBackEndService.Services.Categories;
 using BaobabBackEndService.Services.Coupons;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 /*
-Parte 5:
+Parte 6:
 
 En esta sección, integramos nuestros repositorios en el sistema. Es importante recordar primero registrar la interfaz, 
 que podemos identificar por la "I" al principio de su nombre, y luego la clase del repositorio correspondiente.
@@ -57,6 +58,8 @@ en nuestros controladores y servicios.
 */
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+builder.Services.AddScoped<ICategoriesService ,CategoryService>();
+builder.Services.AddScoped<ICouponsService,ICouponsService>();
 
 
 

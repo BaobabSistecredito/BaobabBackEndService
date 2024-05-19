@@ -9,7 +9,6 @@ namespace BaobabBackEndService.Services.Categories
 {
     public interface ICategoriesRepository
     {
-        
         IEnumerable<Category> GetCategories();
 
         Category GetCategory(string id);
