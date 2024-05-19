@@ -83,7 +83,7 @@ CREATE TABLE MassiveCoupons(
     MassiveCouponCode VARCHAR(255) UNIQUE,
     CouponId INT,
     UserEmail VARCHAR(125) UNIQUE,
-    PurcharseId VARCHAR(125) UNIQUE,
+    PurchaseId VARCHAR(125) UNIQUE,
     RedemptionDate DATETIME,
     PurchaseValue FLOAT,
     FOREIGN KEY (CouponId) REFERENCES Coupons(Id)
@@ -94,7 +94,7 @@ INSERT INTO MassiveCoupons (
     MassiveCouponCode, 
     CouponId, 
     UserEmail, 
-    PurcharseId,
+    PurchaseId,
     RedemptionDate, 
     PurchaseValue
 ) VALUES (

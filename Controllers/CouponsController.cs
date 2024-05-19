@@ -165,6 +165,37 @@ namespace BaobabBackEndSerice.Controllers
                 return StatusCode(400, new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}"));
             }
         }
-        // ----------------------------------------------
+        // ----------------------- EDIT ACTION:
+        [HttpPut]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> UpdateCoupon([FromBody] Coupon coupon)
+        {
+            try
+            {
+                // Se trae la información de la entidad 'MassiveCoupons':
+                var poolTable = _context.MassiveCoupons.AsQueryable();
+                // Se confirma si el cupón existe en la piscina:
+                var existCoupon = await poolTable.FirstOrDefaultAsync(p => p.CouponId == coupon.Id);
+                // Condicional que determina si se ha encontrado el cupón:
+                if(existCoupon == null)
+                {
+                    // Se actualiza la entidad en la base de datos:
+                    _context.Coupons.Update(coupon);
+                    // También funciona con:
+                    // _context.Entry(coupon).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                    return Ok(new ResponseUtils<Category>(true, null, coupon.CouponCode, "¡Cupón actualizado!"));
+                }
+                else
+                {
+                    // Retorno de la respuesta con la estructura de la clase 'ResponseUtils':
+                    return StatusCode(406, new ResponseUtils<Coupon>(false, null, null, "¡El cupón ya fue redimido, no es posible actualizarlo!"));
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(400, new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}"));
+            }
+        }
     }
 }
