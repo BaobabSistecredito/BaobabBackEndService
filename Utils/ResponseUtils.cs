@@ -1,24 +1,22 @@
 using System.Collections.Generic;
-using BaobabBackEndSerice.Models;
 
 namespace BaobabBackEndService.Utils
 {
     public class ResponseUtils<T>
     {
-        private List<Coupon> list;
-        private object item;
-
         public bool Status { get; set; }
         public List<T> List { get; set; }
-        public string Item { get; set; }
+        public object Item { get; set; } // Usando object en lugar de T
         public string Message { get; set; }
+        public List<T> Errors { get; set; }
 
-        public ResponseUtils(bool status, List<T> list = null, string item = null, string message = "")
+        public ResponseUtils(bool status, List<T> list = null, object item = null, string message = "", List<T> errors = null)
         {
             Status = status;
             List = list ?? new List<T>();
             Item = item;
             Message = message;
+            Errors = errors ?? new List<T>();
         }
     }
 }
