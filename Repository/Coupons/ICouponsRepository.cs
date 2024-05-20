@@ -34,7 +34,12 @@ namespace BaobabBackEndService.Repository.Coupons
 
         Coupon GetCoupon(string id);
 
-        //ResponseUtils<Coupon> AddCoupon(Coupon coupon);
+        Coupon CreateCoupon(Coupon coupon);
+
+        Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
+        Task<Coupon> GetCouponByTitleAsync(string title);
+
+        
 
         //ResponseUtils<Coupon> UpdateCoupon(stirng id,Coupon coupon);
 

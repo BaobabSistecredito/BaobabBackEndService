@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace BaobabBackEndService.Repository.Coupons
 {
@@ -35,6 +36,16 @@ namespace BaobabBackEndService.Repository.Coupons
         public Coupon GetCoupon(string id)
         {
             return _context.Coupons.Find(id);
+        }
+
+        public async Task<Coupon> GetCouponByCouponCodeAsync(string cuponCode)
+        {
+            return await _context.Coupons.FirstOrDefaultAsync(c => c.CouponCode == cuponCode);
+        }
+
+        public async Task<Coupon> GetCouponByTitleAsync(string title)
+        {
+            return await _context.Coupons.FirstOrDefaultAsync(c => c.Title == title);
         }
 
         public IEnumerable<Coupon> GetCoupons()
@@ -70,6 +81,13 @@ namespace BaobabBackEndService.Repository.Coupons
 
         Continuemos con el siguiente paso Alli en este archivo...
         */
+
+        public Coupon CreateCoupon(Coupon coupon)
+        {
+            _context.Coupons.Add(coupon);
+            _context.SaveChanges();
+            return coupon;
+        }
 
     }
 }
