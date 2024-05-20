@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
+using Microsoft.EntityFrameworkCore;
 
-namespace BaobabBackEndService.Services.Categories
+namespace BaobabBackEndService.Repository.Categories
 {
     public class CategoriesRepository : ICategoriesRepository
     {
@@ -17,14 +18,25 @@ namespace BaobabBackEndService.Services.Categories
             _context = context;
         }
 
-        public IEnumerable<Category>  GetCategories()
+        public IEnumerable<Category> GetCategories()
         {
             return _context.Categories.ToList();
         }
 
-        public Category  GetCategory(string id)
+        public Category GetCategory(string id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Category> GetCategoryByIdAsync(int id)
+        {
+            return await _context.Categories.FindAsync(id);
+        }
+
+        public async Task UpdateCategoryAsync(Category category)
+        {
+            _context.Entry(category).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

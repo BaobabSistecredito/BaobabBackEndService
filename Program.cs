@@ -1,6 +1,7 @@
 using BaobabBackEndSerice.Data;
-using BaobabBackEndService.BusinessLogic;
-using BaobabBackEndService.Services.Categories;
+using BaobabBackEndService.Repository.Categories;
+using BaobabBackEndService.Repository.Coupons;
+using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Services.Coupons;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -56,10 +57,10 @@ en nuestros controladores y servicios.
 ¡Eso es todo para esta parte! Ahora, tu sistema está configurado para utilizar el nuevo repositorio.
  Yeeeiii fiesta en la casa del tintero
 */
-builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
-builder.Services.AddScoped<ICategoriesService ,CategoryService>();
-builder.Services.AddScoped<ICouponsService,ICouponsService>();
+builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
+builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
+builder.Services.AddScoped<ICouponsServices, CouponsServices>();
 
 
 

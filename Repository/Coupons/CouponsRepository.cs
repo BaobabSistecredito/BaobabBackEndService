@@ -6,7 +6,7 @@ using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 
-namespace BaobabBackEndService.Services.Coupons
+namespace BaobabBackEndService.Repository.Coupons
 {
     public class CouponsRepository : ICouponsRepository
     {
@@ -34,8 +34,7 @@ namespace BaobabBackEndService.Services.Coupons
 
         public Coupon GetCoupon(string id)
         {
-            throw new NotImplementedException();
-
+            return _context.Coupons.Find(id);
         }
 
         public IEnumerable<Coupon> GetCoupons()

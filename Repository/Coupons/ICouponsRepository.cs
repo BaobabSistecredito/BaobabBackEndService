@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 
-namespace BaobabBackEndService.Services.Coupons
+namespace BaobabBackEndService.Repository.Coupons
 {
     public interface ICouponsRepository
     {
