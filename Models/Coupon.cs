@@ -8,7 +8,6 @@ namespace BaobabBackEndSerice.Models
     public DateTime? CreationDate { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? ExpiryDate { get; set; }
-
     public float ValueDiscount { get; set; }
     public string? TypeDiscount { get; set; }
     public int NumberOfAvailableUses { get; set; }

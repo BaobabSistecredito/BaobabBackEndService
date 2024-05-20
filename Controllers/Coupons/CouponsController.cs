@@ -3,7 +3,7 @@ using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using System.Collections.Generic;
-using BaobabBackEndService.BusinessLogic;
+using BaobabBackEndService.Services.Coupons;
 
 namespace BaobabBackEndSerice.Controllers
 {
@@ -27,9 +27,9 @@ namespace BaobabBackEndSerice.Controllers
 
         Continuemos con el siguiente paso...
         */
-        private readonly ICouponsService _couponsService;
+        private readonly ICouponsServices _couponsService;
 
-        public CouponsController(ICouponsService couponsService)
+        public CouponsController(ICouponsServices couponsService)
         {
             _couponsService = couponsService;
         }
@@ -60,7 +60,7 @@ namespace BaobabBackEndSerice.Controllers
         {
             try
             {
-                var result = _couponsService.GetAllCoupons();
+                var result = _couponsService.GetCoupons();
                 return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "todo oki");
             }
             catch (Exception ex)

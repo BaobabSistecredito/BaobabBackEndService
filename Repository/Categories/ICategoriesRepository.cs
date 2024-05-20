@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 
-namespace BaobabBackEndService.Services.Categories
+namespace BaobabBackEndService.Repository.Categories
 {
     public interface ICategoriesRepository
     {
@@ -13,6 +13,8 @@ namespace BaobabBackEndService.Services.Categories
 
         Category GetCategory(string id);
 
+        Task UpdateCategoryAsync(Category category);
+        Task<Category> GetCategoryByIdAsync(int id);
         //ResponseUtils<Category> AddCategory(Category category);
 
         //ResponseUtils<Category> UpdateCategory(Category category);

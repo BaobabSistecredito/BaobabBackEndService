@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 
-namespace BaobabBackEndService.Services.Coupons
+namespace BaobabBackEndService.Repository.Coupons
 {
     public interface ICouponsRepository
     {
@@ -34,7 +34,12 @@ namespace BaobabBackEndService.Services.Coupons
 
         Coupon GetCoupon(string id);
 
-        //ResponseUtils<Coupon> AddCoupon(Coupon coupon);
+        Coupon CreateCoupon(Coupon coupon);
+
+        Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
+        Task<Coupon> GetCouponByTitleAsync(string title);
+
+        
 
         //ResponseUtils<Coupon> UpdateCoupon(stirng id,Coupon coupon);
 
