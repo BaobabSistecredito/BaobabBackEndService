@@ -14,6 +14,11 @@ namespace BaobabBackEndService.Services.categories
         Category GetCategory(string id);
 
         Task<ResponseUtils<Category>> UpdateCategory(string id, Category category);
+        Task<ResponseUtils<Category>> CreateCategoria(Category category);
+
+
+
+        
 
     }
 }
