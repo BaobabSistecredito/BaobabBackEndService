@@ -29,5 +29,6 @@ namespace BaobabBackEndSerice.Controllers
                 return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}"));
             }
         }
+        
     }
 }

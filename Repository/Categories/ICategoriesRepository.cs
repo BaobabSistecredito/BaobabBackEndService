@@ -15,6 +15,7 @@ namespace BaobabBackEndService.Repository.Categories
 
         Task UpdateCategoryAsync(Category category);
         Task<Category> GetCategoryByIdAsync(int id);
+        Task <IEnumerable<Category>> GetAllCategoriesAsync(string category);
         //ResponseUtils<Category> AddCategory(Category category);
 
         //ResponseUtils<Category> UpdateCategory(Category category);
