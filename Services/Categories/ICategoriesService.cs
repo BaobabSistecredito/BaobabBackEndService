@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BaobabBackEndService.Services.categories
 {
@@ -14,6 +15,8 @@ namespace BaobabBackEndService.Services.categories
         Category GetCategory(string id);
 
         Task<ResponseUtils<Category>> UpdateCategory(string id, Category category);
+
+        Task<ResponseUtils<Category>> GetCategoriesAsync(string number);
 
     }
 }

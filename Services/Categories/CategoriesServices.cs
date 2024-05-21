@@ -2,6 +2,8 @@
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Utils;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BaobabBackEndService.Services.categories
@@ -21,10 +23,37 @@ namespace BaobabBackEndService.Services.categories
             return _categoriesRepository.GetCategories();
         }
 
+
+        public async Task<ResponseUtils<Category>> GetCategoriesAsync(string number)
+        {
+
+            if (!int.TryParse(number, out int parseNumber))
+            {
+                return new ResponseUtils<Category>(false, message: "Dato ingresado no es valido.");
+            }
+
+            try
+            {
+                if (parseNumber == 1)
+                {
+                    return new ResponseUtils<Category>(true, new List<Category>(await _categoriesRepository.GetCategoriesAsync("Activo")), message: "Se encontro el status buscado correctamente."); //llamada base de datos
+                }
+
+                return new ResponseUtils<Category>(true, new List<Category>( await _categoriesRepository.GetCategoriesAsync("Inactivo")), message: "Se encontro el estatus buscado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Category>(false, message: "Error buscar el estado de la categoría en la base de datos: " + ex.InnerException.Message);
+            }
+        }
+
+
         public Category GetCategory(string id)
         {
             return _categoriesRepository.GetCategory(id);
         }
+
+
         public async Task<ResponseUtils<Category>> UpdateCategory(string id, Category category)
         {
             // Validaciones de entrada por id
@@ -72,6 +101,9 @@ namespace BaobabBackEndService.Services.categories
                 return new ResponseUtils<Category>(false, message: "Error al actualizar la categoría en la base de datos: " + ex.InnerException.Message);
             }
         }
+
+
+
 
     }
 }
