@@ -71,6 +71,47 @@ namespace BaobabBackEndService.Services.categories
             {
                 return new ResponseUtils<Category>(false, message: "Error al actualizar la categoría en la base de datos: " + ex.InnerException.Message);
             }
+
+            
+        }
+
+        public async Task<ResponseUtils<Category>> CreateCategoria(Category category)
+        {
+            var existeName = await _categoriesRepository.GetCategoryByNameAsync(category.CategoryName);
+
+            if(existeName != null)
+            {
+                return new ResponseUtils<Category>(false, message: "El nombre de la categoria ya existe");
+
+            }
+
+
+            if(string.IsNullOrWhiteSpace(category.CategoryName) || category.CategoryName == null)
+            {
+                return new ResponseUtils<Category>(false, message: "El nombre de la categoria es un campo obligatorio");
+                
+            }
+
+
+            //crear categoria
+            if(category.Status == "Activo" || category.Status == "Inactivo" )
+            {
+            }else{
+                return new ResponseUtils<Category>(false, message: "El estado ingresado no es permitido ");
+            }
+
+            //pasar datos a minuscula
+            category.CategoryName = category.CategoryName.ToLower();
+            category.Status = category.Status;
+
+            return new ResponseUtils<Category>(true, new List<Category> {_categoriesRepository.CreateCategory(category) }, null, message: "Todo oki");
+
+        
+
+            
+
+           
+
         }
 
     }

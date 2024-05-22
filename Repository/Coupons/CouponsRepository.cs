@@ -60,10 +60,20 @@ namespace BaobabBackEndService.Repository.Coupons
             return await _context.Coupons.FirstOrDefaultAsync(c => c.Title == title);
         }
 
+
+        
         public IEnumerable<Coupon> GetCoupons()
         {
             return _context.Coupons.ToList();
         }
+
+        public async Task<IEnumerable<Coupon>> GetCouponsAsync()
+        {
+            return await _context.Coupons.ToListAsync();
+        }
+
+
+      
         /*
         Parte 5:
 
