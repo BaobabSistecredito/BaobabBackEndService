@@ -39,6 +39,12 @@ namespace BaobabBackEndService.Repository.Coupons
         Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
         Task<Coupon> GetCouponByTitleAsync(string title);
 
+        Coupon CuponCode(string CodeCoupon);
+
+
+        //creacion de funcion pra guardar en la poll
+        MassiveCoupon CrearPoll(MassiveCoupon massiveCoupon);
+
         
 
         //ResponseUtils<Coupon> UpdateCoupon(stirng id,Coupon coupon);

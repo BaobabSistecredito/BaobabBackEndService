@@ -62,6 +62,64 @@ namespace BaobabBackEndService.Services.Coupons
             return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, null, message: "Todo oki");
         }
 
+        //redencion de cupon
+
+        public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(string PurchaseId,string UserEmail, float PurchaseValue,string CodeCoupon,MassiveCoupon massiveCoupon )
+        {
+
+            bool Validate = true;
+
+            if(Validate == true)
+            {
+                var CuponValido = _couponsRepository.CuponCode(CodeCoupon);
+
+
+                //validar si el cupon es null
+                if(CuponValido == null)
+                {
+                    return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no existe en la base de datos");                    
+                }
+
+
+                if(CuponValido.TypeUsability == "limitada")
+                {
+
+                    //traer todos los datos del cupon para actualizarlo
+                    
+
+                    
+                    //resto 1 numero de uso 
+                    CuponValido.NumberOfAvailableUses = CuponValido.NumberOfAvailableUses --;
+                }
+
+                massiveCoupon.MassiveCouponCode = CodeCoupon;
+
+                massiveCoupon.CouponId = CuponValido.Id;
+
+                massiveCoupon.UserEmail = UserEmail;
+
+                massiveCoupon.RedemptionDate = DateTime.Now;
+
+                massiveCoupon.PurchaseId = PurchaseId;
+
+                massiveCoupon.purchaseValue = PurchaseValue;
+
+                 return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { _couponsRepository.CrearPoll(massiveCoupon) }, null, message: "Todo oki");
+
+            
+
+            }else{
+                return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no es valido");                    
+            }
+
+            
+
+            
+
+        }
+
+
+
 
     }
 }

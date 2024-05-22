@@ -89,5 +89,24 @@ namespace BaobabBackEndService.Repository.Coupons
             return coupon;
         }
 
+        //buscar cupon por codigo de cupon
+
+        public Coupon CuponCode(string CodeCoupon)
+        {
+            return _context.Coupons.FirstOrDefault(c => c.CouponCode == CodeCoupon);
+        }
+
+
+        //Crear poll
+        public MassiveCoupon CrearPoll(MassiveCoupon massiveCoupon)
+        {
+            _context.MassiveCoupons.Add(massiveCoupon);
+            _context.SaveChanges();
+            return massiveCoupon;
+        }
+
+        //actualizar cupon
+        
+
     }
 }

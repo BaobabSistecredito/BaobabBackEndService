@@ -14,5 +14,7 @@ namespace BaobabBackEndService.Services.Coupons
         Coupon GetCoupon(string id);
 
         Task<ResponseUtils<Coupon>> CreateCoupon(Coupon coupon);
+
+        Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(string PurchaseId,string UserEmail, float PurchaseValue,string CodeCoupon,MassiveCoupon massiveCoupon);
     }
 }
