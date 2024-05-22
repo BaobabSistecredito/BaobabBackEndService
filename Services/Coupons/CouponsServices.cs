@@ -72,7 +72,6 @@ namespace BaobabBackEndService.Services.Coupons
             {
 
                 Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
-                Console.WriteLine(Cupones);
             return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo 2");
 
             }else{
