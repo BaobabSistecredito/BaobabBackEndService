@@ -72,15 +72,16 @@ namespace BaobabBackEndService.Services.Coupons
             {
 
                 Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
-            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo 2");
+                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Se ha encotrado la informacion");
 
             }else{
                 //buscador
                 if(!string.IsNullOrEmpty(Search))
                 {
-                    Cupones = Cupones.Where(x => x.StatusCoupon == Search || x.CouponCode == Search).ToList();
-                }else{
-                    return new ResponseUtils<Coupon>(false, message: "El parametro no se encuentra en la base de datos");
+                    Cupones = Cupones.Where(x =>x.CouponCode.ToLower() == Search.ToLower()).ToList();
+                    if(!Cupones.Any()){
+                        return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
+                    }
                 }
 
             }

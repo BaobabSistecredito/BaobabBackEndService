@@ -80,7 +80,7 @@ namespace BaobabBackEndSerice.Controllers
                 var SearchResult = await _couponsService.FilterSearch(Search);
                  if (!SearchResult.Status)
                 {
-                    return StatusCode(422, SearchResult);
+                    return StatusCode(400, SearchResult);
                 }
 
                 return Ok(SearchResult);
