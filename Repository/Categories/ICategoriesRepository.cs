@@ -17,17 +17,10 @@ namespace BaobabBackEndService.Repository.Categories
 
         Task UpdateCategoryAsync(Category category);
         Task<Category> GetCategoryByIdAsync(int id);
-
-        Category CreateCategory(Category category);
       
         Task<Category> GetCategoryByNameAsync(string Name);
       
-        //ResponseUtils<Category> AddCategory(Category category);
-
-        //ResponseUtils<Category> UpdateCategory(Category category);
-
-        //ResponseUtils<Category> DeleteCategory(string id); // en este caso no se elimina la categoria solo se cambia de estado
-
+        Task<IEnumerable<Category>>  GetCategoriesAsync(string status);
 
     }
 

@@ -7,6 +7,7 @@ using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace BaobabBackEndService.Repository.Categories
 {
     public class CategoriesRepository : ICategoriesRepository
@@ -27,6 +28,11 @@ namespace BaobabBackEndService.Repository.Categories
         {
             throw new NotImplementedException();
         }
+        
+        public async Task<IEnumerable<Category>> GetCategoriesAsync(string status)
+        {
+            return await _context.Categories.Where(c => c.Status == status).ToListAsync();
+        }
 
         public async Task<Category> GetCategoryByIdAsync(int id)
         {
@@ -39,7 +45,6 @@ namespace BaobabBackEndService.Repository.Categories
             await _context.SaveChangesAsync();
         }
 
-
         //crear categoria
         public Category CreateCategory(Category category)
         {
@@ -47,12 +52,12 @@ namespace BaobabBackEndService.Repository.Categories
             _context.SaveChanges();
             return category;
         }
-
+        
         //Validar si el nombre de la categoria existe en la base de datos
         public async Task<Category>GetCategoryByNameAsync(string name)
         {
             return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == name);
         }
-
     }
 }
+
