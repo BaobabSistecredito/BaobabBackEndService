@@ -14,7 +14,10 @@ namespace BaobabBackEndService.Services.categories
         Category GetCategory(string id);
 
         Task<ResponseUtils<Category>> UpdateCategory(string id, Category category);
+        // -------------------------- SEARCH FUNCTION:
         Task<ResponseUtils<Category>> SearchCategory(string category);
+        // -------------------------------------------
+        
 
     }
 }

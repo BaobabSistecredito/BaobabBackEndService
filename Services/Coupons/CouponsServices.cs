@@ -61,7 +61,125 @@ namespace BaobabBackEndService.Services.Coupons
 
             return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, null, message: "Todo oki");
         }
-
-
+        // ----------------------- VALIDATE ACTION:
+        public async Task<ResponseUtils<Coupon>> ValidateCoupon(string couponCode, float purchaseValue)
+        {
+            try
+            {
+                // Se inicializa variable confirmando si el cupón existe en la base de datos:
+                var existCoupon = await _couponsRepository.GetCouponByCouponCodeAsync(couponCode);
+                // Se confirma si se ha encontrado el cupón:
+                if(existCoupon != null)
+                {
+                    // Se confirma si el estado del cupón es 'Activo':
+                    if(existCoupon.StatusCoupon == "Activo")
+                    {
+                        // Se confirma el tipo de usabilidad del cupón:
+                        if(existCoupon.TypeUsability == "Limitada")
+                        {
+                            // Se confirma si el cupón tiene usos disponibles:
+                            if(existCoupon.NumberOfAvailableUses > 0)
+                            {
+                                // Se confirma la fecha de expiración del cupón:
+                                var currentDate = DateTime.Now;
+                                if(existCoupon.ExpiryDate >= currentDate)
+                                {
+                                    // Se confirma el tipo de cupón 'Porcentual' o 'Neto':
+                                    if(existCoupon.TypeDiscount == "Porcentual")
+                                    {
+                                        // Se confirma el rango del valor comprado:
+                                        if(purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
+                                        {
+                                            var validatedCoupon = existCoupon.CouponCode;
+                                            // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                                            return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                        }
+                                        else
+                                        {
+                                            return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Se confirma el rango del valor comprado:
+                                        if(purchaseValue >= existCoupon.MinPurchaseRange)
+                                        {
+                                            var validatedCoupon = existCoupon.CouponCode;
+                                            // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                                            return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                        }
+                                        else
+                                        {
+                                            return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    return new ResponseUtils<Coupon>(false, null, 406, message: "¡El cupón ha expirado!");
+                                }
+                            }
+                            else
+                            {
+                                return new ResponseUtils<Coupon>(false, null, 406, message: "Cupón sin usos disponibles!");
+                            }
+                        }
+                        else
+                        {
+                            // Se confirma la fecha de expiración del cupón:
+                            var currentDate = DateTime.Now;
+                            if(existCoupon.ExpiryDate >= currentDate)
+                            {
+                                // Se confirma el tipo de cupón 'Porcentual' o 'Neto':
+                                if(existCoupon.TypeDiscount == "Porcentual")
+                                {
+                                    // Se confirma el rango del valor comprado:
+                                    if(purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
+                                    {
+                                        var validatedCoupon = existCoupon.CouponCode;
+                                        // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                                        return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                    }
+                                    else
+                                    {
+                                        return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                    }
+                                }
+                                else
+                                {
+                                    // Se confirma el rango del valor comprado:
+                                    if(purchaseValue >= existCoupon.MinPurchaseRange)
+                                    {
+                                        var validatedCoupon = existCoupon.CouponCode;
+                                        // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                                        return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                    }
+                                    else
+                                    {
+                                        return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                return new ResponseUtils<Coupon>(false, null, 406, message: "¡El cupón ha expirado!");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return new ResponseUtils<Coupon>(false, null, 406, message: "¡Cupón no activo!");
+                    }
+                }
+                else
+                {
+                    return new ResponseUtils<Coupon>(false, null, 404, message: "¡Cupón no encontrado!");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Coupon>(false, null, 400, $"Error: {ex.Message}");
+            }
+        }
     }
 }

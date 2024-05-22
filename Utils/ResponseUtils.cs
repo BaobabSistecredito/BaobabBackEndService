@@ -6,15 +6,15 @@ namespace BaobabBackEndService.Utils
     {
         public bool Status { get; set; }
         public List<T> List { get; set; }
-        public object Item { get; set; } // Usando object en lugar de T
+        public object Code { get; set; } // Usando object en lugar de T
         public string Message { get; set; }
         public List<T> Errors { get; set; }
 
-        public ResponseUtils(bool status, List<T> list = null, object item = null, string message = "", List<T> errors = null)
+        public ResponseUtils(bool status, List<T> list = null, object code = null, string message = "", List<T> errors = null)
         {
             Status = status;
             List = list ?? new List<T>();
-            Item = item;
+            Code = code;
             Message = message;
             Errors = errors ?? new List<T>();
         }
