@@ -38,6 +38,18 @@ namespace BaobabBackEndService.Repository.Coupons
             return _context.Coupons.Find(id);
         }
 
+        public async Task<IEnumerable<Coupon>>GetCouponByIdAsync(int couponId){
+            return await _context.Coupons.Where(c => c.Id == couponId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Coupon>>GetCouponByTitleSearchAsync(string value){
+            return await _context.Coupons.Where(c => c.Title.StartsWith(value)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Coupon>>GetCouponByCouponCodeSearchAsync(string value){
+            return await _context.Coupons.Where(c => c.CouponCode.StartsWith(value)).ToListAsync();
+        }
+
         public async Task<Coupon> GetCouponByCouponCodeAsync(string cuponCode)
         {
             return await _context.Coupons.FirstOrDefaultAsync(c => c.CouponCode == cuponCode);
