@@ -21,14 +21,13 @@ namespace BaobabBackEndService.Controllers.Categories
             _categoryService = categoryService;
         }
         // ----------------------- SEARCH ACTION:
-        [HttpGet]
-        [Route("Search/{category?}")]
+        [HttpGet("{category?}")]
         public async Task<ActionResult<ResponseUtils<Category>>> SearchCategory(string? category)
         {
             var response = await _categoryService.SearchCategory(category);
             if (!response.Status)
             {
-                return StatusCode(422, response);
+                return StatusCode(400, response);
             }
             
             return Ok(response);
