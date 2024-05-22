@@ -102,7 +102,7 @@ namespace BaobabBackEndService.Services.categories
 
             //pasar datos a minuscula
             category.CategoryName = category.CategoryName.ToLower();
-            category.Status = category.Status.ToLower();
+            category.Status = category.Status;
 
             return new ResponseUtils<Category>(true, new List<Category> {_categoriesRepository.CreateCategory(category) }, null, message: "Todo oki");
 
