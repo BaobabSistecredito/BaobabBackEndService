@@ -94,12 +94,12 @@ namespace BaobabBackEndService.Services.categories
                     else
                     {
                         // Retorno de la respuesta fallida con la estructura de la clase 'ResponseUtils':
-                        return new ResponseUtils<Category>(false, null, null, message: "¡Dato no encontrado!");
+                        return new ResponseUtils<Category>(false, null, 404, message: "¡Dato no encontrado!");
                     }
                 }
                 else
                 {
-                    return new ResponseUtils<Category>(false, null, null, message: "¡No se han ingresado datos!");
+                    return new ResponseUtils<Category>(false, null, 400, message: "¡No se han ingresado datos!");
                 }
             }
             catch (Exception ex)
