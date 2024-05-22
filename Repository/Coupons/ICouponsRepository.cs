@@ -39,6 +39,9 @@ namespace BaobabBackEndService.Repository.Coupons
         Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
         Task<Coupon> GetCouponByTitleAsync(string title);
 
+        Task<IEnumerable<Coupon>>GetCouponByIdAsync(int couponId);
+        Task<IEnumerable<Coupon>>GetCouponByTitleSearchAsync(string value);
+        Task<IEnumerable<Coupon>>GetCouponByCouponCodeSearchAsync(string value);
         Task<IEnumerable<Coupon>> GetCouponsAsync();
 
 

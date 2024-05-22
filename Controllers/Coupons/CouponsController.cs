@@ -69,6 +69,16 @@ namespace BaobabBackEndSerice.Controllers
             }
         }
 
+        [HttpGet("{searchType}/{value}")]
+        public async Task<ResponseUtils<Coupon>> GetCoupon(string searchType, string value){
+            try{
+                var result = await _couponsService.GetCouponsAsync(searchType, value);
+                return result;
+            }
+            catch(Exception ex){
+                return new ResponseUtils<Coupon>(false, null, null, $"Error: {ex.Message}");
+            }
+        }
 
         //Buscador y search
            [HttpGet("{Search}")]

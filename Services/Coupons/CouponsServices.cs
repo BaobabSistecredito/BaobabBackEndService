@@ -43,6 +43,47 @@ namespace BaobabBackEndService.Services.Coupons
             return _couponsRepository.GetCoupon(id);
         }
 
+        public async Task<ResponseUtils<Coupon>> GetCouponsAsync(string searchType, string value){
+            try{
+                if(!int.TryParse(searchType, out int parseSearchType)){
+                    return new ResponseUtils<Coupon>(false, message: "Dato ingresado no es valido.");
+                }
+                
+                List<Coupon> coupons;
+
+            switch (parseSearchType)
+            {
+                case 1:
+                    if (!int.TryParse(value, out int couponId))
+                    {
+                        return new ResponseUtils<Coupon>(false, message: "No se encontraron coincidencias en la base de datos.");
+                    }
+                    coupons = new List<Coupon>(await _couponsRepository.GetCouponByIdAsync(couponId));
+                    break;
+                case 2:
+                    coupons = new List<Coupon>(await _couponsRepository.GetCouponByTitleSearchAsync(value));
+                    break;
+                case 3:
+                    coupons = new List<Coupon>(await _couponsRepository.GetCouponByCouponCodeSearchAsync(value));
+                    break;
+                default:
+                    return new ResponseUtils<Coupon>(false, message: "Dato ingresado no es válido.");
+            }
+    
+            if (coupons == null || !coupons.Any())
+            {
+                return new ResponseUtils<Coupon>(false, message: "No se encontraron cupones con los criterios de búsqueda proporcionados.");
+            }
+    
+            return new ResponseUtils<Coupon>(true, coupons, message: "Se encontraron los cupones correctamente.");
+                    
+            }
+            catch (Exception ex){
+                return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
+            }
+        }
+        
+
         public async Task<ResponseUtils<Coupon>> CreateCoupon(Coupon coupon)
         {
             var existingCodeCoupon = await _couponsRepository.GetCouponByCouponCodeAsync(coupon.CouponCode);
