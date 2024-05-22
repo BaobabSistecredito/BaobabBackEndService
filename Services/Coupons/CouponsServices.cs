@@ -33,7 +33,7 @@ namespace BaobabBackEndService.Services.Coupons
 
         public IEnumerable<Coupon> GetCoupons()
         {
-            // Lógica de negocio para obtener todos los cupones
+            // Lógica de negocio para obtene rtodos los cupones
 
             return _couponsRepository.GetCoupons();
         }
@@ -60,6 +60,32 @@ namespace BaobabBackEndService.Services.Coupons
             coupon.StatusCoupon = "Creado";
 
             return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, null, message: "Todo oki");
+        }
+
+        //funcion para buscar, Filtrar o mostrar cuponen
+        public async Task<ResponseUtils<Coupon>> FilterSearch(string Search)
+        {
+
+            var Cupones = await _couponsRepository.GetCouponsAsync();
+
+            if(Search == "Activo" || Search == "Inactivo" || Search == "Creado" || Search == "Vencido" || Search == "Agotado")
+            {
+
+                Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
+                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Se ha encotrado la informacion");
+
+            }else{
+                //buscador
+                if(!string.IsNullOrEmpty(Search))
+                {
+                    Cupones = Cupones.Where(x =>x.CouponCode.ToLower() == Search.ToLower()).ToList();
+                    if(!Cupones.Any()){
+                        return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
+                    }
+                }
+
+            }
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo oki");
         }
 
 

@@ -14,5 +14,12 @@ namespace BaobabBackEndService.Services.Coupons
         Coupon GetCoupon(string id);
 
         Task<ResponseUtils<Coupon>> CreateCoupon(Coupon coupon);
+
+        Task<ResponseUtils<Coupon>> FilterSearch(string Search);
+
+        
+
+
+
     }
 }
