@@ -23,7 +23,6 @@ namespace BaobabBackEndService.Repository.Categories
         {
             return _context.Categories.ToList();
         }
-
         public Category GetCategory(string id)
         {
             throw new NotImplementedException();
@@ -38,12 +37,21 @@ namespace BaobabBackEndService.Repository.Categories
         {
             return await _context.Categories.FindAsync(id);
         }
-
         public async Task UpdateCategoryAsync(Category category)
         {
             _context.Entry(category).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+        // ----------------------- SEARCH ACTION:
+        public async Task <IEnumerable<Category>> GetAllCategoriesAsync(string? category)
+        {
+            // Se trae la información de la entidad 'Categories':
+            var categories = await _context.Categories.ToListAsync();
+            var categoriesFiltered = categories.Where(c => c.CategoryName.ToLower().StartsWith(category) || c.Status.ToLower().StartsWith(category));
+            
+            return categoriesFiltered;
+        }
+        // -----------------------------------------------
 
         //crear categoria
         public Category CreateCategory(Category category)

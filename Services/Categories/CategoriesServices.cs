@@ -22,8 +22,7 @@ namespace BaobabBackEndService.Services.categories
             // Lógica de negocio para obtener todas las categorías
             return _categoriesRepository.GetCategories();
         }
-
-
+        
         public async Task<ResponseUtils<Category>> GetCategoriesAsync(string number)
         {
 
@@ -46,7 +45,6 @@ namespace BaobabBackEndService.Services.categories
                 return new ResponseUtils<Category>(false, message: "Error buscar el estado de la categoría en la base de datos: " + ex.InnerException.Message);
             }
         }
-
 
         public Category GetCategory(string id)
         {
@@ -143,8 +141,41 @@ namespace BaobabBackEndService.Services.categories
 
         }
 
-
-
+        // ----------------------- SEARCH ACTION:
+        public async Task<ResponseUtils<Category>> SearchCategory(string? category)
+        {
+            try
+            {
+                // Se convierte la búsqueda a minúscula para hacerla case-insensitive:
+                var loweredCategory = category.ToLower();
+                // Se trae la información de la entidad 'Categories':
+                var categories = await _categoriesRepository.GetAllCategoriesAsync(loweredCategory);
+                // Se confirma que el parámetro 'category' no esté vacío:
+                if(!string.IsNullOrEmpty(loweredCategory))
+                {
+                    // Se confirma si se han encontrado datos que coincidan con el filtrado:
+                    if(categories.Any())
+                    {
+                        // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                        return new ResponseUtils<Category>(true, new List<Category>(categories), message: "¡Categorías filtradas!");
+                    }
+                    else
+                    {
+                        // Retorno de la respuesta fallida con la estructura de la clase 'ResponseUtils':
+                        return new ResponseUtils<Category>(false, null, 404, message: "¡Dato no encontrado!");
+                    }
+                }
+                else
+                {
+                    return new ResponseUtils<Category>(false, null, 400, message: "¡No se han ingresado datos!");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+            }
+        }
+        // -------------------------------------------------------------------------
 
     }
 }
