@@ -45,6 +45,10 @@ namespace BaobabBackEndService.Repository.Coupons
         //creacion de funcion pra guardar en la poll
         MassiveCoupon CrearPoll(MassiveCoupon massiveCoupon);
 
+        //Actualizar Cupon para redencion
+        Task<Coupon> RedencionCupon(Coupon coupon);
+
+
         
 
         //ResponseUtils<Coupon> UpdateCoupon(stirng id,Coupon coupon);

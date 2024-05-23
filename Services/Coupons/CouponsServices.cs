@@ -63,15 +63,14 @@ namespace BaobabBackEndService.Services.Coupons
         }
 
         //redencion de cupon
-
-        public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(string PurchaseId,string UserEmail, float PurchaseValue,string CodeCoupon,MassiveCoupon massiveCoupon )
+        public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemRequest redeemRequest)
         {
 
             bool Validate = true;
 
             if(Validate == true)
             {
-                var CuponValido = _couponsRepository.CuponCode(CodeCoupon);
+                var CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
 
 
                 //validar si el cupon es null
@@ -81,28 +80,117 @@ namespace BaobabBackEndService.Services.Coupons
                 }
 
 
-                if(CuponValido.TypeUsability == "limitada")
+                if(CuponValido.TypeUsability == "limitada" && CuponValido.NumberOfAvailableUses >0)
                 {
 
                     //traer todos los datos del cupon para actualizarlo
+
+                    var title = CuponValido.Title;
+
+                    var Description = CuponValido.Description;
+
+                    var CreationDate = CuponValido.CreationDate;
+
+                    var StarDate = CuponValido.StartDate;
+                    
+                    var ExpiryDate = CuponValido.ExpiryDate;
+
+                    var ValueDiscount = CuponValido.ValueDiscount;
+
+                    var TypeDiscount = CuponValido.TypeDiscount;
+
+                    int NumberOfAvailableUses = CuponValido.NumberOfAvailableUses;
+
+                    var Menos = NumberOfAvailableUses-1;
+
+                    var TypeUsability = CuponValido.TypeUsability;
+
+                    var StatusCoupon = CuponValido.StatusCoupon;
+
+                    var MinPurchaseRange = CuponValido.MinPurchaseRange;
+
+                    var MaxPurchaseRange = CuponValido.MaxPurchaseRange;
+
+                    var CouponCode = CuponValido.CouponCode;
+
+                    var CategotyId = CuponValido.CategoryId;
+
+                    var MarketingUserId = CuponValido.MarketingUserId;
                     
 
-                    
+                    Console.WriteLine(NumberOfAvailableUses);
+                    Console.WriteLine("----------------------------------------------------------------");
+                    Console.WriteLine("----------------------------------------------------------------");
+                    Console.WriteLine(Menos);
+
+
+
                     //resto 1 numero de uso 
-                    CuponValido.NumberOfAvailableUses = CuponValido.NumberOfAvailableUses --;
+                    //NumberOfAvailableUses = NumberOfAvailableUses-1; 
+
+
+                    var Cupon = new Coupon
+                    {
+                        Title = title,
+
+                        Description = Description,
+
+                        CreationDate = CreationDate,
+
+                        StartDate = StarDate,
+
+                        ExpiryDate= ExpiryDate,
+
+                        ValueDiscount = ValueDiscount,
+
+                        TypeDiscount = TypeDiscount,
+
+                        NumberOfAvailableUses = Menos ,
+
+                        TypeUsability = TypeUsability,
+
+                        StatusCoupon = StatusCoupon,
+
+                        MinPurchaseRange=MinPurchaseRange,
+
+                        MaxPurchaseRange = MaxPurchaseRange,
+
+                        CouponCode = CouponCode,
+
+                        CategoryId = CategotyId,
+
+                        MarketingUserId = MarketingUserId    
+                    };
+
+                    await _couponsRepository.RedencionCupon(Cupon);
+                    
                 }
 
-                massiveCoupon.MassiveCouponCode = CodeCoupon;
+                MassiveCoupon massiveCoupon= new MassiveCoupon
+                {
+                    MassiveCouponCode = redeemRequest.CodeCoupon+1,//agregar funcion
+                    CouponId = CuponValido.Id,
+                    UserEmail = redeemRequest.UserEmail,
+                    RedemptionDate = DateTime.Now,
+                    PurcharseId = redeemRequest.PurcharseId,
+                    PurchaseValue = redeemRequest.PurchaseValue
+
+
+                };
+
+                /* massiveCoupon.MassiveCouponCode = redeemRequest.CodeCoupon;
 
                 massiveCoupon.CouponId = CuponValido.Id;
 
-                massiveCoupon.UserEmail = UserEmail;
+                massiveCoupon.UserEmail = redeemRequest.UserEmail;
 
                 massiveCoupon.RedemptionDate = DateTime.Now;
 
-                massiveCoupon.PurchaseId = PurchaseId;
+                massiveCoupon.PurchaseId = redeemRequest.PurchaseId;
 
-                massiveCoupon.purchaseValue = PurchaseValue;
+                massiveCoupon.purchaseValue = redeemRequest.PurchaseValue; */
+
+
 
                  return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { _couponsRepository.CrearPoll(massiveCoupon) }, null, message: "Todo oki");
 
