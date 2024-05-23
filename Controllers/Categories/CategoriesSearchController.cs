@@ -32,5 +32,6 @@ namespace BaobabBackEndService.Controllers.Categories
             
             return Ok(response);
         }
+        
     }
 }
