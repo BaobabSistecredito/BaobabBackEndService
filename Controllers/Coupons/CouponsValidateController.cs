@@ -22,15 +22,13 @@ namespace BaobabBackEndService.Controllers.Coupons
         }
         // ----------------------- VALIDATE ACTION:
         [HttpGet]
-        [Route("validate/{couponcode?}/{purchasevalue?}")]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> ValidateCoupon (string couponCode, float purchaseValue)
+        public async Task<ActionResult<ResponseUtils<Coupon>>> ValidateCoupon ([FromBody] CouponValidationRequest request)
         {
-            var response = await _couponService.ValidateCoupon(couponCode, purchaseValue);
+            var response = await _couponService.ValidateCoupon(request.CouponCode, request.PurchaseValue);
             if(!response.Status)
             {
                 return StatusCode(422, response);
             }
-            
             return Ok(response);
         }
     }
