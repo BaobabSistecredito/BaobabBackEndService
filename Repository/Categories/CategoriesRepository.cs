@@ -41,7 +41,7 @@ namespace BaobabBackEndService.Repository.Categories
         {
             // Se trae la información de la entidad 'Categories':
             var categories = await _context.Categories.ToListAsync();
-            var categoriesFiltered = categories.Where(c => c.CategoryName.ToLower().Contains(category) || c.Status.ToLower().Contains(category));
+            var categoriesFiltered = categories.Where(c => c.CategoryName.ToLower().StartsWith(category) || c.Status.ToLower().StartsWith(category));
             
             return categoriesFiltered;
         }

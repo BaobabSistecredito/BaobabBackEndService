@@ -90,9 +90,8 @@ namespace BaobabBackEndService.Services.Coupons
                                         // Se confirma el rango del valor comprado:
                                         if(purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
                                         {
-                                            var validatedCoupon = existCoupon.CouponCode;
                                             // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                            return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                            return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
                                         }
                                         else
                                         {
@@ -104,9 +103,8 @@ namespace BaobabBackEndService.Services.Coupons
                                         // Se confirma el rango del valor comprado:
                                         if(purchaseValue >= existCoupon.MinPurchaseRange)
                                         {
-                                            var validatedCoupon = existCoupon.CouponCode;
                                             // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                            return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                            return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
                                         }
                                         else
                                         {
@@ -136,9 +134,8 @@ namespace BaobabBackEndService.Services.Coupons
                                     // Se confirma el rango del valor comprado:
                                     if(purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
                                     {
-                                        var validatedCoupon = existCoupon.CouponCode;
                                         // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                        return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                        return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
                                     }
                                     else
                                     {
@@ -150,9 +147,8 @@ namespace BaobabBackEndService.Services.Coupons
                                     // Se confirma el rango del valor comprado:
                                     if(purchaseValue >= existCoupon.MinPurchaseRange)
                                     {
-                                        var validatedCoupon = existCoupon.CouponCode;
                                         // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                        return new ResponseUtils<Coupon>(true, null, validatedCoupon, message: "¡Cupón válido!");
+                                        return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
                                     }
                                     else
                                     {
