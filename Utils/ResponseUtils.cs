@@ -1,9 +1,13 @@
 using System.Collections.Generic;
+using BaobabBackEndSerice.Models;
 
 namespace BaobabBackEndService.Utils
 {
     public class ResponseUtils<T>
     {
+        private List<Category> list;
+        private object item;
+
         public bool Status { get; set; }
         public List<T> List { get; set; }
         public object Code { get; set; } // Usando object en lugar de T
@@ -17,6 +21,14 @@ namespace BaobabBackEndService.Utils
             Code = code;
             Message = message;
             Errors = errors ?? new List<T>();
+        }
+
+        public ResponseUtils(bool status, List<Category> list, object item, string message)
+        {
+            Status = status;
+            this.list = list;
+            this.item = item;
+            Message = message;
         }
     }
 }
