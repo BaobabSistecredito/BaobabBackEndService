@@ -16,12 +16,9 @@ namespace BaobabBackEndService.Services.Coupons
         Task<ResponseUtils<Coupon>> GetCouponsAsync(string searchType, string value);
 
         Task<ResponseUtils<Coupon>> CreateCoupon(Coupon coupon);
-
+        // -------------------------- VALIDATE FUNCTION:
+        Task<ResponseUtils<Coupon>> ValidateCoupon(string couponCode, float purchaseValue);
+        // ---------------------------------------------
         Task<ResponseUtils<Coupon>> FilterSearch(string Search);
-
-        
-
-
-
     }
 }
