@@ -49,21 +49,21 @@ namespace BaobabBackEndService.Controllers
                 return Ok(respuesta);
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al crear la categoria: " + ex.Message));
 
             }
-            
+
 
         }
-      
-      
 
-        
-        
 
-        
+
+
+
+
+
 
     }
 
