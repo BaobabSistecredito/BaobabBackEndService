@@ -24,5 +24,16 @@ namespace BaobabBackEndService.Controllers.Coupons
         {
             return await _couponsService.EditCouponStatus(id, status);
         }
+        // ----------------------- EDIT ACTION:
+        [HttpPut("{marketinUserId}")]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> EditCoupon(int marketinUserId, [FromBody] Coupon coupon)
+        {
+            var response = await _couponService.EditCoupon(marketinUserId, coupon);
+            if(!response.Status)
+            {
+                return StatusCode(422, response);
+            }
+            return Ok(response);
+        }
     }
 }

@@ -31,14 +31,18 @@ namespace BaobabBackEndService.Repository.Coupons
     */
 
     IEnumerable<Coupon> GetCoupons();
-
     Task<Coupon> GetCouponAsync(int id);
-
     Coupon CreateCoupon(Coupon coupon);
-
     Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
     Task<Coupon> GetCouponByTitleAsync(string title);
-
+    // ------------------- GET MassiveCoupon:
+    Task<MassiveCoupon> GetMassiveCouponByCouponId(Coupon coupon);
+    // --------------------- UPDATE COUPON:
+    Task<Coupon> UpdateCoupon(Coupon coupon);
+    // --------------------- CREATE RECORD IN 'ChangesHistory':
+    Task<ChangeHistory> AddNewChange(ChangeHistory newChange);
+    Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
+    Task<Coupon> GetCouponByTitleAsync(string title);
     Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId);
     Task<IEnumerable<Coupon>> GetCouponByTitleSearchAsync(string value);
     Task<IEnumerable<Coupon>> GetCouponByCouponCodeSearchAsync(string value);

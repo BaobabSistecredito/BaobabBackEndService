@@ -67,6 +67,12 @@ namespace BaobabBackEndService.Repository.Coupons
         {
             return _context.Coupons.ToList();
         }
+        // ------------------- GET MassiveCoupon:
+        public async Task<MassiveCoupon> GetMassiveCouponByCouponId(Coupon coupon)
+        {
+            return await _context.MassiveCoupons.FirstOrDefaultAsync(mc => mc.CouponId == coupon.Id);
+        }
+        // ---------------------------------------
 
         public async Task<IEnumerable<Coupon>> GetCouponsAsync()
         {
@@ -109,6 +115,20 @@ namespace BaobabBackEndService.Repository.Coupons
             _context.SaveChanges();
             return coupon;
         }
+
+        // --------------------- UPDATE COUPON:
+        public async Task<Coupon> UpdateCoupon(Coupon coupon)
+        {
+            _context.Coupons.Update(coupon);
+            await _context.SaveChangesAsync();
+            return coupon;
+        }
+        // --------------------- ADD NEW CHANGE:
+        public async Task<ChangeHistory> AddNewChange(ChangeHistory newChange)
+        {
+            _context.ChangesHistory.Add(newChange);
+            await _context.SaveChangesAsync();
+            return newChange;
 
         public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid)
         {

@@ -15,6 +15,7 @@ namespace BaobabBackEndService.Services.categories
         Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryRequest category);
         // -------------------------- SEARCH FUNCTION:
         Task<ResponseUtils<Category>> SearchCategory(string category);
+        // -------------------------------------------
         Task<ResponseUtils<Category>> CreateCategoria(Category category);
         Task<ResponseUtils<Category>> GetCategoriesAsync(string number);
         Task<bool> ValidateCategoryStatusChange(int categoryid);

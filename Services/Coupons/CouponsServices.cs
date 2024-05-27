@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BaobabBackEndService.Services.Coupons
 {
@@ -125,6 +127,41 @@ namespace BaobabBackEndService.Services.Coupons
 
             return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, null, message: "Todo oki");
         }
+        // ----------------------- EDIT ACTION:
+        public async Task<ResponseUtils<Coupon>> EditCoupon(int marketingUserId, Coupon coupon)
+        {
+            try
+            {
+                // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
+                var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(coupon);
+                // Condicional que determina si se ha encontrado el cupón:
+                if(existCoupon == null)
+                {
+                    // Se actualiza la entidad 'Coupons' en la base de datos:
+                    await _couponsRepository.UpdateCoupon(coupon);
+                    // Se crea una instancia del modelo 'ChangeHistory' con la información requerida para crear un nuevo registro en la entidad:
+                    var newChange = new ChangeHistory {
+                        ModifiedTable = "Coupons",
+                        IdModifiedRecord = coupon.Id,
+                        ChangeDate = DateTime.Now,
+                        IdMarketingUser = marketingUserId
+                    };
+                    // Se crea un nuevo registro en la entidad 'ChangesHistory':
+                    await _couponsRepository.AddNewChange(newChange);
+                    // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                    return new ResponseUtils<Coupon>(true, new List<Coupon>{coupon}, 200, message: "¡Cupón actualizado!");
+                }
+                else
+                {
+                    return new ResponseUtils<Coupon>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Coupon>(false, null, 500, message: $"Error interno del servidor: {ex.Message}");
+            }
+        }
+
         // ----------------------- VALIDATE ACTION:
         public async Task<ResponseUtils<Coupon>> ValidateCoupon(string couponCode, float purchaseValue)
         {
