@@ -20,22 +20,17 @@ namespace BaobabBackEndService.Controllers.Coupons
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseUtils<MassiveCoupon>>> redeemCoupon(RedeemRequest redeemRequest)
+        public async Task<ActionResult<ResponseUtils<MassiveCoupon>>> redeemCoupon([FromBody]RedeemRequest redeemRequest)
         {
              try
             {
-
-                var Redimir = _couponsService.RedeemCoupon(redeemRequest);
-    
+                var Redimir = await _couponsService.RedeemCoupon(redeemRequest);
                 return Ok(Redimir);
-            
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new ResponseUtils<MassiveCoupon>(false, null, null, $"Errors: {ex.Message}"));
             }
-            
-
         }
        
     }

@@ -96,20 +96,18 @@ namespace BaobabBackEndService.Repository.Coupons
             return _context.Coupons.FirstOrDefault(c => c.CouponCode == CodeCoupon);
         }
 
-
         //Crear poll
-        public MassiveCoupon CrearPoll(MassiveCoupon massiveCoupon)
+        public async Task<MassiveCoupon> CrearPoll(MassiveCoupon massiveCoupon)
         {
             _context.MassiveCoupons.Add(massiveCoupon);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return massiveCoupon;
         }
 
         //actualizar cupon
         public async Task<Coupon> RedencionCupon(Coupon coupon)
         {
-
-            _context.Update(coupon);
+            _context.Coupons.Update(coupon);
             await _context.SaveChangesAsync();
             return coupon;
         }

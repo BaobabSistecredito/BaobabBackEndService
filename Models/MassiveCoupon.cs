@@ -6,7 +6,7 @@ namespace BaobabBackEndSerice.Models
         public string? MassiveCouponCode { get; set; }
         public int CouponId { get; set; }
         public string? UserEmail { get; set; }
-        public string? PurcharseId { get; set; }
+        public string? PurchaseId { get; set; }
         public DateTime? RedemptionDate { get; set; }
         public float PurchaseValue { get; set; }
     }
