@@ -38,8 +38,12 @@ namespace BaobabBackEndService.Repository.Coupons
 
         Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
         Task<Coupon> GetCouponByTitleAsync(string title);
-
-        
+        // ------------------- GET MassiveCoupon:
+        Task<MassiveCoupon> GetMassiveCouponByCouponId(Coupon coupon);
+        // --------------------- UPDATE COUPON:
+        Task<Coupon> UpdateCoupon(Coupon coupon);
+        // --------------------- CREATE RECORD IN 'ChangesHistory':
+        Task<ChangeHistory> AddNewChange(ChangeHistory newChange);
 
         //ResponseUtils<Coupon> UpdateCoupon(stirng id,Coupon coupon);
 

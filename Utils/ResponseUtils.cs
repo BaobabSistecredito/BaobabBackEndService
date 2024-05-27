@@ -6,7 +6,7 @@ namespace BaobabBackEndService.Utils
     {
         public bool Status { get; set; }
         public List<T> List { get; set; }
-        public object Code { get; set; } // Usando object en lugar de T
+        public object Code { get; set; }
         public string Message { get; set; }
         public List<T> Errors { get; set; }
 
