@@ -38,5 +38,21 @@ namespace BaobabBackEndService.Repository.Categories
             _context.Entry(category).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+
+        //crear categoria
+        public Category CreateCategory(Category category)
+        {
+            _context.Categories.Add(category);
+            _context.SaveChanges();
+            return category;
+        }
+
+        //Validar si el nombre de la categoria existe en la base de datos
+        public async Task<Category>GetCategoryByNameAsync(string name)
+        {
+            return await _context.Categories.FirstOrDefaultAsync(c => c.CategoryName == name);
+        }
+
     }
 }
