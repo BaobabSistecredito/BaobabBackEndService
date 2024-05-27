@@ -11,14 +11,16 @@ namespace BaobabBackEndService.Services.Coupons
     {
         IEnumerable<Coupon> GetCoupons();
 
-        Coupon GetCoupon(string id);
+        Task<Coupon> GetCoupon(string id);
 
         Task<ResponseUtils<Coupon>> GetCouponsAsync(string searchType, string value);
 
-        Task<ResponseUtils<Coupon>> CreateCoupon(Coupon coupon);
+        Task<ResponseUtils<Coupon>> CreateCoupon(CouponRequest coupon);
         // -------------------------- VALIDATE FUNCTION:
         Task<ResponseUtils<Coupon>> ValidateCoupon(string couponCode, float purchaseValue);
         // ---------------------------------------------
         Task<ResponseUtils<Coupon>> FilterSearch(string Search);
+
+        Task<ResponseUtils<Coupon>> EditCouponStatus(string id,string status);
     }
 }

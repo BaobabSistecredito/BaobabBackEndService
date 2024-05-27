@@ -33,9 +33,9 @@ namespace BaobabBackEndService.Repository.Coupons
         Continuemos con el siguiente paso Alli en este archivo...
         */
 
-        public Coupon GetCoupon(string id)
+        public async Task<Coupon> GetCouponAsync(int id)
         {
-            return _context.Coupons.Find(id);
+            return await _context.Coupons.FindAsync(id);
         }
 
         public async Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId)
@@ -63,8 +63,6 @@ namespace BaobabBackEndService.Repository.Coupons
             return await _context.Coupons.FirstOrDefaultAsync(c => c.Title == title);
         }
 
-
-
         public IEnumerable<Coupon> GetCoupons()
         {
             return _context.Coupons.ToList();
@@ -74,8 +72,6 @@ namespace BaobabBackEndService.Repository.Coupons
         {
             return await _context.Coupons.ToListAsync();
         }
-
-
 
         /*
         Parte 5:
@@ -117,6 +113,12 @@ namespace BaobabBackEndService.Repository.Coupons
         public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid)
         {
             return await _context.Coupons.FirstOrDefaultAsync(c => c.CategoryId == categoryid && c.StatusCoupon == "Activo");
+        }
+
+        public async Task UpdateStatusCouponAsync(Coupon coupons)
+        {
+            _context.Entry(coupons).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

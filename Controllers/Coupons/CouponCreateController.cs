@@ -26,28 +26,9 @@ namespace BaobabBackEndSerice.Controllers
             {
                 return BadRequest(new ResponseUtils<Coupon>(false, message: $"{ModelState}"));
             }
-
             try
             {
-
-                var coupon = new Coupon
-                {
-                    Title = request.Title,
-                    Description = request.Description,
-                    StartDate = DateTime.Parse(request.StartDate),
-                    ExpiryDate = DateTime.Parse(request.ExpiryDate),
-                    ValueDiscount = request.ValueDiscount,
-                    TypeDiscount = request.TypeDiscount,
-                    NumberOfAvailableUses = request.NumberOfAvailableUses,
-                    TypeUsability = request.TypeUsability,
-                    MinPurchaseRange = request.MinPurchaseRange,
-                    MaxPurchaseRange = request.MaxPurchaseRange,
-                    CouponCode = request.CouponCode,
-                    CategoryId = request.CategoryId,
-                    MarketingUserId = request.MarketingUserId
-                };
-
-                var response = await _couponsService.CreateCoupon(coupon);
+                var response = await _couponsService.CreateCoupon(request);
                 if (!response.Status)
                 {
                     return StatusCode(422, response);
