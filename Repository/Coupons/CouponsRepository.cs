@@ -106,11 +106,11 @@ namespace BaobabBackEndService.Repository.Coupons
         }
 
         //actualizar cupon
-
         public async Task<Coupon> RedencionCupon(Coupon coupon)
         {
-            _context.Coupons.Update(coupon);
-            _context.SaveChanges();
+
+            _context.Update(coupon);
+            await _context.SaveChangesAsync();
             return coupon;
         }
         

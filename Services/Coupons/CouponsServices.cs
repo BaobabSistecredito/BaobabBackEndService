@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Repository.Coupons;
@@ -80,90 +81,46 @@ namespace BaobabBackEndService.Services.Coupons
                 }
 
 
-                if(CuponValido.TypeUsability == "limitada" && CuponValido.NumberOfAvailableUses >0)
+                if(CuponValido.TypeUsability == "Limitada" && CuponValido.NumberOfAvailableUses >0)
                 {
-
-                    //traer todos los datos del cupon para actualizarlo
-
-                    var title = CuponValido.Title;
-
-                    var Description = CuponValido.Description;
-
-                    var CreationDate = CuponValido.CreationDate;
-
-                    var StarDate = CuponValido.StartDate;
-                    
-                    var ExpiryDate = CuponValido.ExpiryDate;
-
-                    var ValueDiscount = CuponValido.ValueDiscount;
-
-                    var TypeDiscount = CuponValido.TypeDiscount;
-
-                    int NumberOfAvailableUses = CuponValido.NumberOfAvailableUses;
-
-                    var Menos = NumberOfAvailableUses-1;
-
-                    var TypeUsability = CuponValido.TypeUsability;
-
-                    var StatusCoupon = CuponValido.StatusCoupon;
-
-                    var MinPurchaseRange = CuponValido.MinPurchaseRange;
-
-                    var MaxPurchaseRange = CuponValido.MaxPurchaseRange;
-
-                    var CouponCode = CuponValido.CouponCode;
-
-                    var CategotyId = CuponValido.CategoryId;
-
-                    var MarketingUserId = CuponValido.MarketingUserId;
-                    
-
-                    Console.WriteLine(NumberOfAvailableUses);
-                    Console.WriteLine("----------------------------------------------------------------");
-                    Console.WriteLine("----------------------------------------------------------------");
-                    Console.WriteLine(Menos);
-
-
 
                     //resto 1 numero de uso 
                     //NumberOfAvailableUses = NumberOfAvailableUses-1; 
 
 
-                    var Cupon = new Coupon
+                    /*
+                    
+                        SE HAN ENCONTRADO DOS ERRORES LOS CUALES INTERFIEREN EN EL FUNCIONAMIENTO
+                        DEL SERVICIO MAS BIEN MIRE BIEN EL CODIGO SON DOS BOBADAS :C 
+                    
+                    */
+
+                    Coupon coupon = new Coupon
                     {
-                        Title = title,
-
-                        Description = Description,
-
-                        CreationDate = CreationDate,
-
-                        StartDate = StarDate,
-
-                        ExpiryDate= ExpiryDate,
-
-                        ValueDiscount = ValueDiscount,
-
-                        TypeDiscount = TypeDiscount,
-
-                        NumberOfAvailableUses = Menos ,
-
-                        TypeUsability = TypeUsability,
-
-                        StatusCoupon = StatusCoupon,
-
-                        MinPurchaseRange=MinPurchaseRange,
-
-                        MaxPurchaseRange = MaxPurchaseRange,
-
-                        CouponCode = CouponCode,
-
-                        CategoryId = CategotyId,
-
-                        MarketingUserId = MarketingUserId    
+                        Id = CuponValido.Id,
+                        Title = CuponValido.Title,
+                        Description = CuponValido.Description,
+                        CreationDate = CuponValido.CreationDate,
+                        StartDate = CuponValido.StartDate,
+                        ExpiryDate = CuponValido.ExpiryDate,
+                        ValueDiscount = CuponValido.ValueDiscount,
+                        TypeDiscount = CuponValido.TypeDiscount,
+                        NumberOfAvailableUses = CuponValido.NumberOfAvailableUses,
+                        TypeUsability = CuponValido.TypeUsability,
+                        StatusCoupon = CuponValido.StatusCoupon,
+                        MinPurchaseRange = CuponValido.MinPurchaseRange,
+                        MaxPurchaseRange = CuponValido.MaxPurchaseRange,
+                        CouponCode = CuponValido.CouponCode,
+                        CategoryId = CuponValido.CategoryId,
+                        MarketingUserId = CuponValido.MarketingUserId
                     };
 
-                    await _couponsRepository.RedencionCupon(Cupon);
-                    
+                    CuponValido.NumberOfAvailableUses = CuponValido.NumberOfAvailableUses -1 ;
+
+                    //await _couponsRepository.RedencionCupon(Cupon);
+                    await _couponsRepository.RedencionCupon(coupon);
+
+                                   
                 }
 
                 MassiveCoupon massiveCoupon= new MassiveCoupon
@@ -192,7 +149,7 @@ namespace BaobabBackEndService.Services.Coupons
 
 
 
-                 return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { _couponsRepository.CrearPoll(massiveCoupon) }, null, message: "Todo oki");
+                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { _couponsRepository.CrearPoll(massiveCoupon) }, null, message: "Todo oki");
 
             
 
