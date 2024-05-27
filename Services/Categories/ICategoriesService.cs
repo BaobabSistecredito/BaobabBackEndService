@@ -12,10 +12,11 @@ namespace BaobabBackEndService.Services.categories
     {
         IEnumerable<Category> GetCategories();
         Category GetCategory(string id);
-        Task<ResponseUtils<Category>> UpdateCategory(string id, Category category);
+        Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryRequest category);
         // -------------------------- SEARCH FUNCTION:
-        Task<ResponseUtils<Category>> SearchCategory(string category);
+                Task<ResponseUtils<Category>> SearchCategory(string category);
         Task<ResponseUtils<Category>> CreateCategoria(Category category);
         Task<ResponseUtils<Category>> GetCategoriesAsync(string number);
+        Task<bool> ValidateCategoryStatusChange(int categoryid);
     }
 }

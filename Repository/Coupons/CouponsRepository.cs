@@ -111,5 +111,8 @@ namespace BaobabBackEndService.Repository.Coupons
             return coupon;
         }
 
+        public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid){
+            return await _context.Coupons.FirstOrDefaultAsync(c => c.CategoryId == categoryid && c.StatusCoupon == "Activo");
+        }
     }
 }

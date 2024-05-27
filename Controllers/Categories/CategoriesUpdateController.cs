@@ -19,7 +19,7 @@ namespace BaobabBackEndSerice.Controllers
 
         //filtrar y Search categorias
         [HttpPut("{id}")]
-        public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(string id, Category category)
+        public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(string id, CategoryRequest category)
         {
             try
             {

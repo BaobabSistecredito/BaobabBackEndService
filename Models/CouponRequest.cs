@@ -27,7 +27,7 @@ namespace BaobabBackEndSerice.Models
     public string TypeDiscount { get; set; }
 
     [Required(ErrorMessage = "El campo NumberOfAvailableUses es requerido")]
-    [Range(1, int.MaxValue, ErrorMessage = "NumberOfAvailableUses must be at least 1")]
+    [Range(1, int.MaxValue, ErrorMessage = "NumberOfAvailableUses no puede ser menor a 1")]
     public int NumberOfAvailableUses { get; set; }
 
     [Required(ErrorMessage = "El campo TypeUsability es requerido")]
@@ -52,4 +52,3 @@ namespace BaobabBackEndSerice.Models
     public int MarketingUserId { get; set; }
   }
 }
-//falta agregar la opcion de coupon unico y repetir con el codeCoupon 
