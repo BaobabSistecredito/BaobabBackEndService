@@ -35,18 +35,82 @@ namespace BaobabBackEndService.Services.Coupons
 
         public IEnumerable<Coupon> GetCoupons()
         {
-            // Lógica de negocio para obtener todos los cupones
+            // Lógica de negocio para obtene rtodos los cupones
 
             return _couponsRepository.GetCoupons();
         }
 
-        public Coupon GetCoupon(string id)
+        public async Task<Coupon> GetCoupon(string id)
         {
-            return _couponsRepository.GetCoupon(id);
+            if (int.TryParse(id, out int couponId))
+            {
+                return null;
+            }
+            return await _couponsRepository.GetCouponAsync(couponId);
+        }
+        public async Task<ResponseUtils<Coupon>> GetCouponsAsync(string searchType, string value)
+        {
+            try
+            {
+                if (!int.TryParse(searchType, out int parseSearchType))
+                {
+                    return new ResponseUtils<Coupon>(false, message: "Dato ingresado no es valido.");
+                }
+
+                List<Coupon> coupons;
+
+                switch (parseSearchType)
+                {
+                    case 1:
+                        if (!int.TryParse(value, out int couponId))
+                        {
+                            return new ResponseUtils<Coupon>(false, message: "No se encontraron coincidencias en la base de datos.");
+                        }
+                        coupons = new List<Coupon>(await _couponsRepository.GetCouponByIdAsync(couponId));
+                        break;
+                    case 2:
+                        coupons = new List<Coupon>(await _couponsRepository.GetCouponByTitleSearchAsync(value));
+                        break;
+                    case 3:
+                        coupons = new List<Coupon>(await _couponsRepository.GetCouponByCouponCodeSearchAsync(value));
+                        break;
+                    default:
+                        return new ResponseUtils<Coupon>(false, message: "Dato ingresado no es válido.");
+                }
+
+                if (coupons == null || !coupons.Any())
+                {
+                    return new ResponseUtils<Coupon>(false, message: "No se encontraron cupones con los criterios de búsqueda proporcionados.");
+                }
+
+                return new ResponseUtils<Coupon>(true, coupons, message: "Se encontraron los cupones correctamente.");
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
+            }
         }
 
-        public async Task<ResponseUtils<Coupon>> CreateCoupon(Coupon coupon)
+        public async Task<ResponseUtils<Coupon>> CreateCoupon(CouponRequest request)
         {
+            var coupon = new Coupon
+            {
+                Title = request.Title,
+                Description = request.Description,
+                StartDate = DateTime.Parse(request.StartDate),
+                ExpiryDate = DateTime.Parse(request.ExpiryDate),
+                ValueDiscount = request.ValueDiscount,
+                TypeDiscount = request.TypeDiscount,
+                NumberOfAvailableUses = request.NumberOfAvailableUses,
+                TypeUsability = request.TypeUsability,
+                MinPurchaseRange = request.MinPurchaseRange,
+                MaxPurchaseRange = request.MaxPurchaseRange,
+                CouponCode = request.CouponCode,
+                CategoryId = request.CategoryId,
+                MarketingUserId = request.MarketingUserId
+            };
+
             var existingCodeCoupon = await _couponsRepository.GetCouponByCouponCodeAsync(coupon.CouponCode);
             var existingTitleCoupon = await _couponsRepository.GetCouponByTitleAsync(coupon.Title);
             if (existingCodeCoupon != null)
@@ -106,29 +170,29 @@ namespace BaobabBackEndService.Services.Coupons
                 // Se inicializa variable confirmando si el cupón existe en la base de datos:
                 var existCoupon = await _couponsRepository.GetCouponByCouponCodeAsync(couponCode);
                 // Se confirma si se ha encontrado el cupón:
-                if(existCoupon != null)
+                if (existCoupon != null)
                 {
                     // Se confirma si el estado del cupón es 'Activo':
-                    if(existCoupon.StatusCoupon == "Activo")
+                    if (existCoupon.StatusCoupon == "Activo")
                     {
                         // Se confirma el tipo de usabilidad del cupón:
-                        if(existCoupon.TypeUsability == "Limitada")
+                        if (existCoupon.TypeUsability == "Limitada")
                         {
                             // Se confirma si el cupón tiene usos disponibles:
-                            if(existCoupon.NumberOfAvailableUses > 0)
+                            if (existCoupon.NumberOfAvailableUses > 0)
                             {
                                 // Se confirma la fecha de expiración del cupón:
                                 var currentDate = DateTime.Now;
-                                if(existCoupon.ExpiryDate >= currentDate)
+                                if (existCoupon.ExpiryDate >= currentDate)
                                 {
                                     // Se confirma el tipo de cupón 'Porcentual' o 'Neto':
-                                    if(existCoupon.TypeDiscount == "Porcentual")
+                                    if (existCoupon.TypeDiscount == "Porcentual")
                                     {
                                         // Se confirma el rango del valor comprado:
-                                        if(purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
+                                        if (purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
                                         {
                                             // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                            return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
+                                            return new ResponseUtils<Coupon>(true, new List<Coupon> { existCoupon }, 200, message: "¡Cupón válido!");
                                         }
                                         else
                                         {
@@ -138,10 +202,10 @@ namespace BaobabBackEndService.Services.Coupons
                                     else
                                     {
                                         // Se confirma el rango del valor comprado:
-                                        if(purchaseValue >= existCoupon.MinPurchaseRange)
+                                        if (purchaseValue >= existCoupon.MinPurchaseRange)
                                         {
                                             // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                            return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
+                                            return new ResponseUtils<Coupon>(true, new List<Coupon> { existCoupon }, 200, message: "¡Cupón válido!");
                                         }
                                         else
                                         {
@@ -163,16 +227,16 @@ namespace BaobabBackEndService.Services.Coupons
                         {
                             // Se confirma la fecha de expiración del cupón:
                             var currentDate = DateTime.Now;
-                            if(existCoupon.ExpiryDate >= currentDate)
+                            if (existCoupon.ExpiryDate >= currentDate)
                             {
                                 // Se confirma el tipo de cupón 'Porcentual' o 'Neto':
-                                if(existCoupon.TypeDiscount == "Porcentual")
+                                if (existCoupon.TypeDiscount == "Porcentual")
                                 {
                                     // Se confirma el rango del valor comprado:
-                                    if(purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
+                                    if (purchaseValue >= existCoupon.MinPurchaseRange && purchaseValue <= existCoupon.MaxPurchaseRange)
                                     {
                                         // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                        return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
+                                        return new ResponseUtils<Coupon>(true, new List<Coupon> { existCoupon }, 200, message: "¡Cupón válido!");
                                     }
                                     else
                                     {
@@ -182,10 +246,10 @@ namespace BaobabBackEndService.Services.Coupons
                                 else
                                 {
                                     // Se confirma el rango del valor comprado:
-                                    if(purchaseValue >= existCoupon.MinPurchaseRange)
+                                    if (purchaseValue >= existCoupon.MinPurchaseRange)
                                     {
                                         // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                                        return new ResponseUtils<Coupon>(true, new List<Coupon>{existCoupon}, 200, message: "¡Cupón válido!");
+                                        return new ResponseUtils<Coupon>(true, new List<Coupon> { existCoupon }, 200, message: "¡Cupón válido!");
                                     }
                                     else
                                     {
@@ -212,6 +276,82 @@ namespace BaobabBackEndService.Services.Coupons
             catch (Exception ex)
             {
                 return new ResponseUtils<Coupon>(false, null, 400, $"Error: {ex.Message}");
+            }
+        }
+
+        //funcion para buscar, Filtrar o mostrar cuponen
+        public async Task<ResponseUtils<Coupon>> FilterSearch(string Search)
+        {
+
+            var Cupones = await _couponsRepository.GetCouponsAsync();
+
+            if (Search == "Activo" || Search == "Inactivo" || Search == "Creado" || Search == "Vencido" || Search == "Agotado")
+            {
+
+                Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
+                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Se ha encotrado la informacion");
+
+            }
+            else
+            {
+                //buscador
+                if (!string.IsNullOrEmpty(Search))
+                {
+                    Cupones = Cupones.Where(x => x.CouponCode.ToLower() == Search.ToLower()).ToList();
+                    if (!Cupones.Any())
+                    {
+                        return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
+                    }
+                }
+            }
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo oki");
+        }
+
+        public async Task<ResponseUtils<Coupon>> EditCouponStatus(string id, string status)
+        {
+
+            if (!int.TryParse(id, out int couponId) || !int.TryParse(status, out int statusNum))
+            {
+                return new ResponseUtils<Coupon>(false, message: "El parametro ingresado no es valido");
+            }
+            var coupon = await _couponsRepository.GetCouponAsync(couponId);
+            if (coupon == null)
+            {
+                return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
+            }
+
+            switch (statusNum)
+            {
+                case 1:
+                    coupon.StatusCoupon = "Activo";
+                    break;
+                case 2:
+                    coupon.StatusCoupon = "Inactivo";
+                    break;
+                case 3:
+                    coupon.StatusCoupon = "Vencido";
+                    break;
+                case 4:
+                    coupon.StatusCoupon = "Agotado";
+                    break;
+                case 5:
+                    coupon.StatusCoupon = "Creado";
+                    break;
+                case 6:
+                    coupon.StatusCoupon = "Eliminado";
+                    break;
+
+                default:
+                    return new ResponseUtils<Coupon>(false, message: "El parametro ingresado no es valido");
+            }
+            try
+            {
+                await _couponsRepository.UpdateStatusCouponAsync(coupon);
+                return new ResponseUtils<Coupon>(true, null, null, message: "Todo oki");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
         }
     }

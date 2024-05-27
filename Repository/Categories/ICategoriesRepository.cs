@@ -10,19 +10,12 @@ namespace BaobabBackEndService.Repository.Categories
     public interface ICategoriesRepository
     {
         IEnumerable<Category> GetCategories();
-
         Category GetCategory(string id);
-
+        Category CreateCategory(Category category);
         Task UpdateCategoryAsync(Category category);
         Task<Category> GetCategoryByIdAsync(int id);
-        Task <IEnumerable<Category>> GetAllCategoriesAsync(string category);
-        //ResponseUtils<Category> AddCategory(Category category);
-
-        //ResponseUtils<Category> UpdateCategory(Category category);
-
-        //ResponseUtils<Category> DeleteCategory(string id); // en este caso no se elimina la categoria solo se cambia de estado
-
-
+        Task<IEnumerable<Category>> GetAllCategoriesAsync(string category);
+        Task<Category> GetCategoryByNameAsync(string Name);
+        Task<IEnumerable<Category>> GetCategoriesAsync(string status);
     }
-
 }

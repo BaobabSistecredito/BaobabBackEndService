@@ -33,9 +33,24 @@ namespace BaobabBackEndService.Repository.Coupons
         Continuemos con el siguiente paso Alli en este archivo...
         */
 
-        public Coupon GetCoupon(string id)
+        public async Task<Coupon> GetCouponAsync(int id)
         {
-            return _context.Coupons.Find(id);
+            return await _context.Coupons.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId)
+        {
+            return await _context.Coupons.Where(c => c.Id == couponId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Coupon>> GetCouponByTitleSearchAsync(string value)
+        {
+            return await _context.Coupons.Where(c => c.Title.StartsWith(value)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Coupon>> GetCouponByCouponCodeSearchAsync(string value)
+        {
+            return await _context.Coupons.Where(c => c.CouponCode.StartsWith(value)).ToListAsync();
         }
 
         public async Task<Coupon> GetCouponByCouponCodeAsync(string cuponCode)
@@ -58,6 +73,12 @@ namespace BaobabBackEndService.Repository.Coupons
             return await _context.MassiveCoupons.FirstOrDefaultAsync(mc => mc.CouponId == coupon.Id);
         }
         // ---------------------------------------
+
+        public async Task<IEnumerable<Coupon>> GetCouponsAsync()
+        {
+            return await _context.Coupons.ToListAsync();
+        }
+
         /*
         Parte 5:
 
@@ -108,6 +129,16 @@ namespace BaobabBackEndService.Repository.Coupons
             _context.ChangesHistory.Add(newChange);
             await _context.SaveChangesAsync();
             return newChange;
+
+        public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid)
+        {
+            return await _context.Coupons.FirstOrDefaultAsync(c => c.CategoryId == categoryid && c.StatusCoupon == "Activo");
+        }
+
+        public async Task UpdateStatusCouponAsync(Coupon coupons)
+        {
+            _context.Entry(coupons).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }

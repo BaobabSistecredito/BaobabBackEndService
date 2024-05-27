@@ -16,11 +16,14 @@ namespace BaobabBackEndSerice.Controllers
             _categoryService = categoryService;
         }
 
+
+        //filtrar y Search categorias
         [HttpPut("{id}")]
-        public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(string id, Category category)
+        public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(string id, CategoryRequest category)
         {
             try
             {
+
                 var response = await _categoryService.UpdateCategory(id, category);
                 if (!response.Status)
                 {
