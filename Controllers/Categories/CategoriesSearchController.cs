@@ -29,9 +29,9 @@ namespace BaobabBackEndService.Controllers.Categories
             {
                 return StatusCode(400, response);
             }
-            
+
             return Ok(response);
         }
-        
+
     }
 }

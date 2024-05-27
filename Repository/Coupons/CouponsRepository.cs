@@ -38,15 +38,18 @@ namespace BaobabBackEndService.Repository.Coupons
             return _context.Coupons.Find(id);
         }
 
-        public async Task<IEnumerable<Coupon>>GetCouponByIdAsync(int couponId){
+        public async Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId)
+        {
             return await _context.Coupons.Where(c => c.Id == couponId).ToListAsync();
         }
 
-        public async Task<IEnumerable<Coupon>>GetCouponByTitleSearchAsync(string value){
+        public async Task<IEnumerable<Coupon>> GetCouponByTitleSearchAsync(string value)
+        {
             return await _context.Coupons.Where(c => c.Title.StartsWith(value)).ToListAsync();
         }
 
-        public async Task<IEnumerable<Coupon>>GetCouponByCouponCodeSearchAsync(string value){
+        public async Task<IEnumerable<Coupon>> GetCouponByCouponCodeSearchAsync(string value)
+        {
             return await _context.Coupons.Where(c => c.CouponCode.StartsWith(value)).ToListAsync();
         }
 
@@ -61,7 +64,7 @@ namespace BaobabBackEndService.Repository.Coupons
         }
 
 
-        
+
         public IEnumerable<Coupon> GetCoupons()
         {
             return _context.Coupons.ToList();
@@ -73,7 +76,7 @@ namespace BaobabBackEndService.Repository.Coupons
         }
 
 
-      
+
         /*
         Parte 5:
 
@@ -111,7 +114,8 @@ namespace BaobabBackEndService.Repository.Coupons
             return coupon;
         }
 
-        public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid){
+        public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid)
+        {
             return await _context.Coupons.FirstOrDefaultAsync(c => c.CategoryId == categoryid && c.StatusCoupon == "Activo");
         }
     }

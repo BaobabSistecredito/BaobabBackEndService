@@ -20,10 +20,11 @@ namespace BaobabBackEndService.Services.categories
             _couponsRepository = couponsRepository;
         }
 
-        public IEnumerable<Category> GetCategories()
+        public ResponseUtils<Category> GetAllCategories()
         {
-            // Lógica de negocio para obtener todas las categorías
-            return _categoriesRepository.GetCategories();
+            var result = _categoriesRepository.GetCategories();
+            return new ResponseUtils<Category>(false, new List<Category>(result), null, message: "Todo");
+
         }
 
         public async Task<ResponseUtils<Category>> GetCategoriesAsync(string number)

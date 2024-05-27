@@ -23,7 +23,7 @@ namespace BaobabBackEndSerice.Controllers
         {
             try
             {
-                
+
                 var response = await _categoryService.UpdateCategory(id, category);
                 if (!response.Status)
                 {

@@ -16,16 +16,32 @@ namespace BaobabBackEndSerice.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet("{number}")]
-        public async Task<ResponseUtils<Category>> GetCategories(string number){
-            try{
-                var result = await _categoryService.GetCategoriesAsync(number);
-                return result;
+        [HttpGet]
+        public ResponseUtils<Category> GetAllCategories()
+        {
+            try
+            {
+                return _categoryService.GetAllCategories();
             }
-            catch (Exception ex){
+            catch (Exception ex)
+            {
                 return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
             }
         }
-        
+
+        [HttpGet("{number}")]
+        public async Task<ResponseUtils<Category>> GetCategories(string number)
+        {
+            try
+            {
+                var result = await _categoryService.GetCategoriesAsync(number);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+            }
+        }
+
     }
 }
