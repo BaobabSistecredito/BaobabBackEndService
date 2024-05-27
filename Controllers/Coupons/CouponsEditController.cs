@@ -1,26 +1,28 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc;
 using BaobabBackEndSerice.Models;
-using BaobabBackEndService.Utils;
 using BaobabBackEndService.Services.Coupons;
+using BaobabBackEndService.Utils;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BaobabBackEndService.Controllers.Coupons
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("api/v1/[controller]")]
     public class CouponsEditController : ControllerBase
     {
-        private readonly ICouponsServices _couponService;
-        public CouponsEditController(ICouponsServices couponService)
+        private readonly ICouponsServices _couponsService;
+        public CouponsEditController(ICouponsServices couponsService)
         {
-            _couponService = couponService;
+            _couponsService = couponsService;
         }
-        // ----------------------- EDIT ACTION:
 
+        [HttpPut("Status/{id}/{status}")]
+        public async Task<ResponseUtils<Coupon>> EditCouponStatus(string id, string status)
+        {
+            return await _couponsService.EditCouponStatus(id, status);
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace BaobabBackEndService.Repository.Coupons
 
     IEnumerable<Coupon> GetCoupons();
 
-    Coupon GetCoupon(string id);
+    Task<Coupon> GetCouponAsync(int id);
 
     Coupon CreateCoupon(Coupon coupon);
 
@@ -44,5 +44,7 @@ namespace BaobabBackEndService.Repository.Coupons
     Task<IEnumerable<Coupon>> GetCouponByCouponCodeSearchAsync(string value);
     Task<IEnumerable<Coupon>> GetCouponsAsync();
     Task<Coupon> SearchCouponsByCategoryAsync(int categoryid);
+    Task UpdateStatusCouponAsync(Coupon coupons);
+
   }
 }

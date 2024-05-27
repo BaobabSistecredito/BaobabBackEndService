@@ -38,11 +38,14 @@ namespace BaobabBackEndService.Services.Coupons
             return _couponsRepository.GetCoupons();
         }
 
-        public Coupon GetCoupon(string id)
+        public async Task<Coupon> GetCoupon(string id)
         {
-            return _couponsRepository.GetCoupon(id);
+            if (int.TryParse(id, out int couponId))
+            {
+                return null;
+            }
+            return await _couponsRepository.GetCouponAsync(couponId);
         }
-
         public async Task<ResponseUtils<Coupon>> GetCouponsAsync(string searchType, string value)
         {
             try
@@ -87,8 +90,25 @@ namespace BaobabBackEndService.Services.Coupons
             }
         }
 
-        public async Task<ResponseUtils<Coupon>> CreateCoupon(Coupon coupon)
+        public async Task<ResponseUtils<Coupon>> CreateCoupon(CouponRequest request)
         {
+            var coupon = new Coupon
+            {
+                Title = request.Title,
+                Description = request.Description,
+                StartDate = DateTime.Parse(request.StartDate),
+                ExpiryDate = DateTime.Parse(request.ExpiryDate),
+                ValueDiscount = request.ValueDiscount,
+                TypeDiscount = request.TypeDiscount,
+                NumberOfAvailableUses = request.NumberOfAvailableUses,
+                TypeUsability = request.TypeUsability,
+                MinPurchaseRange = request.MinPurchaseRange,
+                MaxPurchaseRange = request.MaxPurchaseRange,
+                CouponCode = request.CouponCode,
+                CategoryId = request.CategoryId,
+                MarketingUserId = request.MarketingUserId
+            };
+
             var existingCodeCoupon = await _couponsRepository.GetCouponByCouponCodeAsync(coupon.CouponCode);
             var existingTitleCoupon = await _couponsRepository.GetCouponByTitleAsync(coupon.Title);
             if (existingCodeCoupon != null)
@@ -248,6 +268,54 @@ namespace BaobabBackEndService.Services.Coupons
                 }
             }
             return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo oki");
+        }
+
+        public async Task<ResponseUtils<Coupon>> EditCouponStatus(string id, string status)
+        {
+
+            if (!int.TryParse(id, out int couponId) || !int.TryParse(status, out int statusNum))
+            {
+                return new ResponseUtils<Coupon>(false, message: "El parametro ingresado no es valido");
+            }
+            var coupon = await _couponsRepository.GetCouponAsync(couponId);
+            if (coupon == null)
+            {
+                return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
+            }
+
+            switch (statusNum)
+            {
+                case 1:
+                    coupon.StatusCoupon = "Activo";
+                    break;
+                case 2:
+                    coupon.StatusCoupon = "Inactivo";
+                    break;
+                case 3:
+                    coupon.StatusCoupon = "Vencido";
+                    break;
+                case 4:
+                    coupon.StatusCoupon = "Agotado";
+                    break;
+                case 5:
+                    coupon.StatusCoupon = "Creado";
+                    break;
+                case 6:
+                    coupon.StatusCoupon = "Eliminado";
+                    break;
+
+                default:
+                    return new ResponseUtils<Coupon>(false, message: "El parametro ingresado no es valido");
+            }
+            try
+            {
+                await _couponsRepository.UpdateStatusCouponAsync(coupon);
+                return new ResponseUtils<Coupon>(true, null, null, message: "Todo oki");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
+            }
         }
     }
 }
