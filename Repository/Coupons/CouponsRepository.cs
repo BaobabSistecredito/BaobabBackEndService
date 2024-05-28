@@ -129,7 +129,8 @@ namespace BaobabBackEndService.Repository.Coupons
             _context.ChangesHistory.Add(newChange);
             await _context.SaveChangesAsync();
             return newChange;
-
+        }
+        
         public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid)
         {
             return await _context.Coupons.FirstOrDefaultAsync(c => c.CategoryId == categoryid && c.StatusCoupon == "Activo");
@@ -140,5 +141,6 @@ namespace BaobabBackEndService.Repository.Coupons
             _context.Entry(coupons).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
     }
 }

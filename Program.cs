@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<BaobabDataBaseContext>(Options =>
     Options.UseMySql(
-        builder.Configuration.GetConnectionString("BaobabDataBaseConnection"),
+        builder.Configuration.GetConnectionString("BaobabDataBaseConnectionTest"),
         Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
 
 // Add services to the container.
