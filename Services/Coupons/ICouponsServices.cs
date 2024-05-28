@@ -21,5 +21,6 @@ namespace BaobabBackEndService.Services.Coupons
         // ---------------------------------------------
         Task<ResponseUtils<Coupon>> FilterSearch(string Search);
         Task<ResponseUtils<Coupon>> EditCouponStatus(string id,string status);
+        Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemRequest redeemRequest);
     }
 }

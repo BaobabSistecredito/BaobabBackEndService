@@ -116,6 +116,30 @@ namespace BaobabBackEndService.Repository.Coupons
             return coupon;
         }
 
+        //buscar cupon por codigo de cupon
+
+        public Coupon CuponCode(string CodeCoupon)
+        {
+            return _context.Coupons.FirstOrDefault(c => c.CouponCode == CodeCoupon);
+        }
+
+        //Crear poll
+        public async Task<MassiveCoupon> CrearPoll(MassiveCoupon massiveCoupon)
+        {
+            _context.MassiveCoupons.Add(massiveCoupon);
+            await _context.SaveChangesAsync();
+            return massiveCoupon;
+        }
+
+        //actualizar cupon
+        public async Task<Coupon> RedencionCupon(Coupon coupon)
+        {
+            _context.Coupons.Update(coupon);
+            await _context.SaveChangesAsync();
+            return coupon;
+        }
+        
+
         // --------------------- UPDATE COUPON:
         public async Task<Coupon> UpdateCoupon(Coupon coupon)
         {

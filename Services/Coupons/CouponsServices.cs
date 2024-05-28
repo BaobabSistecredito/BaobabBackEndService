@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Repository.Coupons;
@@ -353,6 +354,64 @@ namespace BaobabBackEndService.Services.Coupons
             {
                 return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
+        }        //redencion de cupon
+        public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemRequest redeemRequest)
+        {
+            //ResponseUtils<Coupon> validate = ValidateCoupon(RedeemRequest.CodeCoupon, RedeemRequest.PurchaseValue);
+            var validate = true;
+
+            if(/* validate.Status */ validate ==true)
+            {
+                var CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
+
+                //validar si el cupon es null
+                if(CuponValido == null)
+                {
+                    return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no existe en la base de datos");                    
+                }
+
+                //cambiar estado a agotado
+                if(CuponValido.NumberOfAvailableUses == 0)
+                {
+                    CuponValido.StatusCoupon = "Agotado";
+                    await _couponsRepository.RedencionCupon(CuponValido);
+                    return new ResponseUtils<MassiveCoupon>(false, message: "El cupon esta Agotado");                    
+                }
+
+                //Cambiar estado a Vencido
+                if(DateTime.Now > CuponValido.ExpiryDate)
+                {
+                    CuponValido.StatusCoupon = "Vencido";
+                    await _couponsRepository.RedencionCupon(CuponValido);
+                    return new ResponseUtils<MassiveCoupon>(false, message: "El cupon esta Vencido");    
+                }
+
+
+                if(CuponValido.TypeUsability == "Limitada" && CuponValido.NumberOfAvailableUses >0)
+                {
+                    CuponValido.NumberOfAvailableUses = CuponValido.NumberOfAvailableUses-1;
+                    await _couponsRepository.RedencionCupon(CuponValido);
+                              
+                }
+
+                MassiveCoupon massiveCoupon= new MassiveCoupon
+                {
+                    MassiveCouponCode = redeemRequest.CodeCoupon+1,
+                    CouponId = CuponValido.Id,
+                    UserEmail = redeemRequest.UserEmail,
+                    RedemptionDate = DateTime.Now,
+                    PurchaseId = redeemRequest.PurchaseId,
+                    PurchaseValue = redeemRequest.PurchaseValue
+                };
+
+                var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
+                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, null, message: "Todo oki");
+
+            }else{
+                return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no es valido");                    
+            }
+
         }
+
     }
 }

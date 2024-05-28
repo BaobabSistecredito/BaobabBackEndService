@@ -47,6 +47,8 @@ namespace BaobabBackEndService.Repository.Coupons
     Task<IEnumerable<Coupon>> GetCouponsAsync();
     Task<Coupon> SearchCouponsByCategoryAsync(int categoryid);
     Task UpdateStatusCouponAsync(Coupon coupons);
-
+    Coupon CuponCode(string CodeCoupon);
+    Task<MassiveCoupon> CrearPoll(MassiveCoupon massiveCoupon);
+    Task<Coupon> RedencionCupon(Coupon coupon);
   }
 }
