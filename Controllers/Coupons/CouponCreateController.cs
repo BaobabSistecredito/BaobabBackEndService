@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
 using System.Globalization;
 
-namespace BaobabBackEndSerice.Controllers
+namespace BaobabBackEndService.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]

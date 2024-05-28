@@ -1,8 +1,10 @@
 using BaobabBackEndSerice.Data;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
+using BaobabBackEndService.Repository.Users;
 using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Services.Coupons;
+using BaobabBackEndService.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -70,9 +72,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 */
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
 builder.Services.AddScoped<ICouponsServices, CouponsServices>();
-
+builder.Services.AddScoped<IUsersServices, UsersServices>();
 
 
 var app = builder.Build();
