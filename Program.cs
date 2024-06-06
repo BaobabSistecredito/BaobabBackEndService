@@ -11,6 +11,13 @@ using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
+//librerias de jwt
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using BaobabBackEndService.Services.User;
+using BaobabBackEndService.Repository.User;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configuración de CORS
@@ -44,6 +51,25 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+//configuracion jwt
+builder.Services.AddAuthentication(opt => {
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(configure => {
+        string jwt_token = "3C7HJGIRJIKSOKSDIJFIDJFDJFDJF23234E";
+        configure.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwt_token,
+            ValidAudience = jwt_token,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("3C7HJGIRJIKSOKSDIJFIDJFDJFDJF23234E"))
+        };
+    });
+;
 
 /*
     Parte 6:
@@ -73,10 +99,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddScoped<IMassiveCouponsRepository, MassiveCouponsRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
+builder.Services.AddScoped<IUserRepository,UserRepository>();
+
 builder.Services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
 builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
 builder.Services.AddScoped<ICouponsServices, CouponsServices>();
-
+builder.Services.AddScoped<IUserService,UserService>();
 
 
 var app = builder.Build();
@@ -105,6 +133,9 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
+//CONFIGURACIONES DE JWT 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

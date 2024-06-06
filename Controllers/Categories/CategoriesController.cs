@@ -7,6 +7,7 @@ namespace BaobabBackEndSerice.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;
