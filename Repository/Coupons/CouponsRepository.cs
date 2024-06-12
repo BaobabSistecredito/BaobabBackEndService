@@ -57,7 +57,12 @@ namespace BaobabBackEndService.Repository.Coupons
         {
             return await _context.MassiveCoupons.FirstOrDefaultAsync(mc => mc.CouponId == coupon.Id);
         }
-        // ---------------------------------------
+        // ------------------- GET Coupons & Categoy:
+        public async Task<IEnumerable<Coupon>> GetCouponAndCategoyAsync()
+        {
+            return await _context.Coupons.Include(c => c.Category).ToListAsync();
+        }
+        // -----------------------------------------
         /*
         Parte 5:
 

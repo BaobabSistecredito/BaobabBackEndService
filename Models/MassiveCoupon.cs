@@ -9,6 +9,7 @@ namespace BaobabBackEndSerice.Models
         public string? PurchaseId { get; set; }
         public DateTime? RedemptionDate { get; set; }
         public float purchaseValue { get; set; }
+        public Coupon? Coupon { get; set; }
     }
 }
 

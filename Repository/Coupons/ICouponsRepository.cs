@@ -44,10 +44,11 @@ namespace BaobabBackEndService.Repository.Coupons
         Task<Coupon> UpdateCoupon(Coupon coupon);
         // --------------------- CREATE RECORD IN 'ChangesHistory':
         Task<ChangeHistory> AddNewChange(ChangeHistory newChange);
+        // ------------------- GET Coupons & Categoy:
+        Task<IEnumerable<Coupon>> GetCouponAndCategoyAsync();
 
         //ResponseUtils<Coupon> UpdateCoupon(stirng id,Coupon coupon);
 
         //ResponseUtils<Coupon> DeleteCoupon(string id); // en este caso no se elimina el coupon solo se cambia de estado
-
     }
 }

@@ -68,7 +68,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     en nuestros controladores y servicios.
 
     ¡Eso es todo para esta parte! Ahora, tu sistema está configurado para utilizar el nuevo repositorio.
-    Yeeeiii fiesta en la casa del tintero
 */
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();

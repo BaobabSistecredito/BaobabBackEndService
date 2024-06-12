@@ -18,6 +18,7 @@ namespace BaobabBackEndService.Services.Coupons
         Task<ResponseUtils<Coupon>> ValidateCoupon(string couponCode, float purchaseValue);
         // ----------------------- EDIT ACTION:
         Task<ResponseUtils<Coupon>> EditCoupon(int marketingUserId, Coupon coupon);
-        // -----------------------------------
+        // ----------------------- GET COUPON & CATEGORY:
+        Task<IEnumerable<Coupon>> GetCouponAndCategory();
     }
 }

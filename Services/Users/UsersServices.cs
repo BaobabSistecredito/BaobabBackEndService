@@ -35,7 +35,7 @@ namespace BaobabBackEndService.Services.Users
                     // Se agrega el nuevo usuario a la entidad 'MarketingUsers:
                     await _usersRepository.AddNewUser(newUser);
                     // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                    return new ResponseUtils<MarketingUser>(true, new List<MarketingUser>{newUser}, 200, message: "¡Usuario registrado!");
+                    return new ResponseUtils<MarketingUser>(true, new List<MarketingUser>{newUser}, 201, message: "¡Usuario registrado!");
                 }
                 else
                 {

@@ -33,6 +33,12 @@ namespace BaobabBackEndService.Services.Coupons
         Continuemos con el siguiente paso Alli en este archivo...
         */
 
+        // ----------------------- GET COUPON & CATEGORY:
+        public async Task<IEnumerable<Coupon>> GetCouponAndCategory()
+        {
+            return await _couponsRepository.GetCouponAndCategoyAsync();
+        }
+
         public IEnumerable<Coupon> GetCoupons()
         {
             // Lógica de negocio para obtener todos los cupones
