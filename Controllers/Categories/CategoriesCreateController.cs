@@ -9,11 +9,13 @@ using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Utils;
 using BaobabBackEndSerice.Models;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 
 
 namespace BaobabBackEndService.Controllers
 {
+    [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
 

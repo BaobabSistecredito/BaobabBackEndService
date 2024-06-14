@@ -16,6 +16,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using BaobabBackEndService.Dto;
 
+
 namespace BaobabBackEndService.Services.User
 {
     public class UserService : IUserService
@@ -29,22 +30,26 @@ namespace BaobabBackEndService.Services.User
 
         public async Task<ResponseUtils<TokenModel>> CreateToken(AuthResponse authResponse)
         {
-            var User_Auth = _userRepository.UserAuth(authResponse.Username, authResponse.Password);
+            var User_Auth = await _userRepository.UserAuth(authResponse.Username, authResponse.Password);
 
 
+            Console.WriteLine("---------------------------------asdasd------------------------------------------------");
+            Console.WriteLine(User_Auth);
+            Console.WriteLine("---------------------------------asdasd------------------------------------------------");
             if (User_Auth == null)
             {
                 return new ResponseUtils<TokenModel>(false, message: "El usuario o la contraseña no se encuentra en la base de datos");
 
 
             }
-            else
+            else if(User_Auth != null)
             {
+
                 var Secret_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("3C7HJGIRJIKSOKSDIJFIDJFDJFDJF23234E"));
                 var signin_credentials = new SigningCredentials(Secret_key, SecurityAlgorithms.HmacSha256);
                 var Token_configure = new JwtSecurityToken(
-                    issuer: "http://localhost:5086/",
-                    audience: "http://localhost:5086/",
+                    issuer: @Environment.GetEnvironmentVariable("JwtToke"),
+                    audience: @Environment.GetEnvironmentVariable("JwtToke"),
                     claims: new List<Claim>(),
                     expires: DateTime.Now.AddHours(1),
                     signingCredentials: signin_credentials
@@ -55,6 +60,9 @@ namespace BaobabBackEndService.Services.User
                     Token = token_write
                 };
                 return new ResponseUtils<TokenModel>(true, code: token, message: "Todo oki");
+            }else
+            {
+                return new ResponseUtils<TokenModel>(false, message: "El usuario o la contraseña no se encuentra en la base de datos");
             }
 
 

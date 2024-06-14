@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using BaobabBackEndService.Services.categories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BaobabBackEndSerice.Controllers
 {
+    [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
     
@@ -22,6 +24,13 @@ namespace BaobabBackEndSerice.Controllers
         {
             try
             {
+
+              /*   var respuesta = _categoryService.GetAllCategories();
+                 
+                 if (respuesta)
+                {
+                    return new ResponseUtils<Category>(false, null, null, $"Usuario no Authorizado");
+                } */
                 return _categoryService.GetAllCategories();
             }
             catch (Exception ex)

@@ -1,4 +1,3 @@
-using BaobabBackEndSerice.Data;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Repository.MassiveCoupons;
@@ -17,6 +16,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BaobabBackEndService.Services.User;
 using BaobabBackEndService.Repository.User;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.Net;
+using BaobabBackEndService.Middleware;
+using BaobabBackEndSerice.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,61 +54,60 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
-//configuracion jwt
-builder.Services.AddAuthentication(opt => {
+
+builder.Services.AddAuthentication(opt =>
+{
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    .AddJwtBearer(configure => {
-        string jwt_token = "3C7HJGIRJIKSOKSDIJFIDJFDJFDJF23234E";
+    .AddJwtBearer(configure =>
+    {
+        string jwtToken = "3C7HJGIRJIKSOKSDIJFIDJFDJFDJF23234E";
         configure.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwt_token,
-            ValidAudience = jwt_token,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("3C7HJGIRJIKSOKSDIJFIDJFDJFDJF23234E"))
+            ValidIssuer = Environment.GetEnvironmentVariable("JwtToke"),
+            ValidAudience = Environment.GetEnvironmentVariable("JwtToke"),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtToken))
+        };
+
+        configure.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = async context =>
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                /* context.Response.ContentType = "application/json"; */
+
+                if (context.Exception is SecurityTokenExpiredException)
+                {
+                   
+                    Console.WriteLine("-------------------------------------------------------------------------------");
+                    Console.WriteLine("Token Expirado. Por favor, genere un nuevo.");
+                }
+                else
+                {
+                    
+                    Console.WriteLine("-------------------------------------------------------------------------------");
+                    Console.WriteLine("Usuario no Autorizado.");
+                }
+            }
         };
     });
-;
 
-/*
-    Parte 6:
 
-    En esta sección, integramos nuestros repositorios en el sistema. Es importante recordar primero registrar la interfaz, 
-    que podemos identificar por la "I" al principio de su nombre, y luego la clase del repositorio correspondiente.
 
-    Pasos para integrar un repositorio:
-
-    1. Crear la carpeta en el servicio.
-    2. Crear nuestra interfaz con el nombre siguiendo el formato "I + Nombre + Repository".
-    3. Crear nuestra clase del repositorio con el nombre "Nombre + Repository".
-    4. Declarar el scope del repositorio aquí en el archivo `program.cs`.
-    5. Declarar el repositorio en el controlador, como vimos anteriormente en la Parte 0 de nuestra documentación.
-
-    Por ejemplo, para integrar `CouponsRepository`, seguiríamos estos pasos:
-
-    ```csharp
-    // En el archivo program.cs
-    services.AddScoped<ICouponsRepository, CouponsRepository>();
-    De esta forma, hemos registrado el repositorio en el contenedor de dependencias, lo que permitirá inyectarlo 
-    en nuestros controladores y servicios.
-
-    ¡Eso es todo para esta parte! Ahora, tu sistema está configurado para utilizar el nuevo repositorio.
-    Yeeeiii fiesta en la casa del tintero
-*/
 builder.Services.AddScoped<IMassiveCouponsRepository, MassiveCouponsRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
-builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
 builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
 builder.Services.AddScoped<ICouponsServices, CouponsServices>();
-builder.Services.AddScoped<IUserService,UserService>();
-
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
@@ -115,25 +117,48 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "BaobabBackEndService");
 });
 
-
 // Configuración de CORS
 app.UseCors("AllowAnyOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+// Asegúrate de agregar este middleware antes del middleware de autenticación
+app.Use(async (context, next) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    try
+    {
+        await next.Invoke();
+    }
+    catch (SecurityTokenExpiredException)
+    {
+        if (!context.Response.HasStarted)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync("{\"message\": \"Token Expirado. Por favor, genere un nuevo.\"}");
+        }
+    }
+    catch (Exception ex)
+    {
+        if (!context.Response.HasStarted)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync($"{{\"message\": \"{ex.Message}\"}}");
+        }
+        else
+        {
+            throw;
+        }
+    }
+});
 
-//CONFIGURACIONES DE JWT 
 app.UseAuthentication();
 app.UseAuthorization();
 

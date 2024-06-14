@@ -4,6 +4,7 @@ using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BaobabBackEndSerice.Controllers
 {

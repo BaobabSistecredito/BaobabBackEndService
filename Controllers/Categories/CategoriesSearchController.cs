@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using BaobabBackEndService.Services.categories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BaobabBackEndService.Controllers.Categories
 {
+    [Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class CategoriesSearchController : ControllerBase

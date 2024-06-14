@@ -12,7 +12,7 @@ namespace BaobabBackEndService.Repository.User
     public interface IUserRepository
     {
         
-        Task<MarketingUser> UserAuth(string User,string Password);
+        Task<MarketingUser> UserAuth(string User,string password);
 
 
         //Task<MarketingUser> Verificar(string Email,string password);

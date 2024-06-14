@@ -19,9 +19,9 @@ namespace BaobabBackEndService.Repository.User
             _context = context;
         }
 
-        public async Task<MarketingUser> UserAuth(string User,string password)
+        public async Task<MarketingUser> UserAuth(string User,string Password)
         {
-            return await _context.MarketingUsers.FirstOrDefaultAsync(d => d.Username == User && d.Password == password );
+            return await _context.MarketingUsers.FirstOrDefaultAsync(d => d.Username == User && d.Password == Password);
         }
 
 

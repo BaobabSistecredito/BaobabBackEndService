@@ -18,7 +18,7 @@ using BaobabBackEndService.Services.User;
 namespace BaobabBackEndService.Controllers.User
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("[controller]")]
     public class LoginController : Controller
     {
         private readonly IUserService _userService;
@@ -28,19 +28,17 @@ namespace BaobabBackEndService.Controllers.User
             _userService = userService;
         }
 
-        [HttpPost("Valid")]
-        public async Task<ActionResult<ResponseUtils<AuthResponse>>> Login(AuthResponse authResponse)
+        [HttpPost]
+        public async Task<ActionResult<ResponseUtils<AuthResponse>>> Login([FromBody]AuthResponse authResponse)
         {
             try
             {
                 var result =  await _userService.CreateToken(authResponse);
-                return Ok(result);
-                
+                return Ok(result);      
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<AuthResponse>(false, null, null, $"Error: {ex.Message}");
-                
+                return new ResponseUtils<AuthResponse>(false, null, null, $"Error: {ex.Message}");    
             }
 
         }
