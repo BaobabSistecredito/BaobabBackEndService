@@ -5,7 +5,7 @@ using BaobabBackEndService.Services.categories;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
+    
     [ApiController]
     public class CategoriesController : ControllerBase
     {
@@ -16,7 +16,7 @@ namespace BaobabBackEndSerice.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet]
+        [HttpGet("/api/categories")]
         public ResponseUtils<Category> GetAllCategories()
         {
             try
@@ -29,7 +29,7 @@ namespace BaobabBackEndSerice.Controllers
             }
         }
 
-        [HttpGet("{number}")]
+        [HttpGet("/api/categories/{number}")]
         public async Task<ResponseUtils<Category>> GetCategories(string number)
         {
             try

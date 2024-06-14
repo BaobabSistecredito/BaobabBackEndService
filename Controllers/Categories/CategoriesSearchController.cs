@@ -11,7 +11,7 @@ using BaobabBackEndService.Services.categories;
 
 namespace BaobabBackEndService.Controllers.Categories
 {
-    [Route("api/v1/[controller]")]
+    
     [ApiController]
     public class CategoriesSearchController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace BaobabBackEndService.Controllers.Categories
             _categoryService = categoryService;
         }
         // ----------------------- SEARCH ACTION:
-        [HttpGet("{category?}")]
+        [HttpGet("/api/categories/search/{category?}")]
         public async Task<ActionResult<ResponseUtils<Category>>> SearchCategory(string? category)
         {
             var response = await _categoryService.SearchCategory(category);

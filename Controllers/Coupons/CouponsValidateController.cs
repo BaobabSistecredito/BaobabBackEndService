@@ -11,7 +11,7 @@ using BaobabBackEndService.Services.Coupons;
 
 namespace BaobabBackEndService.Controllers.Coupons
 {
-    [Route("api/v1/[controller]")]
+    
     [ApiController]
     public class CouponsValidateController : Controller
     {
@@ -21,7 +21,7 @@ namespace BaobabBackEndService.Controllers.Coupons
             _couponService = couponService;
         }
         // ----------------------- VALIDATE ACTION:
-        [HttpGet]
+        [HttpGet("/api/coupons/validate")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> ValidateCoupon([FromBody] CouponValidationRequest request)
         {
             var response = await _couponService.ValidateCoupon(request.CouponCode, request.PurchaseValue);

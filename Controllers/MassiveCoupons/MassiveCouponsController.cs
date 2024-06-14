@@ -7,7 +7,6 @@ using BaobabBackEndService.Services.MassiveCoupons;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
     public class MassiveCouponsController : Controller
     {
@@ -17,7 +16,7 @@ namespace BaobabBackEndSerice.Controllers
             _massivecouponService = massivecouponService;
         }
 
-        [HttpGet]
+        [HttpGet("/api/massivecoupons")]
         public ResponseUtils<MassiveCoupon> GetAllMassiveCoupons()
         {
             try
@@ -30,7 +29,7 @@ namespace BaobabBackEndSerice.Controllers
             }
         }
 
-        [HttpGet("{searchType}/{value}")]
+        [HttpGet("/api/massivecoupons/{searchType}/{value}")]
         public async Task<ResponseUtils<MassiveCoupon>> GetMassiveCouponsAsync(string searchType, string value)
         {
             try

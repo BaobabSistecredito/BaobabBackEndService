@@ -15,7 +15,6 @@ using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
 
     public class CategoriesCreateController : ControllerBase
@@ -27,7 +26,7 @@ namespace BaobabBackEndService.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpPost]
+        [HttpPost("/api/categories")]
         public async Task<ActionResult<ResponseUtils<Category>>> CrearCategory(CategoryDTO request)
         {
             try
@@ -61,7 +60,4 @@ namespace BaobabBackEndService.Controllers
 
     }
 
-    public interface IActionResult<T>
-    {
-    }
 }

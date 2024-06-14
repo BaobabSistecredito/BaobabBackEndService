@@ -9,7 +9,6 @@ using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
     public class CouponCreateController : ControllerBase
     {
@@ -20,7 +19,7 @@ namespace BaobabBackEndService.Controllers
             _couponsService = couponsService;
         }
 
-        [HttpPost]
+        [HttpPost("/api/coupons")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> CreateCoupon(CouponDTO request)
         {
             /* if (!ModelState.IsValid)

@@ -7,7 +7,6 @@ using BaobabBackEndService.Services.Coupons;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
     public class CouponsController : ControllerBase
     {
@@ -55,7 +54,7 @@ namespace BaobabBackEndSerice.Controllers
         Continuemos con el siguiente paso Alli en este archivo...
         */
 
-        [HttpGet]
+        [HttpGet("/api/coupons")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> GetCoupons()
         {
             try
@@ -69,6 +68,7 @@ namespace BaobabBackEndSerice.Controllers
             }
         }
         // ----------------------- GET COUPON & CATEGORY:
+        //REVISAR DE QUIEN ES ESTO
         [HttpGet]
         [Route("couponsAndCategories")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> GetCouponsAndCategory()
@@ -77,7 +77,7 @@ namespace BaobabBackEndSerice.Controllers
             return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "¡Listado de cupones!");
         }
 
-        [HttpGet("{searchType}/{value}")]
+        [HttpGet("/api/coupons/{searchType}/{value}")]
         public async Task<ResponseUtils<Coupon>> GetCoupon(string searchType, string value)
         {
             try
@@ -92,19 +92,19 @@ namespace BaobabBackEndSerice.Controllers
         }
 
         //Buscador y search
-        [HttpGet("{Search}")]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string Search)
+        [HttpGet("/api/coupons/search/{search}")]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string search)
         {
             try
             {
 
-                var SearchResult = await _couponsService.FilterSearch(Search);
-                if (!SearchResult.Status)
+                var searchResult = await _couponsService.FilterSearch(search);
+                if (!searchResult.Status)
                 {
-                    return StatusCode(400, SearchResult);
+                    return StatusCode(400, searchResult);
                 }
 
-                return Ok(SearchResult);
+                return Ok(searchResult);
 
             }
             catch (Exception ex)
