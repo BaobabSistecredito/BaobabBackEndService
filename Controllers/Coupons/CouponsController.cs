@@ -68,6 +68,14 @@ namespace BaobabBackEndSerice.Controllers
                 return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Errors: {ex.Message}"));
             }
         }
+        // ----------------------- GET COUPON & CATEGORY:
+        [HttpGet]
+        [Route("couponsAndCategories")]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> GetCouponsAndCategory()
+        {
+            var result = await _couponsService.GetCouponAndCategory();
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "¡Listado de cupones!");
+        }
 
         [HttpGet("{searchType}/{value}")]
         public async Task<ResponseUtils<Coupon>> GetCoupon(string searchType, string value)

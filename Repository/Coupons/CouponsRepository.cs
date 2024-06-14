@@ -79,6 +79,12 @@ namespace BaobabBackEndService.Repository.Coupons
             return await _context.Coupons.ToListAsync();
         }
 
+        // ------------------- GET Coupons & Categoy:
+        public async Task<IEnumerable<Coupon>> GetCouponAndCategoyAsync()
+        {
+            return await _context.Coupons.Include(c => c.Category).ToListAsync();
+        }
+        // -----------------------------------------
         /*
         Parte 5:
 

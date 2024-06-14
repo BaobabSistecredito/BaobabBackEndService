@@ -1,10 +1,10 @@
 using BaobabBackEndSerice.Data;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
+using BaobabBackEndService.Repository.Users;
 using BaobabBackEndService.Repository.MassiveCoupons;
 using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Services.Coupons;
-using BaobabBackEndService.Services.MassiveCoupons;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -68,15 +68,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     en nuestros controladores y servicios.
 
     ¡Eso es todo para esta parte! Ahora, tu sistema está configurado para utilizar el nuevo repositorio.
-    Yeeeiii fiesta en la casa del tintero
 */
 builder.Services.AddScoped<IMassiveCouponsRepository, MassiveCouponsRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
 builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
 builder.Services.AddScoped<ICouponsServices, CouponsServices>();
-
+builder.Services.AddScoped<IUsersServices, UsersServices>();
 
 
 var app = builder.Build();

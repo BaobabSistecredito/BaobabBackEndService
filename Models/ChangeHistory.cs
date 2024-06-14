@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace BaobabBackEndSerice.Models
 {
     public class ChangeHistory
@@ -7,5 +9,7 @@ namespace BaobabBackEndSerice.Models
         public int IdModifiedRecord { get; set; }
         public DateTime ChangeDate { get; set; }
         public int IdMarketingUser { get; set; }
-    }   
+        public MarketingUser? MarketingUser { get; set; }
+
+    }
 }
