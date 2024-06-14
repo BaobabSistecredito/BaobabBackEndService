@@ -1,5 +1,7 @@
 
+using AutoMapper;
 using BaobabBackEndSerice.Models;
+using BaobabBackEndService.DTOs;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
@@ -13,11 +15,14 @@ namespace BaobabBackEndService.Services.categories
     {
         private readonly ICategoriesRepository _categoriesRepository;
         private readonly ICouponsRepository _couponsRepository;
+        private readonly IMapper _mapper;
 
-        public CategoryServices(ICategoriesRepository categoriesRepository, ICouponsRepository couponsRepository)
+
+        public CategoryServices(ICategoriesRepository categoriesRepository, ICouponsRepository couponsRepository,IMapper mapper)
         {
             _categoriesRepository = categoriesRepository;
             _couponsRepository = couponsRepository;
+            _mapper =  mapper;
         }
 
         public ResponseUtils<Category> GetAllCategories()
@@ -56,7 +61,7 @@ namespace BaobabBackEndService.Services.categories
         }
 
 
-        public async Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryRequest category)
+        public async Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryDTO category)
         {
             // Validaciones de entrada por id
             if (!int.TryParse(id, out int num) || num <= 0)
@@ -93,7 +98,7 @@ namespace BaobabBackEndService.Services.categories
 
         }
 
-        public async Task<ResponseUtils<Category>> CreateCategoria(Category category)
+        public async Task<ResponseUtils<Category>> CreateCategoria(CategoryDTO category)
         {
             var existeName = await _categoriesRepository.GetCategoryByNameAsync(category.CategoryName);
 
@@ -103,28 +108,10 @@ namespace BaobabBackEndService.Services.categories
 
             }
 
-
-            /* if (string.IsNullOrWhiteSpace(category.CategoryName) || category.CategoryName == null)
-            {
-                return new ResponseUtils<Category>(false, message: "El nombre de la categoria es un campo obligatorio");
-
-            } */
-
-
-            //crear categoria
-            /* if (category.Status == "Activo" || category.Status == "Inactivo")
-            {
-            }
-            else
-            {
-                return new ResponseUtils<Category>(false, message: "El estado ingresado no es permitido ");
-            } */
-
             //pasar datos a minuscula
-            category.CategoryName = category.CategoryName.ToLower();
-            category.Status = category.Status;
+            Category newCategory = _mapper.Map<Category>(category);
 
-            return new ResponseUtils<Category>(true, new List<Category> { _categoriesRepository.CreateCategory(category) }, null, message: "Todo oki");
+            return new ResponseUtils<Category>(true, new List<Category> { _categoriesRepository.CreateCategory(newCategory) }, null, message: "Todo oki");
         }
 
         // ----------------------- SEARCH ACTION:

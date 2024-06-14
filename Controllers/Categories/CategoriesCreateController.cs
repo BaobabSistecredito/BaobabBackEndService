@@ -9,6 +9,7 @@ using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Utils;
 using BaobabBackEndSerice.Models;
 using System.Globalization;
+using BaobabBackEndService.DTOs;
 
 
 
@@ -27,24 +28,17 @@ namespace BaobabBackEndService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseUtils<Category>>> CrearCategory(CategoryRequest request)
+        public async Task<ActionResult<ResponseUtils<Category>>> CrearCategory(CategoryDTO request)
         {
             try
             {
 
-                var Category = new Category
-                {
-                    CategoryName = request.CategoryName,
-                    Status = request.Status
-                };
-
-                var respuesta = await _categoryService.CreateCategoria(Category);
+                var respuesta = await _categoryService.CreateCategoria(request);
 
                 if (!respuesta.Status)
                 {
                     return StatusCode(422, respuesta);
                 }
-
 
                 return Ok(respuesta);
 

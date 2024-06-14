@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Repository.MassiveCoupons;
 using BaobabBackEndService.Utils;
@@ -11,10 +8,11 @@ namespace BaobabBackEndService.Services.MassiveCoupons
     public class MassiveCouponsServices : IMassiveCouponsServices
     {
         private readonly IMassiveCouponsRepository _massivecouponsRepository;
-
-        public MassiveCouponsServices(IMassiveCouponsRepository massivecouponsRepository)
+        private readonly IMapper _mapper;
+        public MassiveCouponsServices(IMassiveCouponsRepository massivecouponsRepository, IMapper mapper)
         {
             _massivecouponsRepository = massivecouponsRepository;
+            _mapper = mapper;
         }
 
         public ResponseUtils<MassiveCoupon> GetAllMassiveCoupons()
