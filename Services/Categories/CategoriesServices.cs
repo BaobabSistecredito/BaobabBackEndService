@@ -104,21 +104,21 @@ namespace BaobabBackEndService.Services.categories
             }
 
 
-            if (string.IsNullOrWhiteSpace(category.CategoryName) || category.CategoryName == null)
+            /* if (string.IsNullOrWhiteSpace(category.CategoryName) || category.CategoryName == null)
             {
                 return new ResponseUtils<Category>(false, message: "El nombre de la categoria es un campo obligatorio");
 
-            }
+            } */
 
 
             //crear categoria
-            if (category.Status == "Activo" || category.Status == "Inactivo")
+            /* if (category.Status == "Activo" || category.Status == "Inactivo")
             {
             }
             else
             {
                 return new ResponseUtils<Category>(false, message: "El estado ingresado no es permitido ");
-            }
+            } */
 
             //pasar datos a minuscula
             category.CategoryName = category.CategoryName.ToLower();
