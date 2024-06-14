@@ -13,6 +13,7 @@ namespace BaobabBackEndSerice.Data
     public DbSet<Coupon> Coupons { get; set; }
     public DbSet<MarketingUser> MarketingUsers { get; set; }
     public DbSet<MassiveCoupon> MassiveCoupons { get; set; }
+    public DbSet<ChangeHistory> ChangesHistory { get; set; }
 
   }
 

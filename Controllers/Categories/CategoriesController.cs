@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
-using BaobabBackEndService.BusinessLogic;
+using BaobabBackEndService.Services.categories;
 
 namespace BaobabBackEndSerice.Controllers
 {
@@ -9,26 +9,39 @@ namespace BaobabBackEndSerice.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly ICategoriesService _categoryService;
+        private readonly ICategoriesServices _categoryService;
 
-        public CategoriesController(ICategoriesService categoryService)
+        public CategoriesController(ICategoriesServices categoryService)
         {
             _categoryService = categoryService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<ResponseUtils<Category>>> GetCategories()
+        public ResponseUtils<Category> GetAllCategories()
         {
             try
             {
-                var result = _categoryService.GetCategories();
-                return new ResponseUtils<Category>(true, new List<Category>(result), null, "todo oki");
+                return _categoryService.GetAllCategories();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}"));
+                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
             }
-
         }
+
+        [HttpGet("{number}")]
+        public async Task<ResponseUtils<Category>> GetCategories(string number)
+        {
+            try
+            {
+                var result = await _categoryService.GetCategoriesAsync(number);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+            }
+        }
+
     }
 }
