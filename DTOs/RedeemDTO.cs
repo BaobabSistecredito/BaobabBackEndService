@@ -1,6 +1,6 @@
-namespace BaobabBackEndSerice.Models
+namespace BaobabBackEndService.DTOs
 {
-  public class RedeemRequest
+  public class RedeemDTO
   {
 
     public string? PurchaseId { get; set; }

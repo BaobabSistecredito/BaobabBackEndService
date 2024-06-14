@@ -5,6 +5,7 @@ using BaobabBackEndService.Utils;
 using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
 using System.Globalization;
+using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers
 {
@@ -20,7 +21,7 @@ namespace BaobabBackEndService.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> CreateCoupon(CouponRequest request)
+        public async Task<ActionResult<ResponseUtils<Coupon>>> CreateCoupon(CouponDTO request)
         {
             /* if (!ModelState.IsValid)
             {

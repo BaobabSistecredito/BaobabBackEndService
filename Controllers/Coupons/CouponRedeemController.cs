@@ -5,6 +5,7 @@ using BaobabBackEndService.Utils;
 using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
 using System.Globalization;
+using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers.Coupons
 {
@@ -20,11 +21,11 @@ namespace BaobabBackEndService.Controllers.Coupons
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseUtils<MassiveCoupon>>> redeemCoupon([FromBody]RedeemRequest redeemRequest)
+        public async Task<ActionResult<ResponseUtils<MassiveCoupon>>> redeemCoupon([FromBody]RedeemDTO request)
         {
              try
             {
-                var Redimir = await _couponsService.RedeemCoupon(redeemRequest);
+                var Redimir = await _couponsService.RedeemCoupon(request);
                 return Ok(Redimir);
             }
             catch (Exception ex)

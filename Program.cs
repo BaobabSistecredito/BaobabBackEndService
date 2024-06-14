@@ -1,3 +1,6 @@
+using AutoMapper;
+using BaobabBackEndService.Mapping;
+using Microsoft.Extensions.DependencyInjection;
 using BaobabBackEndSerice.Data;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
@@ -5,13 +8,15 @@ using BaobabBackEndService.Repository.Users;
 using BaobabBackEndService.Repository.MassiveCoupons;
 using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Services.Coupons;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using BaobabBackEndService.Services.MassiveCoupons;
 using BaobabBackEndService.Services.Users;
-using FluentValidation;
 using FluentValidation.AspNetCore;
+using System.Text.Json.Serialization;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using BaobabBackEndService.Mapping;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,9 +49,10 @@ builder.Services.AddValidatorsFromAssemblyContaining<CategoryValidator>();
 */
 
 
+
 builder.Services.AddDbContext<BaobabDataBaseContext>(Options =>
     Options.UseMySql(
-        builder.Configuration.GetConnectionString("BaobabDataBaseConnectionTest"),
+        builder.Configuration.GetConnectionString("BaobabDataBaseConnection"),
         Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
 
 // Add services to the container.
@@ -63,6 +69,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+
+
+builder.Services.AddAutoMapper(typeof(Program));
 
 /*
     Parte 6:
@@ -98,6 +107,7 @@ builder.Services.AddScoped<ICouponsServices, CouponsServices>();
 builder.Services.AddScoped<IUsersServices, UsersServices>();
 
 
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -118,12 +128,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
 
 app.MapControllers();
 

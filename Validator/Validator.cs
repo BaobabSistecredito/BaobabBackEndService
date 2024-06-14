@@ -18,10 +18,10 @@
     y debe crearse una clase para cada modelo, aca abajo veran el ejemplo de cada una.
 */
 using FluentValidation;
-using BaobabBackEndSerice.Models;
+using BaobabBackEndService.DTOs;
 
 namespace FluentValidation{
-    public class CategoryValidator : AbstractValidator<CategoryRequest>{
+    public class CategoryValidator : AbstractValidator<CategoryDTO>{
         public CategoryValidator(){
             /* PARTE 3
                 dentro de este public vamos a realizar las validaciones correspondientes
@@ -50,17 +50,17 @@ namespace FluentValidation{
         para que pueda ser usada, asi que vamos al program.cs
     */
 
-    public class CouponValidator : AbstractValidator<CouponRequest>{
+    public class CouponValidator : AbstractValidator<CouponDTO>{
         public CouponValidator(){
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Este campo es requerido.")
                 .MinimumLength(3).WithMessage("Este campo debe contener minimo 3 caracteres")
                 .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres");
 
-            RuleFor(x => x.Description)
+/*             RuleFor(x => x.Description)
                 .NotEmpty().WithMessage("Este campo es requerido.")
                 .MinimumLength(3).WithMessage("Este campo debe contener minimo 3 caracteres")
-                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres");
+                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres"); */
             
             RuleFor(x => x.StartDate)
                 .NotEmpty().WithMessage("Este campo es requerido.");
@@ -86,18 +86,18 @@ namespace FluentValidation{
                 .Must(x => x.Equals("Limitada", StringComparison.OrdinalIgnoreCase) || x.Equals("Ilimitada", StringComparison.OrdinalIgnoreCase))
                 .WithMessage("Este campo solo puede contener el valor 'Limitada' o 'Ilimitada'");
 
-            RuleFor(x => x.MinPurchaseRange)
+/*             RuleFor(x => x.MinPurchaseRange)
                 .NotEmpty().WithMessage("Este campo es requerido.")
                 .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0");
 
             RuleFor(x => x.MaxPurchaseRange)
                 .NotEmpty().WithMessage("Este campo es requerido.")
-                .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0");
+                .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0"); */
             
-            RuleFor(x => x.CouponCode)
+/*             RuleFor(x => x.CouponCode)
                 .NotEmpty().WithMessage("Este campo es requerido.")
                 .MinimumLength(3).WithMessage("Este campo debe contener minimo 3 caracteres")
-                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres");
+                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres"); */
 
             RuleFor(x => x.CategoryId)
                 .NotEmpty().WithMessage("Este campo es requerido.")

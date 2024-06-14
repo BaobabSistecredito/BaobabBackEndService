@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
+using BaobabBackEndService.DTOs;
 using BaobabBackEndService.Utils;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BaobabBackEndService.Services.categories
 {
@@ -12,11 +8,11 @@ namespace BaobabBackEndService.Services.categories
     {
         ResponseUtils<Category> GetAllCategories();
         Category GetCategory(string id);
-        Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryRequest category);
+        Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryDTO category);
         // -------------------------- SEARCH FUNCTION:
         Task<ResponseUtils<Category>> SearchCategory(string category);
         // -------------------------------------------
-        Task<ResponseUtils<Category>> CreateCategoria(Category category);
+        Task<ResponseUtils<Category>> CreateCategoria(CategoryDTO category);
         Task<ResponseUtils<Category>> GetCategoriesAsync(string number);
         Task<bool> ValidateCategoryStatusChange(int categoryid);
     }
