@@ -22,10 +22,10 @@ namespace BaobabBackEndSerice.Controllers
         [HttpPost]
         public async Task<ActionResult<ResponseUtils<Coupon>>> CreateCoupon(CouponRequest request)
         {
-            if (!ModelState.IsValid)
+            /* if (!ModelState.IsValid)
             {
                 return BadRequest(new ResponseUtils<Coupon>(false, message: $"{ModelState}"));
-            }
+            } */
             try
             {
                 var response = await _couponsService.CreateCoupon(request);

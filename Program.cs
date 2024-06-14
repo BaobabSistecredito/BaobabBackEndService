@@ -10,6 +10,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,23 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+
+/* PARTE 5 
+    Aca implementaremos la inyeccion de las dependencias para hacer el uso de nuestras validaciones
+    como siempre debemos tener los using que seran, using FluentValidation y 
+    using FluentValidation.AspNetCore una vez los registremos vamos a inyectar la dependencia
+*/
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CategoryValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CouponValidator>();
+/* PARTE 6
+    aca te preguntaras, porque solamente estoy inyectando un solo modelo y no inyecto los otros,
+    pues veras, al hacer la inyeccion de una sola clase, la libreria automaticamente leera todas 
+    las otras clases del mismo tipo dentro DEL MISMO ARCHIVO Validator.cs por lo tanto con solo
+    inyectar una ya es sufuciente para leer las otras. 
+    Y ya con esto queda todo el proceso de fluent validation, dudas preguntas con Jesus.
+*/
+
 
 builder.Services.AddDbContext<BaobabDataBaseContext>(Options =>
     Options.UseMySql(
