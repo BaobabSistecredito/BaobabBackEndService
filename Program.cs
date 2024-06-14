@@ -6,10 +6,10 @@ using BaobabBackEndService.Repository.MassiveCoupons;
 using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Services.Coupons;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using BaobabBackEndService.Services.MassiveCoupons;
+using BaobabBackEndService.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
