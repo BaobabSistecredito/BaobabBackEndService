@@ -76,5 +76,45 @@ namespace BaobabBackEndSerice.Controllers
             var result = await _couponsService.GetCouponAndCategory();
             return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "¡Listado de cupones!");
         }
+
+        [HttpGet("{searchType}/{value}")]
+        public async Task<ResponseUtils<Coupon>> GetCoupon(string searchType, string value)
+        {
+            try
+            {
+                var result = await _couponsService.GetCouponsAsync(searchType, value);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new ResponseUtils<Coupon>(false, null, null, $"Error: {ex.Message}");
+            }
+        }
+
+        //Buscador y search
+        [HttpGet("{Search}")]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string Search)
+        {
+            try
+            {
+
+                var SearchResult = await _couponsService.FilterSearch(Search);
+                if (!SearchResult.Status)
+                {
+                    return StatusCode(400, SearchResult);
+                }
+
+                return Ok(SearchResult);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Errors: {ex.Message}"));
+            }
+        }
+
     }
 }
+
+
+

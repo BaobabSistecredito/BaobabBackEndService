@@ -1,15 +1,22 @@
+using AutoMapper;
+using BaobabBackEndService.Mapping;
+using Microsoft.Extensions.DependencyInjection;
 using BaobabBackEndSerice.Data;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Repository.Users;
+using BaobabBackEndService.Repository.MassiveCoupons;
 using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Services.Coupons;
+using BaobabBackEndService.Services.MassiveCoupons;
 using BaobabBackEndService.Services.Users;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+using FluentValidation.AspNetCore;
 using System.Text.Json.Serialization;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using BaobabBackEndService.Mapping;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +31,24 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+
+/* PARTE 5 
+    Aca implementaremos la inyeccion de las dependencias para hacer el uso de nuestras validaciones
+    como siempre debemos tener los using que seran, using FluentValidation y 
+    using FluentValidation.AspNetCore una vez los registremos vamos a inyectar la dependencia
+*/
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CategoryValidator>();
+//builder.Services.AddValidatorsFromAssemblyContaining<CouponValidator>();
+/* PARTE 6
+    aca te preguntaras, porque solamente estoy inyectando un solo modelo y no inyecto los otros,
+    pues veras, al hacer la inyeccion de una sola clase, la libreria automaticamente leera todas 
+    las otras clases del mismo tipo dentro DEL MISMO ARCHIVO Validator.cs por lo tanto con solo
+    inyectar una ya es sufuciente para leer las otras. 
+    Y ya con esto queda todo el proceso de fluent validation, dudas preguntas con Jesus.
+*/
+
+
 
 // ----------------------------------
 // LIBRERÍA 'HealthCheck'
@@ -50,6 +75,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+
+builder.Services.AddAutoMapper(typeof(Program));
+
 /*
     Parte 6:
 
@@ -74,12 +102,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
     ¡Eso es todo para esta parte! Ahora, tu sistema está configurado para utilizar el nuevo repositorio.
 */
+builder.Services.AddScoped<IMassiveCouponsRepository, MassiveCouponsRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
 builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
 builder.Services.AddScoped<ICouponsServices, CouponsServices>();
 builder.Services.AddScoped<IUsersServices, UsersServices>();
+
 
 
 var app = builder.Build();
@@ -102,12 +133,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
 
 app.MapControllers();
 // ----------------------------------

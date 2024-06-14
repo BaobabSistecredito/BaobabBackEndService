@@ -8,7 +8,7 @@ namespace BaobabBackEndSerice.Models
         public string? UserEmail { get; set; }
         public string? PurchaseId { get; set; }
         public DateTime? RedemptionDate { get; set; }
-        public float purchaseValue { get; set; }
+        public float PurchaseValue { get; set; }
         public Coupon? Coupon { get; set; }
     }
 }
