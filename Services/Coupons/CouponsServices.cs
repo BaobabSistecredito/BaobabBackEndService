@@ -140,9 +140,9 @@ namespace BaobabBackEndService.Services.Coupons
                     var newChange = new ChangeHistory
                     {
                         ModifiedTable = "Coupons",
-                        IdModifiedRecord = coupon.Id,
-                        ChangeDate = DateTime.Now,
-                        IdMarketingUser = marketingUserId,
+                        ModifiedRecordId = coupon.Id,
+                        Date = DateTime.Now,
+                        MarketingUserId = marketingUserId,
                         ModifiedType = "Editado"
                     };
                     // Se crea un nuevo registro en la entidad 'ChangesHistory':

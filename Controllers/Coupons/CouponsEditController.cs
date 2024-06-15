@@ -34,10 +34,6 @@ namespace BaobabBackEndService.Controllers.Coupons
             {
                 return StatusCode(422, response);
             }
-            // Se instancia un objeto de la clase 'SlackNotificationService':
-            // var SlackNotification = new SlackNotificationService();
-            // // Se utiliza el método .SendSlackNotification():
-            // SlackNotification.SendSlackNotification("Prueba", "123", "Funcionó");
             return Ok(response);
         }
     }

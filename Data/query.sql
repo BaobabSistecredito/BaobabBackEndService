@@ -180,19 +180,14 @@ ALTER TABLE MarketingUsers ADD COLUMN Email VARCHAR(150) UNIQUE;
 
 -- CREAR TABLA:
 CREATE TABLE ChangesHistory(
-    Id INT AUTO_INCREMENT UNIQUE NOT NULL PRIMARY KEY,
+    Id INT AUTO_INCREMENT UNIQUE PRIMARY KEY,
     ModifiedTable ENUM("Coupons", "Categories"),
-    IdModifiedTable INT,
-    ChangeDate DATETIME,
-    IdMarketingUser INT,
-    FOREIGN KEY (IdMarketingUser) REFERENCES MarketingUsers(Id)
+    ModifiedRecordId INT,
+    Date DATETIME,
+    ModifiedType ENUM("Editado", "Creado", "Eliminado"),
+    MarketingUserId INT,
+    FOREIGN KEY (MarketingUserId) REFERENCES MarketingUsers(Id)
 );
-
--- MODIFICAR NOMBRE DE UN CAMPO:
-ALTER TABLE ChangesHistory CHANGE COLUMN IdModifiedTable IdModifiedRecord INT;
-
--- AÑADIR COLUMNA:
-ALTER TABLE ChangesHistory ADD COLUMN ModifiedType ENUM("Editado", "Eliminado", "Creado");
 
 -- ELIMINAR TABLA:
 DROP TABLE ChangesHistory;
