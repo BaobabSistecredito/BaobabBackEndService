@@ -7,6 +7,7 @@ using BaobabBackEndService.DTOs;
 namespace BaobabBackEndSerice.Controllers
 {
     [ApiController]
+    [Route("/api/categories")]
     public class CategoriesUpdateController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;
@@ -18,7 +19,7 @@ namespace BaobabBackEndSerice.Controllers
 
 
         //filtrar y Search categorias
-        [HttpPut("/api/categories/{id}")]
+        [HttpPut("{id}")]
         public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(string id, CategoryDTO category)
         {
             try

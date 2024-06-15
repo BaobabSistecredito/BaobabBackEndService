@@ -13,6 +13,7 @@ namespace BaobabBackEndService.Controllers.Coupons
 {
     
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponsValidateController : Controller
     {
         private readonly ICouponsServices _couponService;
@@ -21,7 +22,7 @@ namespace BaobabBackEndService.Controllers.Coupons
             _couponService = couponService;
         }
         // ----------------------- VALIDATE ACTION:
-        [HttpGet("/api/coupons/validate")]
+        [HttpGet("validate")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> ValidateCoupon([FromBody] CouponValidationRequest request)
         {
             var response = await _couponService.ValidateCoupon(request.CouponCode, request.PurchaseValue);

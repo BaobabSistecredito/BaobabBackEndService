@@ -13,6 +13,7 @@ namespace BaobabBackEndService.Controllers.Categories
 {
     
     [ApiController]
+    [Route("/api/categories")]
     public class CategoriesSearchController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;
@@ -21,7 +22,7 @@ namespace BaobabBackEndService.Controllers.Categories
             _categoryService = categoryService;
         }
         // ----------------------- SEARCH ACTION:
-        [HttpGet("/api/categories/search/{category?}")]
+        [HttpGet("search/{category?}")]
         public async Task<ActionResult<ResponseUtils<Category>>> SearchCategory(string? category)
         {
             var response = await _categoryService.SearchCategory(category);

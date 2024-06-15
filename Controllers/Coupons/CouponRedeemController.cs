@@ -11,6 +11,7 @@ namespace BaobabBackEndService.Controllers.Coupons
 {
     
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponRedeemController : Controller
     {
         private readonly ICouponsServices _couponsService;
@@ -20,7 +21,7 @@ namespace BaobabBackEndService.Controllers.Coupons
             _couponsService = couponsService;
         }
 
-        [HttpPost("/api/coupons/redeem")]
+        [HttpPost("redeem")]
         public async Task<ActionResult<ResponseUtils<MassiveCoupon>>> redeemCoupon([FromBody]RedeemDTO request)
         {
             try

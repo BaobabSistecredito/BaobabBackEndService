@@ -7,6 +7,7 @@ namespace BaobabBackEndSerice.Controllers
 {
     
     [ApiController]
+    [Route("/api/categories")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;
@@ -16,7 +17,7 @@ namespace BaobabBackEndSerice.Controllers
             _categoryService = categoryService;
         }
 
-        [HttpGet("/api/categories")]
+        [HttpGet]
         public ResponseUtils<Category> GetAllCategories()
         {
             try
@@ -29,7 +30,7 @@ namespace BaobabBackEndSerice.Controllers
             }
         }
 
-        [HttpGet("/api/categories/{number}")]
+        [HttpGet("{number}")]
         public async Task<ResponseUtils<Category>> GetCategories(string number)
         {
             try

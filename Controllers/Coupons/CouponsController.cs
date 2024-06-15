@@ -8,6 +8,7 @@ using BaobabBackEndService.Services.Coupons;
 namespace BaobabBackEndSerice.Controllers
 {
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponsController : ControllerBase
     {
         /*
@@ -54,7 +55,7 @@ namespace BaobabBackEndSerice.Controllers
         Continuemos con el siguiente paso Alli en este archivo...
         */
 
-        [HttpGet("/api/coupons")]
+        [HttpGet]
         public async Task<ActionResult<ResponseUtils<Coupon>>> GetCoupons()
         {
             try
@@ -77,7 +78,7 @@ namespace BaobabBackEndSerice.Controllers
             return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "¡Listado de cupones!");
         }
 
-        [HttpGet("/api/coupons/{searchType}/{value}")]
+        [HttpGet("{searchType}/{value}")]
         public async Task<ResponseUtils<Coupon>> GetCoupon(string searchType, string value)
         {
             try
@@ -92,7 +93,7 @@ namespace BaobabBackEndSerice.Controllers
         }
 
         //Buscador y search
-        [HttpGet("/api/coupons/{search}")]
+        [HttpGet("{search}")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string search)
         {
             try
