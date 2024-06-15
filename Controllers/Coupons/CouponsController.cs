@@ -92,7 +92,7 @@ namespace BaobabBackEndSerice.Controllers
         }
 
         //Buscador y search
-        [HttpGet("/api/coupons/search/{search}")]
+        [HttpGet("/api/coupons/{search}")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string search)
         {
             try
