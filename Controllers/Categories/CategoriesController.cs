@@ -25,7 +25,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+                return new ResponseUtils<Category>(false, null, 422, $"Error: {ex.Message}");
             }
         }
 
@@ -39,7 +39,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+                return new ResponseUtils<Category>(false, null, 422, $"Error: {ex.Message}");
             }
         }
 

@@ -6,16 +6,22 @@ using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using Microsoft.EntityFrameworkCore;
+using BaobabBackEndService.DTOs;
+using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BaobabBackEndService.Repository.Coupons
 {
     public class CouponsRepository : ICouponsRepository
     {
         private readonly BaobabDataBaseContext _context;
+        private readonly IMapper _mapper;
 
-        public CouponsRepository(BaobabDataBaseContext context)
+        public CouponsRepository(BaobabDataBaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         /*
         Parte 3:
@@ -68,9 +74,9 @@ namespace BaobabBackEndService.Repository.Coupons
             return _context.Coupons.ToList();
         }
         // ------------------- GET MassiveCoupon:
-        public async Task<MassiveCoupon> GetMassiveCouponByCouponId(Coupon coupon)
+        public async Task<MassiveCoupon> GetMassiveCouponByCouponId(int couponId)
         {
-            return await _context.MassiveCoupons.FirstOrDefaultAsync(mc => mc.CouponId == coupon.Id);
+            return await _context.MassiveCoupons.FirstOrDefaultAsync(mc => mc.CouponId == couponId);
         }
         // ---------------------------------------
 
@@ -147,11 +153,22 @@ namespace BaobabBackEndService.Repository.Coupons
         
 
         // --------------------- UPDATE COUPON:
-        public async Task<Coupon> UpdateCoupon(Coupon coupon)
+        public async Task<CouponUpdateDTO> UpdateCoupon(int couponId, CouponUpdateDTO coupon)
         {
-            _context.Coupons.Update(coupon);
-            await _context.SaveChangesAsync();
-            return coupon;
+            // _context.Coupons.Update(coupon);
+            // Se busca el cupón para actualizar:
+            var existCoupon = await _context.Coupons.FindAsync(couponId);
+            // Se confirma que se haya encontrado el cupón:
+            if(existCoupon == null)
+            {
+                return null;
+            }
+            else
+            {
+                _mapper.Map(coupon, existCoupon);
+                await _context.SaveChangesAsync();
+                return coupon;
+            }
         }
         // --------------------- ADD NEW CHANGE:
         public async Task<ChangeHistory> AddNewChange(ChangeHistory newChange)

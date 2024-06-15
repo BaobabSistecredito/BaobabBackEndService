@@ -26,7 +26,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<MassiveCoupon>(false, null, null, $"Error: {ex.Message}");
+                return new ResponseUtils<MassiveCoupon>(false, null, 400, $"Error: {ex.Message}");
             }
         }
 
@@ -40,7 +40,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<MassiveCoupon>(false, null, null, $"Error: {ex.Message}");
+                return new ResponseUtils<MassiveCoupon>(false, null, 400, $"Error: {ex.Message}");
             }
         }
     }

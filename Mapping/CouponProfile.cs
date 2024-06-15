@@ -18,6 +18,8 @@ namespace BaobabBackEndService.Mapping
             CreateMap<Coupon, CouponDTO>()
                 .ForMember(e => e.StartDate, opt => opt.MapFrom(e => e.StartDate.HasValue ? e.StartDate.Value.ToString("yyyy-MM-dd") : null))
                 .ForMember(e => e.ExpiryDate, opt => opt.MapFrom(e => e.ExpiryDate.HasValue ? e.ExpiryDate.Value.ToString("yyyy-MM-dd") : null));
+            // Mapper para editar cupón:
+            CreateMap<CouponUpdateDTO, Coupon>();
         }
     }
 }

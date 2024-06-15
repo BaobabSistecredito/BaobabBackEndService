@@ -7,6 +7,7 @@ using BaobabBackEndService.Services.Coupons;
 using BaobabBackEndService.Utils;
 using Microsoft.AspNetCore.Mvc;
 using BaobabBackEndService.ExternalServices.SlackNotificationService;
+using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers.Coupons
 {
@@ -26,19 +27,18 @@ namespace BaobabBackEndService.Controllers.Coupons
             return await _couponsService.EditCouponStatus(id, status);
         }
         // ----------------------- EDIT ACTION:
-        [HttpPut("{marketinUserId}")]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> EditCoupon(int marketinUserId, [FromBody] Coupon coupon)
+        [HttpPut("{marketinUserId}/{couponid}")]
+        public async Task<ActionResult<ResponseUtils<CouponUpdateDTO>>> EditCoupon(int marketinUserId, int couponid, [FromBody] CouponUpdateDTO coupon)
         {
-            var response = await _couponsService.EditCoupon(marketinUserId, coupon);
-            if(!response.Status)
+            try
             {
-                return StatusCode(422, response);
+                var response = await _couponsService.EditCoupon(marketinUserId, couponid, coupon);
+                return StatusCode(response.Code, response);
             }
-            // Se instancia un objeto de la clase 'SlackNotificationService':
-            // var SlackNotification = new SlackNotificationService();
-            // // Se utiliza el método .SendSlackNotification():
-            // SlackNotification.SendSlackNotification("Prueba", "123", "Funcionó");
-            return Ok(response);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
         }
     }
 }
