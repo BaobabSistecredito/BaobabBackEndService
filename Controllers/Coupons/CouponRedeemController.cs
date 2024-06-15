@@ -9,8 +9,9 @@ using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers.Coupons
 {
-    [Route("api/v1/[controller]")]
+    
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponRedeemController : Controller
     {
         private readonly ICouponsServices _couponsService;
@@ -20,10 +21,10 @@ namespace BaobabBackEndService.Controllers.Coupons
             _couponsService = couponsService;
         }
 
-        [HttpPost]
+        [HttpPost("redeem")]
         public async Task<ActionResult<ResponseUtils<MassiveCoupon>>> redeemCoupon([FromBody]RedeemDTO request)
         {
-             try
+            try
             {
                 var Redimir = await _couponsService.RedeemCoupon(request);
                 return Ok(Redimir);
@@ -33,6 +34,6 @@ namespace BaobabBackEndService.Controllers.Coupons
                 return StatusCode(500, new ResponseUtils<MassiveCoupon>(false, null, null, $"Errors: {ex.Message}"));
             }
         }
-       
+    
     }
 }

@@ -5,8 +5,9 @@ using BaobabBackEndService.Services.categories;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
+    
     [ApiController]
+    [Route("/api/categories")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;

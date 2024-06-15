@@ -7,8 +7,9 @@ using BaobabBackEndService.Services.MassiveCoupons;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("/api/massivecoupons")]
+    
     public class MassiveCouponsController : Controller
     {
         private readonly IMassiveCouponsServices _massivecouponService;

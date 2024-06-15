@@ -9,8 +9,8 @@ using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponCreateController : ControllerBase
     {
         private readonly ICouponsServices _couponsService;

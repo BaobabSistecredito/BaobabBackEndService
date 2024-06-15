@@ -6,8 +6,8 @@ using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("/api/categories")]
     public class CategoriesUpdateController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;

@@ -299,22 +299,23 @@ namespace BaobabBackEndService.Services.Coupons
         //funcion para buscar, Filtrar o mostrar cuponen
         public async Task<ResponseUtils<Coupon>> FilterSearch(string Search)
         {
-
+            
+            var capitalized = Search.Substring(0,1).ToUpper() + Search.Substring(1);
             var Cupones = await _couponsRepository.GetCouponsAsync();
 
-            if (Search == "Activo" || Search == "Inactivo" || Search == "Creado" || Search == "Vencido" || Search == "Agotado")
+            if (capitalized == "Activo" || capitalized == "Inactivo" || capitalized == "Creado" || capitalized == "Vencido" || capitalized == "Agotado")
             {
 
-                Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
+                Cupones = Cupones.Where(x => x.StatusCoupon == capitalized).ToList();
                 return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Se ha encotrado la informacion");
 
             }
             else
             {
                 //buscador
-                if (!string.IsNullOrEmpty(Search))
+                if (!string.IsNullOrEmpty(capitalized))
                 {
-                    Cupones = Cupones.Where(x => x.CouponCode.ToLower() == Search.ToLower()).ToList();
+                    Cupones = Cupones.Where(x => x.CouponCode.ToLower() == capitalized.ToLower()).ToList();
                     if (!Cupones.Any())
                     {
                         return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");

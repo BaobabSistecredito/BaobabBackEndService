@@ -7,8 +7,8 @@ using BaobabBackEndService.Services.Coupons;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponsController : ControllerBase
     {
         /*
@@ -69,6 +69,7 @@ namespace BaobabBackEndSerice.Controllers
             }
         }
         // ----------------------- GET COUPON & CATEGORY:
+        //REVISAR DE QUIEN ES ESTO
         [HttpGet]
         [Route("couponsAndCategories")]
         public async Task<ActionResult<ResponseUtils<Coupon>>> GetCouponsAndCategory()
@@ -92,19 +93,19 @@ namespace BaobabBackEndSerice.Controllers
         }
 
         //Buscador y search
-        [HttpGet("{Search}")]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string Search)
+        [HttpGet("{search}")]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string search)
         {
             try
             {
 
-                var SearchResult = await _couponsService.FilterSearch(Search);
-                if (!SearchResult.Status)
+                var searchResult = await _couponsService.FilterSearch(search);
+                if (!searchResult.Status)
                 {
-                    return StatusCode(400, SearchResult);
+                    return StatusCode(400, searchResult);
                 }
 
-                return Ok(SearchResult);
+                return Ok(searchResult);
 
             }
             catch (Exception ex)

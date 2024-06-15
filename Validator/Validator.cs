@@ -109,4 +109,25 @@ namespace FluentValidation{
 
         }
     }
+
+    public class RedeemValidator: AbstractValidator<RedeemDTO>{
+        public RedeemValidator(){
+            RuleFor(x => x.PurchaseId)
+                .NotEmpty().WithMessage("Este campo es requerido.");
+
+            RuleFor(x => x.UserEmail)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .EmailAddress().WithMessage("El campo ingresado no es tipo email");
+
+            RuleFor(x => x.PurchaseValue)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0");
+
+            RuleFor(x => x.CodeCoupon)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .MinimumLength(2).WithMessage("Este campo debe contener minimo 3 caracteres")
+                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres");
+        }
+    }
+    
 }

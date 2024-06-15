@@ -15,8 +15,8 @@ using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("/api/categories")]
 
     public class CategoriesCreateController : ControllerBase
     {
@@ -61,7 +61,4 @@ namespace BaobabBackEndService.Controllers
 
     }
 
-    public interface IActionResult<T>
-    {
-    }
 }
