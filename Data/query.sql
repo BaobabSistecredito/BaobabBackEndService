@@ -191,6 +191,9 @@ CREATE TABLE ChangesHistory(
 -- MODIFICAR NOMBRE DE UN CAMPO:
 ALTER TABLE ChangesHistory CHANGE COLUMN IdModifiedTable IdModifiedRecord INT;
 
+-- AÑADIR COLUMNA:
+ALTER TABLE ChangesHistory ADD COLUMN ModifiedType ENUM("Editado", "Eliminado", "Creado");
+
 -- ELIMINAR TABLA:
 DROP TABLE ChangesHistory;
 
