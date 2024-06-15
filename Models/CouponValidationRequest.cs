@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 namespace BaobabBackEndSerice.Models
 {
     public class CouponValidationRequest

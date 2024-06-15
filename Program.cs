@@ -16,6 +16,11 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using BaobabBackEndService.Mapping;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using BaobabBackEndService.Services;
+using BaobabBackEndService.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,7 +63,6 @@ builder.Services.AddDbContext<BaobabDataBaseContext>(Options =>
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     /* 
@@ -70,8 +74,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-
-builder.Services.AddAutoMapper(typeof(Program));
 
 /*
     Parte 6:
@@ -97,6 +99,33 @@ builder.Services.AddAutoMapper(typeof(Program));
 
     ¡Eso es todo para esta parte! Ahora, tu sistema está configurado para utilizar el nuevo repositorio.
 */
+
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddScoped<IMassiveCouponsRepository, MassiveCouponsRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
@@ -105,6 +134,7 @@ builder.Services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
 builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
 builder.Services.AddScoped<ICouponsServices, CouponsServices>();
 builder.Services.AddScoped<IUsersServices, UsersServices>();
+builder.Services.AddScoped<JwtService>();
 
 
 
@@ -116,16 +146,9 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "BaobabBackEndService");
 });
 
-
-// Configuración de CORS
 app.UseCors("AllowAnyOrigin");
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
