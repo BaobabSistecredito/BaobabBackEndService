@@ -50,6 +50,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<CategoryValidator>();
 
 
 
+// ----------------------------------
+// LIBRERÍA 'HealthCheck'
+builder.Services.AddHealthChecks();
+// ----------------------------------
+// DATABASE:
 builder.Services.AddDbContext<BaobabDataBaseContext>(Options =>
     Options.UseMySql(
         builder.Configuration.GetConnectionString("BaobabDataBaseConnection"),
@@ -130,5 +135,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
-
+// ----------------------------------
+app.MapHealthChecks("_health");
+// ----------------------------------
 app.Run();

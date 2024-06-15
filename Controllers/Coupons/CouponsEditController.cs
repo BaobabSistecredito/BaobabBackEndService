@@ -6,6 +6,7 @@ using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Services.Coupons;
 using BaobabBackEndService.Utils;
 using Microsoft.AspNetCore.Mvc;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndService.Controllers.Coupons
 {
