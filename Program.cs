@@ -1,26 +1,11 @@
-using AutoMapper;
-using BaobabBackEndService.Mapping;
-using Microsoft.Extensions.DependencyInjection;
-using BaobabBackEndSerice.Data;
-using BaobabBackEndService.Repository.Categories;
-using BaobabBackEndService.Repository.Coupons;
-using BaobabBackEndService.Repository.Users;
-using BaobabBackEndService.Repository.MassiveCoupons;
-using BaobabBackEndService.Services.categories;
-using BaobabBackEndService.Services.Coupons;
-using BaobabBackEndService.Services.MassiveCoupons;
-using BaobabBackEndService.Services.Users;
-using FluentValidation.AspNetCore;
-using System.Text.Json.Serialization;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using BaobabBackEndService.Mapping;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using BaobabBackEndSerice.Data;
+using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 using BaobabBackEndService.Services;
-using BaobabBackEndService.Middleware;
+using System.Text.Json.Serialization;
+using BaobabBackEndService.Extensions;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -100,57 +85,25 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     ¡Eso es todo para esta parte! Ahora, tu sistema está configurado para utilizar el nuevo repositorio.
 */
 
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
-    };
-});
-
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddScoped<IMassiveCouponsRepository, MassiveCouponsRepository>();
-builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
-builder.Services.AddScoped<ICouponsRepository, CouponsRepository>();
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
-builder.Services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
-builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
-builder.Services.AddScoped<ICouponsServices, CouponsServices>();
-builder.Services.AddScoped<IUsersServices, UsersServices>();
-builder.Services.AddScoped<JwtService>();
-
+builder.Services.AddRepositories();
+builder.Services.AddServices();
+builder.Services.AddCustomAuthentication(builder.Configuration);
 
 
 var app = builder.Build();
 
 app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "BaobabBackEndService");
-});
-
-app.UseCors("AllowAnyOrigin");
-
-app.UseMiddleware<ErrorHandlingMiddleware>();
+app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "BaobabBackEndService"); });
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAnyOrigin");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

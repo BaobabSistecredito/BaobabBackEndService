@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
+using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Repository.Users
 {
@@ -12,5 +9,7 @@ namespace BaobabBackEndService.Repository.Users
         Task<MarketingUser> GetMarketingUserByEmail(MarketingUser user);
         // ------------------------ ADD NEW USER:
         Task<MarketingUser> AddNewUser(MarketingUser newUser);
+        // ------------------------ Get AND VALIDATE USER:
+        Task<MarketingUser> UserLoginAsync(UserLoginDTO userLoginDTO);
     }
 }

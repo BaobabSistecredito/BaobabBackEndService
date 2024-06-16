@@ -3,39 +3,42 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using BaobabBackEndSerice.Models;
+using System.Data;
 
-namespace BaobabBackEndService.Services
+namespace BaobabBackEndService.ExternalServices.Jwt
 {
     public class JwtService
     {
         private readonly string _secret;
         private readonly string _issuer;
         private readonly string _audience;
-        private readonly int _expiryMinutes;
 
         public JwtService(IConfiguration config)
         {
             _secret = config["Jwt:Key"];
             _issuer = config["Jwt:Issuer"];
             _audience = config["Jwt:Audience"];
-            _expiryMinutes = int.Parse(config["Jwt:ExpiryMinutes"]);
         }
 
-        public string GenerateJwtToken(MarketingUser user)
+        public string GenerateJwtToken(MarketingUser user, List<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_secret);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.UserRole)
+            };
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Email, user.Email)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(_expiryMinutes),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(1),
                 Issuer = _issuer,
-                Audience = _audience
+                Audience = _audience,
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

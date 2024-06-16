@@ -1,3 +1,4 @@
+using BaobabBackEndService.Models;
 using System.Text.Json.Serialization;
 
 namespace BaobabBackEndSerice.Models
@@ -12,8 +13,9 @@ namespace BaobabBackEndSerice.Models
     [JsonIgnore]
     public List<Coupon>? Coupons { get; set; }
     [JsonIgnore]
-
     public List<ChangeHistory>? ChangeHistory { get; set; }
+    [JsonIgnore]
+    public List<UserRole>? UserRole { get; set; }
 
   }
 }

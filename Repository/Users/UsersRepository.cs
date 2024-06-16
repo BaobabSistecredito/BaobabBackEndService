@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
+using BaobabBackEndService.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace BaobabBackEndService.Repository.Users
@@ -28,5 +29,11 @@ namespace BaobabBackEndService.Repository.Users
             await _context.SaveChangesAsync();
             return newUser;
         }
+
+        public async Task<MarketingUser> UserLoginAsync(UserLoginDTO userLoginDTO)
+        {
+            return await _context.MarketingUsers.FirstOrDefaultAsync(d => d.Username == userLoginDTO.Username && d.Password == userLoginDTO.Password);
+        }
+
     }
 }
