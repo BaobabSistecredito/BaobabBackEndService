@@ -145,20 +145,9 @@ CREATE TABLE MarketingUsers(
     UserName VARCHAR(255),
     Password VARCHAR(255),
     EmployeeId INT,
-    Uuid CHAR(36)
+    Email VARCHAR(150)
 );
-
 -- INSERTAR DATOS:
-INSERT INTO MarketingUsers (UserName, Password, EmployeeId) VALUES 
-('pedro_pablo', '123', 1),
-('jaimito', '123', 2),
-('user', '123', 3);
--- INSERTAR DATOS:
-INSERT INTO MarketingUsers (UserName, Password, EmployeeId) VALUES 
-('pedrooooo', '123', 4, 'pedro@gmail.com'),
-('jaimitoooooo', '123', 5, 'jaimito@gmail.com'),
-('userrrrr', '123', 6, 'user2@gmail.com');
-
 INSERT INTO MarketingUsers (UserName, Password, EmployeeId, Email) VALUES 
 ('test', '123', 7, 'test@gmail.com'),
 ('prueba', '123', 8, 'prueba@gmail.com'),
@@ -174,7 +163,7 @@ DROP TABLE MarketingUsers;
 ALTER TABLE MarketingUsers DROP COLUMN Uuid;
 
 -- AGREGAR NUEVO CAMPO:
-ALTER TABLE MarketingUsers ADD COLUMN Email VARCHAR(150) UNIQUE;
+ALTER TABLE MarketingUsers ADD COLUMN Role ENUM("Admin", "User");
 
 -- ---------------------------------------------------------------------------------
 
@@ -198,14 +187,3 @@ ALTER TABLE ChangesHistory ADD COLUMN ModifiedType ENUM("Editado", "Eliminado", 
 DROP TABLE ChangesHistory;
 
 -- ---------------------------------------------------------------------------------
--- TRIGGERS:
--- DELIMITER //
-
--- CREATE TRIGGER GenerateUUID 
--- BEFORE INSERT ON MarketingUsers
--- FOR EACH ROW
--- BEGIN
---     SET NEW.Uuid = UUID();
--- END//
-
--- DELIMITER ;

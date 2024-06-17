@@ -9,6 +9,7 @@ namespace BaobabBackEndSerice.Models
     public string? Password { get; set; }
     public int EmployeeId { get; set; }
     public string? Email { get; set; }
+    public string? Role { get; set; }
     [JsonIgnore]
     public List<Coupon>? Coupons { get; set; }
     [JsonIgnore]

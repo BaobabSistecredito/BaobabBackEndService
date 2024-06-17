@@ -287,7 +287,6 @@ namespace BaobabBackEndService.Services.Coupons
 
             if (Search == "Activo" || Search == "Inactivo" || Search == "Creado" || Search == "Vencido" || Search == "Agotado")
             {
-
                 Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
                 return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Se ha encotrado la informacion");
             }
