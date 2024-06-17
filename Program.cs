@@ -15,7 +15,9 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using BaobabBackEndService.Mapping;
+using SlackNet.AspNetCore;
+using SlackNet;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,8 +77,21 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+// ------------ // ---------------
+/* 
+    Se configura y registra la sección 'SlackSettingsService' del archivo 'appsettings.json' como un servicio de configuración en el contenedor de dependencias de la aplicación:
+*/
+builder.Services.Configure<SlackSettingsService>(builder.Configuration.GetSection("SlackSettingsService"));
+/* 
+    Registra un cliente HTTP como servicio para la clase 'SlackNotificationService'.
+    Al registrar un cliente HTTP para SlackNotificationService, ASP.NET Core se encarga de crear y administrar una instancia de HttpClient que puede ser inyectada en SlackNotificationService. Esto facilita el envío de solicitudes HTTP al WebHook de Slack desde SlackNotificationService para enviar notificaciones:
+*/
+builder.Services.AddHttpClient<SlackNotificationService>();
+// -------------------------------
 
-builder.Services.AddAutoMapper(typeof(Program), typeof(CouponProfile));
+// ------------ // ---------------
+builder.Services.AddAutoMapper(typeof(Program));
+// -------------------------------
 
 /*
     Parte 6:
@@ -131,11 +146,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+// app.UseSlackNet();
 app.UseHttpsRedirection();
-
+app.UseAuthorization();
 app.MapControllers();
-// ----------------------------------
-app.MapHealthChecks("_health");
-// ----------------------------------
 app.Run();

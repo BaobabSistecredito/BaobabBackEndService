@@ -1,45 +1,52 @@
+using SlackNet;
+using SlackNet.WebApi;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 
 namespace BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 public class SlackNotificationService
 {
-    public async void SendSlackNotification(string errorC, string errorM, string generalM)
+    /* Definición de variables las cuales se inicializarán luego con las dependencias */
+    private readonly HttpClient _httpClient; // Cliente HTTP para realizar solicitudes HTTP.
+    private readonly string _webhookUrl; // URL del WebHook de Slack.
+    private readonly string _botToken; // Token de autenticación del bot de Slack.
+    /* 
+    Constructor que recibe el cliente HTTP y las configuraciones de Slack.
+    Inyección de dependencias.
+     */
+    public SlackNotificationService(HttpClient httpClient, IOptions<SlackSettingsService> slackSettings)
     {
-        // URL del webhook para la solicitud POST de la API de Slack:
-        string url = "https://hooks.slack.com/services/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";
+        _httpClient = httpClient; // Inicializa el cliente HTTP.
+        _webhookUrl = slackSettings.Value.WebhookUrl; // Inicializa la URL del WebHook.
+        _botToken = slackSettings.Value.BotToken; // Inicializa el token del bot.
+    }
+    
+    public async Task SendNotification(string message) // Método para enviar notificaciones a Slack.
+    {
 
-        // Se crea una instancia de la clase 'SlackMessageService' para contener el mensaje:
-        var slackMessage = new SlackMessageService
+        var payload = new // Se crea un objeto que contiene con el mensaje.
         {
-            errorCode = errorC,
-            errorMessage = errorM,
-            generalMessage = generalM
+            text = message // Asigna el mensaje recibido como parámetro al campo 'text'.
         };
 
-        // Serializar el objeto 'slackMessage' en formato JSON:
-        string jsonBody = JsonSerializer.Serialize(slackMessage);
+        var jsonPayload = JsonSerializer.Serialize(payload); // Serializa el objeto a formato JSON.
+        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"); // Crea el contenido de la solicitud HTTP con el JSON.
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _botToken); // Añade el token de autenticación a la cabecera de la solicitud.
 
-        // Crear un objeto HTTPClient para realizar la solicitud HTTP:
-        using(HttpClient client = new HttpClient())
+        var response = await _httpClient.PostAsync(_webhookUrl, content); // Envía una solicitud POST a la URL del WebHook con el contenido.
+
+        if (!response.IsSuccessStatusCode)
         {
-            // Crear el contenido de la solicitud POST como StringContent:
-            StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            // Realizar la solicitud POST a la URL indicada:
-            HttpResponseMessage response = await client.PostAsync(url, content);
-            // Se confirma si la solicitud fue éxitosa (código de estado: 200 - 209):
-            if(response.IsSuccessStatusCode)
-            {
-                // Se muestra el estado de la solicitud:
-                Console.WriteLine($"Estado de la solicitud: {response.StatusCode}");
-            }
-            else
-            {
-                // Si la solicitud no fue éxitosa, se muestra el estado de la solicitud:
-                Console.WriteLine($"La solicitud falló con el código de estado: {response.StatusCode}");
-            }
+            Console.WriteLine("No se procesó la notificación: " + response); // Imprime un mensaje en caso de error.
+        }
+        else
+        {
+            Console.WriteLine("Notificación exitosa: " + response); // Imprime un mensaje en caso de éxito.
         }
     }
 }

@@ -11,6 +11,5 @@ namespace BaobabBackEndSerice.Models
         public string? ModifiedType { get; set; }
         public int? MarketingUserId { get; set; }
         public MarketingUser? MarketingUser { get; set; }
-
     }
 }
