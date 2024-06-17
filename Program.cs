@@ -16,6 +16,9 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using BaobabBackEndService.Mapping;
+using Microsoft.AspNetCore.Identity;
+using BaobabBackEndService.ExternalServices.MailSendService;
+using BaobabBackEndService.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -110,6 +113,13 @@ builder.Services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
 builder.Services.AddScoped<ICategoriesServices, CategoryServices>();
 builder.Services.AddScoped<ICouponsServices, CouponsServices>();
 builder.Services.AddScoped<IUsersServices, UsersServices>();
+
+//envio de correo
+builder.Services.AddScoped<IMailSendService,MailSendService>();
+
+//
+builder.Services.AddHttpClient<IMailSendService,MailSendService>();
+builder.Services.Configure<MailerSendOptions>(builder.Configuration.GetSection("MailerSend"));
 
 
 
