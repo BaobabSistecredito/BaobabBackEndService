@@ -100,7 +100,7 @@ namespace BaobabBackEndService.Services.Coupons
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, null,500, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
+                return new ResponseUtils<Coupon>(false, null,422, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
         }
 
@@ -156,7 +156,7 @@ namespace BaobabBackEndService.Services.Coupons
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, null, 500, message: $"Error interno del servidor: {ex.Message}");
+                return new ResponseUtils<Coupon>(false, null, 422, message: $"Error interno del servidor: {ex.Message}");
             }
         }
         // Postman body para hacer testing:
@@ -369,7 +369,7 @@ namespace BaobabBackEndService.Services.Coupons
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, null, 500,message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
+                return new ResponseUtils<Coupon>(false, null, 422,message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
         }        //redencion de cupon
         public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemDTO redeemRequest)
