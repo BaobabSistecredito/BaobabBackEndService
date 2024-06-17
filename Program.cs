@@ -78,6 +78,16 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 // ------------ // ---------------
+// builder.Services.AddSlackNet(c => c
+//     .UseApiToken("xoxb-7280173190323-7295334874897-vCGyPfd0WozHueAl6h8wZIia")); // Token
+// builder.Services.AddSingleton<ISlackClient>(new SlackClient(new SlackServiceConfiguration
+// {
+//     WebhookUri = new Uri("https://hooks.slack.com/services/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")
+// }));
+// - - - - - - 
+// builder.Services.AddSlackNet(c => c
+//     .UseApiToken("xoxb-7280173190323-7295334874897-vCGyPfd0WozHueAl6h8wZIia")
+//     .UseSigningSecret("https://hooks.slack.com/services/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"));
 /* 
     Se configura y registra la sección 'SlackSettingsService' del archivo 'appsettings.json' como un servicio de configuración en el contenedor de dependencias de la aplicación:
 */
