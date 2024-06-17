@@ -32,24 +32,17 @@ namespace BaobabBackEndService.Controllers
         {
             try
             {
-
                 var respuesta = await _categoryService.CreateCategoria(request);
-
                 if (!respuesta.Status)
                 {
                     return StatusCode(409, respuesta);
                 }
-
                 return StatusCode(201, respuesta);
-
             }
             catch (Exception ex)
             {
                 return StatusCode(422, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al crear la categoria: " + ex.Message));
-
             }
-
-
         }
 
 

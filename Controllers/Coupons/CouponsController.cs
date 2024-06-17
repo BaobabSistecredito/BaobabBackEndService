@@ -110,7 +110,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(422, new ResponseUtils<Category>(false, null, 422, $"Errors: {ex.Message}"));
+                return StatusCode(422, new ResponseUtils<Coupon>(false, null, 422, $"Errors: {ex.Message}"));
             }
         }
 

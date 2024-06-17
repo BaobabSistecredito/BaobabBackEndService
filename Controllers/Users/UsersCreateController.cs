@@ -20,11 +20,18 @@ public class UsersCreateController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ResponseUtils<MarketingUser>>> CreateUser([FromBody] MarketingUser newUser)
     {
-        var response = await _usersService.CreateUser(newUser);
-        if(!response.Status)
-        {
-            return StatusCode(422, response);
+        try{
+            var response = await _usersService.CreateUser(newUser);
+            if(!response.Status)
+            {
+                return StatusCode(422, response);
+            }
+            return Ok(response);
         }
-        return Ok(response);
+        catch (Exception ex)
+        {
+            return StatusCode(422, new ResponseUtils<MarketingUser>(false, null, 422, $"Errors: {ex.Message}"));
+        }
+        
     }
 }
