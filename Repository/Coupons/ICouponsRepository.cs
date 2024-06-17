@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
+using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Repository.Coupons
 {
@@ -36,9 +37,9 @@ namespace BaobabBackEndService.Repository.Coupons
     Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
     Task<Coupon> GetCouponByTitleAsync(string title);
     // ------------------- GET MassiveCoupon:
-    Task<MassiveCoupon> GetMassiveCouponByCouponId(Coupon coupon);
+    Task<MassiveCoupon> GetMassiveCouponByCouponId(int couponId);
     // --------------------- UPDATE COUPON:
-    Task<Coupon> UpdateCoupon(Coupon coupon);
+    Task<CouponUpdateDTO> UpdateCoupon(int couponId, CouponUpdateDTO coupon);
     // --------------------- CREATE RECORD IN 'ChangesHistory':
     Task<ChangeHistory> AddNewChange(ChangeHistory newChange);
         // ------------------- GET Coupons & Categoy:

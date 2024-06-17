@@ -110,24 +110,59 @@ namespace FluentValidation{
         }
     }
 
-    public class RedeemValidator: AbstractValidator<RedeemDTO>{
-        public RedeemValidator(){
-            RuleFor(x => x.PurchaseId)
+    public class CouponUpdateValidator : AbstractValidator<CouponUpdateDTO>{
+        public CouponUpdateValidator(){
+            RuleFor(x => x.Title)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .MinimumLength(3).WithMessage("Este campo debe contener minimo 3 caracteres")
+                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres");
+
+/*             RuleFor(x => x.Description)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .MinimumLength(3).WithMessage("Este campo debe contener minimo 3 caracteres")
+                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres"); */
+            
+            RuleFor(x => x.StartDate)
                 .NotEmpty().WithMessage("Este campo es requerido.");
 
-            RuleFor(x => x.UserEmail)
-                .NotEmpty().WithMessage("Este campo es requerido.")
-                .EmailAddress().WithMessage("El campo ingresado no es tipo email");
-
-            RuleFor(x => x.PurchaseValue)
+            RuleFor(x => x.ExpiryDate)
+                .NotEmpty().WithMessage("Este campo es requerido.");
+            
+            RuleFor(x => x.ValueDiscount)
                 .NotEmpty().WithMessage("Este campo es requerido.")
                 .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0");
 
-            RuleFor(x => x.CodeCoupon)
+            RuleFor(x => x.TypeDiscount)
                 .NotEmpty().WithMessage("Este campo es requerido.")
-                .MinimumLength(2).WithMessage("Este campo debe contener minimo 3 caracteres")
-                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres");
+                .Must(x => x.Equals("Porcentual", StringComparison.OrdinalIgnoreCase) || x.Equals("Neto", StringComparison.OrdinalIgnoreCase))
+                .WithMessage("Este campo solo puede contener el valor 'Porcentual' o 'Neto'");
+
+            RuleFor(x => x.NumberOfAvailableUses)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0");
+            
+            RuleFor(x => x.TypeUsability)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .Must(x => x.Equals("Limitada", StringComparison.OrdinalIgnoreCase) || x.Equals("Ilimitada", StringComparison.OrdinalIgnoreCase))
+                .WithMessage("Este campo solo puede contener el valor 'Limitada' o 'Ilimitada'");
+
+/*             RuleFor(x => x.MinPurchaseRange)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0");
+
+            RuleFor(x => x.MaxPurchaseRange)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0"); */
+            
+/*             RuleFor(x => x.CouponCode)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .MinimumLength(3).WithMessage("Este campo debe contener minimo 3 caracteres")
+                .MaximumLength(255).WithMessage("Este campo debe contener maximo 255 caracteres"); */
+
+            RuleFor(x => x.CategoryId)
+                .NotEmpty().WithMessage("Este campo es requerido.")
+                .GreaterThan(0).WithMessage("Este campo tiene que ser un valor mayor a 0");
+
         }
     }
-    
 }

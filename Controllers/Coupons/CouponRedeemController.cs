@@ -31,9 +31,8 @@ namespace BaobabBackEndService.Controllers.Coupons
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<MassiveCoupon>(false, null, null, $"Errors: {ex.Message}"));
+                return StatusCode(500, new ResponseUtils<MassiveCoupon>(false, null, 422, $"Errors: {ex.Message}"));
             }
         }
-    
     }
 }

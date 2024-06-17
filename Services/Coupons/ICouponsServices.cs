@@ -13,7 +13,7 @@ namespace BaobabBackEndService.Services.Coupons
         // -------------------------- VALIDATE FUNCTION:
         Task<ResponseUtils<Coupon>> ValidateCoupon(string couponCode, float purchaseValue);
         // ----------------------- EDIT ACTION:
-        Task<ResponseUtils<Coupon>> EditCoupon(int marketingUserId, Coupon coupon);
+        Task<ResponseUtils<CouponUpdateDTO>> EditCoupon(int marketingUserId, int couponId, CouponUpdateDTO coupon);
         // -----------------------------------
         // ---------------------------------------------
         Task<ResponseUtils<Coupon>> FilterSearch(string Search);

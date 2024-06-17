@@ -122,25 +122,26 @@ namespace BaobabBackEndService.Services.Coupons
             coupon.CreationDate = DateTime.Now;
             coupon.StatusCoupon = "Creado";
 
-            return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, null, message: "Todo oki");
+            return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, 201, message: "Todo oki");
         }
         // ----------------------- EDIT ACTION:
-        public async Task<ResponseUtils<Coupon>> EditCoupon(int marketingUserId, Coupon coupon)
+        public async Task<ResponseUtils<CouponUpdateDTO>> EditCoupon(int marketingUserId, int couponId, CouponUpdateDTO coupon)
         {
-            try
+            // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
+            var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(couponId);
+            // Condicional que determina si se ha encontrado el cupón:
+            if(existCoupon == null)
             {
-                // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
-                var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(coupon);
-                // Condicional que determina si se ha encontrado el cupón:
-                if (existCoupon == null)
+                // Se envía la información para actualizar el cupón:
+                var response = await _couponsRepository.UpdateCoupon(couponId, coupon);
+                // Se confirma si fue posible actualizar el cupón:
+                if(response != null)
                 {
-                    // Se actualiza la entidad 'Coupons' en la base de datos:
-                    await _couponsRepository.UpdateCoupon(coupon);
                     // Se crea una instancia del modelo 'ChangeHistory' con la información requerida para crear un nuevo registro en la entidad:
                     var newChange = new ChangeHistory
                     {
                         ModifiedTable = "Coupons",
-                        ModifiedRecordId = coupon.Id,
+                        ModifiedRecordId = couponId,
                         Date = DateTime.Now,
                         MarketingUserId = marketingUserId,
                         ModifiedType = "Editado"
@@ -148,16 +149,16 @@ namespace BaobabBackEndService.Services.Coupons
                     // Se crea un nuevo registro en la entidad 'ChangesHistory':
                     await _couponsRepository.AddNewChange(newChange);
                     // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                    return new ResponseUtils<Coupon>(true, new List<Coupon> { coupon }, 200, message: "¡Cupón actualizado!");
+                    return new ResponseUtils<CouponUpdateDTO>(true, new List<CouponUpdateDTO> { coupon }, 200, message: "¡Cupón actualizado!");
                 }
                 else
                 {
-                    return new ResponseUtils<Coupon>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
+                    return new ResponseUtils<CouponUpdateDTO>(false, null, 400, message: "¡El cupón no existe!");
                 }
             }
-            catch (Exception ex)
+            else
             {
-                return new ResponseUtils<Coupon>(false, null, 500, message: $"Error interno del servidor: {ex.Message}");
+                return new ResponseUtils<CouponUpdateDTO>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
             }
         }
         // Postman body para hacer testing:
@@ -288,7 +289,7 @@ namespace BaobabBackEndService.Services.Coupons
                 }
                 else
                 {
-                    return new ResponseUtils<Coupon>(false, null, 404, message: "¡Cupón no encontrado!");
+                    return new ResponseUtils<Coupon>(false, null, 400, message: "¡Cupón no encontrado!");
                 }
             }
             catch (Exception ex)
@@ -307,9 +308,8 @@ namespace BaobabBackEndService.Services.Coupons
             if (capitalized == "Activo" || capitalized == "Inactivo" || capitalized == "Creado" || capitalized == "Vencido" || capitalized == "Agotado")
             {
 
-                Cupones = Cupones.Where(x => x.StatusCoupon == capitalized).ToList();
-                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Se ha encotrado la informacion");
-
+                Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
+                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Se ha encotrado la informacion");
             }
             else
             {
@@ -323,7 +323,7 @@ namespace BaobabBackEndService.Services.Coupons
                     }
                 }
             }
-            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo oki");
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Todo oki");
         }
 
         public async Task<ResponseUtils<Coupon>> EditCouponStatus(string id, string status)
@@ -366,7 +366,7 @@ namespace BaobabBackEndService.Services.Coupons
             try
             {
                 await _couponsRepository.UpdateStatusCouponAsync(coupon);
-                return new ResponseUtils<Coupon>(true, null, null, message: "Todo oki");
+                return new ResponseUtils<Coupon>(true, null, 200, message: "Todo oki");
             }
             catch (Exception ex)
             {
@@ -414,7 +414,7 @@ namespace BaobabBackEndService.Services.Coupons
                 massiveCoupon.CouponId = CuponValido.Id;
 
                 var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
-                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, null, message: "Todo oki");
+                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, 200, message: "Todo oki");
 
             }
             else

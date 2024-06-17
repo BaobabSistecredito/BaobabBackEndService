@@ -61,11 +61,11 @@ namespace BaobabBackEndSerice.Controllers
             try
             {
                 var result = _couponsService.GetCoupons();
-                return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "todo oki");
+                return new ResponseUtils<Coupon>(true, new List<Coupon>(result), 200, "todo oki");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Errors: {ex.Message}"));
+                return StatusCode(500, new ResponseUtils<Category>(false, null, 422, $"Errors: {ex.Message}"));
             }
         }
         // ----------------------- GET COUPON & CATEGORY:
@@ -75,7 +75,7 @@ namespace BaobabBackEndSerice.Controllers
         public async Task<ActionResult<ResponseUtils<Coupon>>> GetCouponsAndCategory()
         {
             var result = await _couponsService.GetCouponAndCategory();
-            return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "¡Listado de cupones!");
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(result), 200, "¡Listado de cupones!");
         }
 
         [HttpGet("{searchType}/{value}")]
@@ -88,7 +88,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, null, null, $"Error: {ex.Message}");
+                return new ResponseUtils<Coupon>(false, null, 422, $"Error: {ex.Message}");
             }
         }
 
@@ -110,7 +110,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Errors: {ex.Message}"));
+                return StatusCode(500, new ResponseUtils<Category>(false, null, 422, $"Errors: {ex.Message}"));
             }
         }
 

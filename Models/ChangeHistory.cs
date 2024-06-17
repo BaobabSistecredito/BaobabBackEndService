@@ -8,8 +8,8 @@ namespace BaobabBackEndSerice.Models
         public string? ModifiedTable { get; set; }
         public int ModifiedRecordId { get; set; }
         public DateTime Date { get; set; }
-        public int? MarketingUserId { get; set; }
         public string? ModifiedType { get; set; }
+        public int? MarketingUserId { get; set; }
         public MarketingUser? MarketingUser { get; set; }
     }
 }
