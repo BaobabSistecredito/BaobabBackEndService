@@ -30,8 +30,14 @@ namespace BaobabBackEndService.ExternalServices.MailSendService
                 from = new {email = FromEmail,},
                     to = new[] {new {email = toEmail}},
                     subject = "!Tu Cupon a sido redimido",
-                    text = $"!Tu Cupon a sido redimido con exito¡ {CodeCoupon} ---{PurchaseId}---{PurchaseValue}--{RedemptionDate}",
-                  /*   variables = new
+                    text = $"!Tu Cupon a sido redimido con exito¡",
+                    variables = new[] {new {email = toEmail,substitutions = new []{
+                        new { var = "CodeCoupon", value = CodeCoupon },
+                        new { var = "PurchaseId", value = PurchaseId },
+                        new { var = "PurchaseValue", value = PurchaseValue },
+                        new { var = "RedemptionDate", value = RedemptionDate }
+                    }}},
+                    /* variables = new
                     {
                         email = toEmail,
                         substitutions = new[]
@@ -41,8 +47,8 @@ namespace BaobabBackEndService.ExternalServices.MailSendService
                             new { var = "PurchaseValue", value = PurchaseValue },
                             new { var = "RedemptionDate", value = RedemptionDate }
                         }
-                    },
-                    template_id = "0r83ql3x53zlzw1j"  */
+                    }, */
+                    template_id = "0r83ql3x53zlzw1j" 
             };
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer",ApiKey); 
 
