@@ -29,13 +29,13 @@ namespace BaobabBackEndSerice.Controllers
                 var response = await _categoryService.UpdateCategory(id, category);
                 if (!response.Status)
                 {
-                    return StatusCode(422, response);
+                    return StatusCode(409, response);
                 }
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Category>(false, message: "Ocurrió un error al actualizar la categoría: " + ex.Message));
+                return StatusCode(422, new ResponseUtils<Category>(false, message: "Ocurrió un error al actualizar la categoría: " + ex.Message));
             }
         }
     }

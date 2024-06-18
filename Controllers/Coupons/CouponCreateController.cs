@@ -36,11 +36,11 @@ namespace BaobabBackEndService.Controllers
                 {
                     return StatusCode(422, response);
                 }
-                return Ok(response);
+                return StatusCode(201,response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al actualizar el cupón: " + ex.Message));
+                return StatusCode(422, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al crear el cupón: " + ex.Message));
             }
         }
     }

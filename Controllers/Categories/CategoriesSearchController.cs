@@ -25,13 +25,19 @@ namespace BaobabBackEndService.Controllers.Categories
         [HttpGet("search/{category?}")]
         public async Task<ActionResult<ResponseUtils<Category>>> SearchCategory(string? category)
         {
-            var response = await _categoryService.SearchCategory(category);
-            if (!response.Status)
-            {
-                return StatusCode(400, response);
-            }
+            try{
+                var response = await _categoryService.SearchCategory(category);
+                if (!response.Status)
+                {
+                    return StatusCode(400, response);
+                }
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (Exception ex){
+                return new ResponseUtils<Category>(false, null, 400, $"Error: {ex.Message}");
+            }
+            
         }
 
     }

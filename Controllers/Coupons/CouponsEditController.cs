@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Services.Coupons;
 using BaobabBackEndService.Utils;
@@ -27,25 +22,27 @@ namespace BaobabBackEndService.Controllers.Coupons
         }
 
         [HttpPut("status/{id}/{status}")]
-        public async Task<ResponseUtils<Coupon>> EditCouponStatus(string id, string status)
+        public async Task<ActionResult<ResponseUtils<Coupon>>> EditCouponStatus(string id, string status)
         {
-            return await _couponsService.EditCouponStatus(id, status);
+            try
+            {
+                return await _couponsService.EditCouponStatus(id, status);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ResponseUtils<Coupon>(false, code: 500, message: $"Errors: {ex.Message}"));
+            }
         }
         // ----------------------- EDIT COUPON:
         [HttpPut("{marketingUserId}/{couponid}")]
         public async Task<ActionResult<ResponseUtils<CouponUpdateDTO>>> EditCoupon(int marketingUserId, int couponid, [FromBody] CouponUpdateDTO coupon)
         {
+
             try
             {
                 var response = await _couponsService.EditCoupon(marketingUserId, couponid, coupon);
-                if(!response.Status)
-                {
-                    return StatusCode(response.Code, response);
-                }
-                else
-                {
-                    return StatusCode(response.Code, response);
-                }
+                return StatusCode(response.Code, response);
+
             }
             catch (Exception ex)
             {

@@ -43,6 +43,5 @@ namespace BaobabBackEndSerice.Controllers
                 return new ResponseUtils<Category>(false, null, 500, $"Error: {ex.Message}");
             }
         }
-
     }
 }
