@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using BaobabBackEndService.DTOs;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
+using Microsoft.AspNetCore.Authorization;
 using BaobabBackEndService.Services.categories;
-using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndSerice.Controllers
 {
@@ -20,6 +21,7 @@ namespace BaobabBackEndSerice.Controllers
 
         //filtrar y Search categorias
         [HttpPut("{id}")]
+        [Authorize("TheAdmin")]
         public async Task<ActionResult<ResponseUtils<Category>>> UpdateCategory(string id, CategoryDTO category)
         {
             try

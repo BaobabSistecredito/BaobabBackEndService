@@ -26,13 +26,14 @@ namespace BaobabBackEndService.Controllers.Coupons
         {
             try
             {
-                var Redimir = await _couponsService.RedeemCoupon(request);
-                return Ok(Redimir);
+                var redimir = await _couponsService.RedeemCoupon(request);
+                return StatusCode(redimir.Code, redimir);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<MassiveCoupon>(false, null, 422, $"Errors: {ex.Message}"));
+                return StatusCode(500, new ResponseUtils<MassiveCoupon>(false, null, null, $"Errors: {ex.Message}"));
             }
         }
+       
     }
 }

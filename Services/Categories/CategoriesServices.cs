@@ -145,7 +145,7 @@ namespace BaobabBackEndService.Services.categories
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, null, 422, $"Error: {ex.Message}");
+                return new ResponseUtils<Category>(false, null, 500, $"Error: {ex.Message}");
             }
         }
         // -------------------------------------------------------------------------

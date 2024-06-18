@@ -17,6 +17,9 @@ public class PasswordHasher
     {
         // Se iniciaiza una variable para confirmar si la contraseña proporcionada coincide con la guardada en la base de datos con el método (Verify):
         bool passwordMatch = BCryptNet.Verify(passwordProvided, dataBasePassword);
+                   Console.WriteLine("-------------------------------------------------");
+            Console.WriteLine(passwordMatch);
+            Console.WriteLine("-------------------------------------------------");
         return passwordMatch;
     }
 }

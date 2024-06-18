@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
 using System.Globalization;
 using BaobabBackEndService.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BaobabBackEndService.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/coupons")]
     public class CouponCreateController : ControllerBase

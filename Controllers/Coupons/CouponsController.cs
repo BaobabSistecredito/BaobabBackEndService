@@ -65,7 +65,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Category>(false, null, 422, $"Errors: {ex.Message}"));
+                return StatusCode(500, new ResponseUtils<Category>(false, null, 500, $"Errors: {ex.Message}"));
             }
         }
         // ----------------------- GET COUPON & CATEGORY:
@@ -88,7 +88,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, null, 422, $"Error: {ex.Message}");
+                return new ResponseUtils<Coupon>(false, null, 500, $"Error: {ex.Message}");
             }
         }
 
@@ -110,7 +110,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Category>(false, null, 422, $"Errors: {ex.Message}"));
+                return StatusCode(500, new ResponseUtils<Category>(false, null, 500, $"Errors: {ex.Message}"));
             }
         }
 
