@@ -3,9 +3,11 @@ using System.Text.Json;
 using BaobabBackEndSerice.Data;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using BaobabBackEndService.Services;
 using System.Text.Json.Serialization;
 using BaobabBackEndService.Extensions;
+using BaobabBackEndService.Mapping;
+using BaobabBackEndService.ExternalServices.MailSendService;
+using BaobabBackEndService.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -99,6 +101,11 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddRepositories();
 builder.Services.AddServices();
 builder.Services.AddCustomAuthentication(builder.Configuration);
+
+
+builder.Services.AddHttpClient<IMailSendService,MailSendService>();
+builder.Services.Configure<MailerSendOptions>(builder.Configuration.GetSection("MailerSend"));
+
 
 
 var app = builder.Build();
