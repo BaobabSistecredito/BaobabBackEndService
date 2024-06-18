@@ -38,7 +38,7 @@ namespace BaobabBackEndService.Repository.Coupons
         Para ver los detalles de la interfaz que define los métodos del repositorio, consulta el archivo Service/Coupons/ICouponsRepository.
         Continuemos con el siguiente paso Alli en este archivo...
         */
-
+        
         public async Task<Coupon> GetCouponAsync(int id)
         {
             return await _context.Coupons.FindAsync(id);
@@ -46,7 +46,7 @@ namespace BaobabBackEndService.Repository.Coupons
 
         public async Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId)
         {
-            return await _context.Coupons.Where(c => c.Id == couponId).ToListAsync();
+            return await _context.Coupons.Where(c => c.Id == couponId).Include(c => c.Category).Include(c => c.MarketingUser).ToListAsync();
         }
 
         public async Task<IEnumerable<Coupon>> GetCouponByTitleSearchAsync(string value)
@@ -76,13 +76,13 @@ namespace BaobabBackEndService.Repository.Coupons
         // ------------------- GET MassiveCoupon:
         public async Task<MassiveCoupon> GetMassiveCouponByCouponId(int couponId)
         {
-            return await _context.MassiveCoupons.FirstOrDefaultAsync(mc => mc.CouponId == couponId);
+            return await _context.MassiveCoupons.Include(c => c.Coupon).FirstOrDefaultAsync(mc => mc.CouponId == couponId);
         }
         // ---------------------------------------
 
         public async Task<IEnumerable<Coupon>> GetCouponsAsync()
         {
-            return await _context.Coupons.ToListAsync();
+            return await _context.Coupons.Include(c => c.Category).Include(c => c.MarketingUser).ToListAsync();
         }
 
         // ------------------- GET Coupons & Categoy:

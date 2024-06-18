@@ -25,9 +25,9 @@ namespace BaobabBackEndService.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
-            services.AddScoped<IMailSendService,MailSendService>();
             services.AddScoped<ICategoriesServices, CategoryServices>();
             services.AddScoped<ICouponsServices, CouponsServices>();
+            services.AddScoped<IMailSendService,MailSendService>();
             services.AddScoped<IUsersServices, UsersServices>();
             services.AddScoped<IJwtService, JwtService>();
             return services;

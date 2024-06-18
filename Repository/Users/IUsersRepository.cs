@@ -11,5 +11,7 @@ namespace BaobabBackEndService.Repository.Users
         Task<MarketingUser> AddNewUser(MarketingUser newUser);
         // ------------------------ Get AND VALIDATE USER:
         Task<MarketingUser> UserLoginAsync(UserLoginDTO userLoginDTO);
+        // ------------------------ GET USER BY ID:
+        Task<MarketingUser> GetMarketingUserById(int id);
     }
 }

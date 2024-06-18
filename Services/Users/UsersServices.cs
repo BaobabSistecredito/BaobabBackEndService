@@ -60,7 +60,7 @@ namespace BaobabBackEndService.Services.Users
 
             var token = _jwtService.GenerateJwtToken(validateUSer);
 
-            return new ResponseUtils<string>(true, new List<string> { token });
+            return new ResponseUtils<string>(true, new List<string> { token },200);
 
         }
 

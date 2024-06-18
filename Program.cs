@@ -120,11 +120,12 @@ builder.Services.AddAutoMapper(typeof(Program));
 */
 
 builder.Services.AddSwaggerGen();
+builder.Services.AddRepositories();
+builder.Services.AddServices();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddRepositories();
-builder.Services.AddServices();
+
 builder.Services.AddCustomAuthentication(builder.Configuration);
 
 
@@ -135,19 +136,20 @@ builder.Services.Configure<MailerSendOptions>(builder.Configuration.GetSection("
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "BaobabBackEndService"); });
 
-app.UseHttpsRedirection();
 app.UseCors("AllowAnyOrigin");
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "BaobabBackEndService"); });
+}
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 // app.UseSlackNet();
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.MapControllers();
 
-app.MapControllers();
 app.Run();

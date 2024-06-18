@@ -23,7 +23,7 @@ public class UsersLoginController : ControllerBase
         var response = await _usersService.UserLoginAsync(user);
         if(!response.Status)
         {
-            return StatusCode((int)response.Code, response);
+            return StatusCode(response.Code, response);
         }
         return Ok(response);
     }

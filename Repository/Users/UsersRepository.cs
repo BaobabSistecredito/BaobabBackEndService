@@ -35,5 +35,10 @@ namespace BaobabBackEndService.Repository.Users
             return await _context.MarketingUsers.FirstOrDefaultAsync(d => d.Username == userLoginDTO.Username);
         }
 
+        // ------------------------ GET USER BY ID:
+        public async Task<MarketingUser> GetMarketingUserById(int id)
+        {
+            return await _context.MarketingUsers.FirstOrDefaultAsync(m => m.Id == id);
+        }
     }
 }
