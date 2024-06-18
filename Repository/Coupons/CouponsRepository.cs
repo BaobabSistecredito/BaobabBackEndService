@@ -71,7 +71,7 @@ namespace BaobabBackEndService.Repository.Coupons
 
         public IEnumerable<Coupon> GetCoupons()
         {
-            return _context.Coupons.ToList();
+            return _context.Coupons.Include(c => c.Category).Include(c => c.MarketingUser).ToList();
         }
         // ------------------- GET MassiveCoupon:
         public async Task<MassiveCoupon> GetMassiveCouponByCouponId(int couponId)
