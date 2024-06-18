@@ -32,7 +32,7 @@ namespace BaobabBackEndService.Repository.Users
 
         public async Task<MarketingUser> UserLoginAsync(UserLoginDTO userLoginDTO)
         {
-            return await _context.MarketingUsers.FirstOrDefaultAsync(d => d.Username == userLoginDTO.Username && d.Password == userLoginDTO.Password);
+            return await _context.MarketingUsers.FirstOrDefaultAsync(d => d.Username == userLoginDTO.Username);
         }
 
     }

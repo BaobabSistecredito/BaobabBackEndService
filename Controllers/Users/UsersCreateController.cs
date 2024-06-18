@@ -17,8 +17,8 @@ public class UsersCreateController : ControllerBase
         _usersService = usersService;
     }
     // ------------------------ ADD NEW USER:
-    [HttpPost("login")]
-    public async Task<ActionResult<ResponseUtils<MarketingUser>>> Login([FromBody] MarketingUser newUser)
+    [HttpPost]
+    public async Task<ActionResult<ResponseUtils<MarketingUser>>> CreateUser([FromBody] MarketingUser newUser)
     {
         var response = await _usersService.CreateUser(newUser);
         if(!response.Status)

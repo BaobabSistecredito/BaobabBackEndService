@@ -51,8 +51,13 @@ namespace BaobabBackEndService.Services.Users
 
         public async Task<ResponseUtils<string>> UserLoginAsync(UserLoginDTO user)
         {
-            var validateUSer = await _usersRepository.UserLoginAsync(user);
-            if (validateUSer == null)
+            MarketingUser validateUSer = await _usersRepository.UserLoginAsync(user);
+            Console.WriteLine("-------------------------------------------------");
+            Console.WriteLine(validateUSer.Password);
+            Console.WriteLine(user.Password);
+            Console.WriteLine("-------------------------------------------------");
+            var EncriptedPassword = new PasswordHasher().VerifyPassword(validateUSer.Password, user.Password);
+            if (validateUSer == null || !EncriptedPassword)
             {
                 return new ResponseUtils<string>(false, null, 406, message: "La contraseña o el usuario son incorrectos");
             }

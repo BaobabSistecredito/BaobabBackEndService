@@ -3,11 +3,10 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using BaobabBackEndSerice.Models;
-using System.Data;
 
 namespace BaobabBackEndService.ExternalServices.Jwt
 {
-    public class JwtService
+    public class JwtService : IJwtService
     {
         private readonly string _secret;
         private readonly string _issuer;
@@ -20,17 +19,15 @@ namespace BaobabBackEndService.ExternalServices.Jwt
             _audience = config["Jwt:Audience"];
         }
 
-        public string GenerateJwtToken(MarketingUser user, List<string> roles)
+        public string GenerateJwtToken(MarketingUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_secret);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.UserRole)
+                new Claim(ClaimTypes.Role, user.Role)
             };
-
-            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

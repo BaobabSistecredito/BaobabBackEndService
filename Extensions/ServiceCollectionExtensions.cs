@@ -27,7 +27,7 @@ namespace BaobabBackEndService.Extensions
             services.AddScoped<ICategoriesServices, CategoryServices>();
             services.AddScoped<ICouponsServices, CouponsServices>();
             services.AddScoped<IUsersServices, UsersServices>();
-            services.AddScoped<JwtService>();
+            services.AddScoped<IJwtService, JwtService>();
             return services;
         }
     }

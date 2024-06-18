@@ -7,8 +7,8 @@ using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Controllers.Users;
 
-[Route("api/users")]
 [ApiController]
+[Route("api/users")]
 public class UsersLoginController : ControllerBase
 {
     private readonly IUsersServices _usersService;
@@ -17,7 +17,6 @@ public class UsersLoginController : ControllerBase
     {
         _usersService = usersService;
     }
-    // ------------------------ ADD NEW USER:
     [HttpPost("login")]
     public async Task<ActionResult<ResponseUtils<MarketingUser>>> Login([FromBody] UserLoginDTO user)
     {
