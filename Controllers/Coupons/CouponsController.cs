@@ -100,7 +100,7 @@ namespace BaobabBackEndSerice.Controllers
             {
 
                 var searchResult = await _couponsService.FilterSearch(search);
-                if (!searchResult.Status)
+                if (!searchResult.IsSuccessful)
                 {
                     return StatusCode(400, searchResult);
                 }

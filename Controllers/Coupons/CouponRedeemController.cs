@@ -27,7 +27,7 @@ namespace BaobabBackEndService.Controllers.Coupons
             try
             {
                 var redimir = await _couponsService.RedeemCoupon(request);
-                return StatusCode(redimir.Code, redimir);
+                return StatusCode(redimir.StatusCode, redimir);
             }
             catch (Exception ex)
             {

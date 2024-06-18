@@ -27,7 +27,7 @@ namespace BaobabBackEndService.Controllers.Categories
         {
             try{
                 var response = await _categoryService.SearchCategory(category);
-                if (!response.Status)
+                if (!response.IsSuccessful)
                 {
                     return StatusCode(400, response);
                 }

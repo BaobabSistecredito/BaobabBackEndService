@@ -22,7 +22,7 @@ public class UsersCreateController : ControllerBase
     {
         try{
             var response = await _usersService.CreateUser(newUser);
-            if(!response.Status)
+            if(!response.IsSuccessful)
             {
                 return StatusCode(422, response);
             }

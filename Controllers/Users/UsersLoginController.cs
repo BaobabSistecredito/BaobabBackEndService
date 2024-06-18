@@ -21,9 +21,9 @@ public class UsersLoginController : ControllerBase
     public async Task<ActionResult<ResponseUtils<MarketingUser>>> Login([FromBody] UserLoginDTO user)
     {
         var response = await _usersService.UserLoginAsync(user);
-        if(!response.Status)
+        if(!response.IsSuccessful)
         {
-            return StatusCode(response.Code, response);
+            return StatusCode(response.StatusCode, response);
         }
         return Ok(response);
     }

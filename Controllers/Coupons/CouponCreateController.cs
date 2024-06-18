@@ -32,7 +32,7 @@ namespace BaobabBackEndService.Controllers
             try
             {
                 var response = await _couponsService.CreateCoupon(request);
-                if (!response.Status)
+                if (!response.IsSuccessful)
                 {
                     return StatusCode(422, response);
                 }

@@ -33,7 +33,7 @@ namespace BaobabBackEndService.Controllers
             try
             {
                 var respuesta = await _categoryService.CreateCategoria(request);
-                return StatusCode(respuesta.Code, respuesta);
+                return StatusCode(respuesta.StatusCode, respuesta);
             }
             catch (Exception ex)
             {

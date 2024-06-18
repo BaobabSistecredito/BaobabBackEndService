@@ -41,7 +41,7 @@ namespace BaobabBackEndService.Controllers.Coupons
             try
             {
                 var response = await _couponsService.EditCoupon(marketingUserId, couponid, coupon);
-                return StatusCode(response.Code, response);
+                return StatusCode(response.StatusCode, response);
 
             }
             catch (Exception ex)
