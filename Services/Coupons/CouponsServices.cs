@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.DTOs;
+using BaobabBackEndService.ExternalServices.MailSendService;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,14 @@ namespace BaobabBackEndService.Services.Coupons
         private readonly ICouponsRepository _couponsRepository;
         private readonly IMapper _mapper;
 
+        private readonly IMailSendService _emailSendService;
 
-        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper)
+
+        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper, IMailSendService emailSendService)
         {
             _couponsRepository = couponsRepository;
             _mapper = mapper;
+            _emailSendService = emailSendService;
         }
 
         /*
@@ -372,7 +376,9 @@ namespace BaobabBackEndService.Services.Coupons
             {
                 return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
-        }        //redencion de cupon
+        }       
+        
+         //redencion de cupon
         public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemDTO redeemRequest)
         {
             var validate = true;
@@ -412,6 +418,12 @@ namespace BaobabBackEndService.Services.Coupons
 
                 MassiveCoupon massiveCoupon = _mapper.Map<MassiveCoupon>(redeemRequest);
                 massiveCoupon.CouponId = CuponValido.Id;
+
+                DateTime Day = DateTime.Now;
+                string dayString = Day.ToString();
+
+                var result = await _emailSendService.SendEmailAsync(redeemRequest.UserEmail,redeemRequest.CodeCoupon,$"{redeemRequest.PurchaseId}",$"{redeemRequest.PurchaseValue}",dayString);
+                Console.WriteLine(result);
 
                 var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
                 return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, 200, message: "Todo oki");
