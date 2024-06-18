@@ -422,18 +422,8 @@ namespace BaobabBackEndService.Services.Coupons
                 DateTime Day = DateTime.Now;
                 string dayString = Day.ToString();
 
-
-                var NumValue = redeemRequest.PurchaseId;
-                string NumString = NumValue.ToString();
-
-                var result = await _emailSendService.SendEmailAsync("hola",redeemRequest.UserEmail,redeemRequest.CodeCoupon,redeemRequest.PurchaseId,NumString,dayString);
-                Console.WriteLine("----------------------------------------------------------------------------");
+                var result = await _emailSendService.SendEmailAsync(redeemRequest.UserEmail,redeemRequest.CodeCoupon,$"{redeemRequest.PurchaseId}",$"{redeemRequest.PurchaseValue}",dayString);
                 Console.WriteLine(result);
-                Console.WriteLine("----------------------------------------------------------------------------");
-                Console.WriteLine("----------------------------------------------------------------------------");
-                Console.WriteLine("----------------------------------------------------------------------------");
-                Console.WriteLine("----------------------------------------------------------------------------");
-        
 
                 var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
                 return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, null, message: "Todo oki");

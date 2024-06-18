@@ -23,14 +23,13 @@ namespace BaobabBackEndService.ExternalServices.MailSendService
         }
 
 
-        public async Task<string> SendEmailAsync(string info,string toEmail,string CodeCoupon,string PurchaseId,string PurchaseValue,string RedemptionDate )
+        public async Task<string> SendEmailAsync(string toEmail,string CodeCoupon,string PurchaseId,string PurchaseValue,string RedemptionDate )
         {
             var request = new
             {
                 from = new {email = FromEmail,},
                     to = new[] {new {email = toEmail}},
-                    subject = "!Tu Cupon a sido redimido",
-                    text = $"!Tu Cupon a sido redimido con exito¡",
+                    subject = "Haz redimido tu cupón",
                     variables = new[] {new {email = toEmail,substitutions = new []{
                         new { var = "CodeCoupon", value = CodeCoupon },
                         new { var = "PurchaseId", value = PurchaseId },
