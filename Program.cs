@@ -5,7 +5,9 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using BaobabBackEndService.Extensions;
-using BaobabBackEndService.Mapping;
+using SlackNet.AspNetCore;
+using SlackNet;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 using BaobabBackEndService.ExternalServices.MailSendService;
 using BaobabBackEndService.Models;
 
@@ -66,8 +68,31 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+// ------------ // ---------------
+// builder.Services.AddSlackNet(c => c
+//     .UseApiToken("xoxb-7280173190323-7295334874897-vCGyPfd0WozHueAl6h8wZIia")); // Token
+// builder.Services.AddSingleton<ISlackClient>(new SlackClient(new SlackServiceConfiguration
+// {
+//     WebhookUri = new Uri("https://hooks.slack.com/services/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")
+// }));
+// - - - - - - 
+// builder.Services.AddSlackNet(c => c
+//     .UseApiToken("xoxb-7280173190323-7295334874897-vCGyPfd0WozHueAl6h8wZIia")
+//     .UseSigningSecret("https://hooks.slack.com/services/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"));
+/* 
+    Se configura y registra la sección 'SlackSettingsService' del archivo 'appsettings.json' como un servicio de configuración en el contenedor de dependencias de la aplicación:
+*/
+builder.Services.Configure<SlackSettingsService>(builder.Configuration.GetSection("SlackSettingsService"));
+/* 
+    Registra un cliente HTTP como servicio para la clase 'SlackNotificationService'.
+    Al registrar un cliente HTTP para SlackNotificationService, ASP.NET Core se encarga de crear y administrar una instancia de HttpClient que puede ser inyectada en SlackNotificationService. Esto facilita el envío de solicitudes HTTP al WebHook de Slack desde SlackNotificationService para enviar notificaciones:
+*/
+builder.Services.AddHttpClient<SlackNotificationService>();
+// -------------------------------
 
-builder.Services.AddAutoMapper(typeof(Program), typeof(CouponProfile));
+// ------------ // ---------------
+builder.Services.AddAutoMapper(typeof(Program));
+// -------------------------------
 
 /*
     Parte 6:
@@ -103,7 +128,7 @@ builder.Services.AddServices();
 builder.Services.AddCustomAuthentication(builder.Configuration);
 
 
-builder.Services.AddHttpClient<IMailSendService,MailSendService>();
+builder.Services.AddHttpClient<IMailSendService, MailSendService>();
 builder.Services.Configure<MailerSendOptions>(builder.Configuration.GetSection("MailerSend"));
 
 
@@ -119,8 +144,10 @@ app.UseCors("AllowAnyOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 
+// app.UseSlackNet();
+app.UseHttpsRedirection();
+app.UseAuthorization();
 app.MapControllers();
-// ----------------------------------
-app.MapHealthChecks("_health");
-// ----------------------------------
+
+app.MapControllers();
 app.Run();

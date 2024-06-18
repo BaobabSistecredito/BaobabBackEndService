@@ -7,6 +7,7 @@ using BaobabBackEndService.Services.Coupons;
 using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Services.MassiveCoupons;
 using BaobabBackEndService.ExternalServices.Jwt;
+using BaobabBackEndService.ExternalServices.MailSendService;
 
 namespace BaobabBackEndService.Extensions
 {
@@ -24,6 +25,7 @@ namespace BaobabBackEndService.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IMassiveCouponsServices, MassiveCouponsServices>();
+            services.AddScoped<IMailSendService,MailSendService>();
             services.AddScoped<ICategoriesServices, CategoryServices>();
             services.AddScoped<ICouponsServices, CouponsServices>();
             services.AddScoped<IUsersServices, UsersServices>();

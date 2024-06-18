@@ -165,25 +165,6 @@ namespace BaobabBackEndService.Services.Coupons
                 return new ResponseUtils<CouponUpdateDTO>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
             }
         }
-        // Postman body para hacer testing:
-        // {
-        //     "Id" : 4,
-        //     "Title": "Hallloween Editado",
-        //     "Description" : "Get 30% off on your purchases for Halloween.",
-        //     "CreationDate" : "2024-05-14T21:12:51",
-        //     "StartDate" : "2024-05-14T21:12:51",
-        //     "ExpiryDate" : "2024-05-27T21:12:51",
-        //     "ValueDiscount" : 30,
-        //     "TypeDiscount": "Porcentual",
-        //     "NumberOfAvailableUses" : 50,
-        //     "TypeUsability": "Limitada",
-        //     "StatusCoupon": "Activo",
-        //     "MinPurchaseRange": 500000,
-        //     "MaxPurchaseRange": 10000000,
-        //     "CouponCode": "HALLOWEENEDIT",
-        //     "CategoryId" : 1,
-        //     "MarketingUserId" : 3
-        // }
 
         // ----------------------- VALIDATE ACTION:
         public async Task<ResponseUtils<Coupon>> ValidateCoupon(string couponCode, float purchaseValue)
