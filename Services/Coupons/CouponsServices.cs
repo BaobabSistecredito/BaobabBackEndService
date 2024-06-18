@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.DTOs;
+using BaobabBackEndService.ExternalServices.MailSendService;
 using BaobabBackEndService.ExternalServices.SlackNotificationService;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
@@ -18,14 +19,18 @@ namespace BaobabBackEndService.Services.Coupons
     {
         private readonly SlackNotificationService _slackNotificationService;
         private readonly ICouponsRepository _couponsRepository;
+        private readonly IMailSendService _mailSendService;
+
         private readonly IMapper _mapper;
 
 
-        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper, SlackNotificationService slackNotificationService)
+        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper, SlackNotificationService slackNotificationService, IMailSendService mailSendService)
         {
             _slackNotificationService = slackNotificationService;
             _couponsRepository = couponsRepository;
             _mapper = mapper;
+            _mailSendService = mailSendService;
+
         }
 
         /*
@@ -412,6 +417,10 @@ namespace BaobabBackEndService.Services.Coupons
 
                 MassiveCoupon massiveCoupon = _mapper.Map<MassiveCoupon>(redeemRequest);
                 massiveCoupon.CouponId = CuponValido.Id;
+                DateTime Day = DateTime.Now;
+                string dayString = Day.ToString();
+
+                var result = await _mailSendService.SendEmailAsync(redeemRequest.UserEmail, redeemRequest.CodeCoupon, $"{redeemRequest.PurchaseId}", $"{redeemRequest.PurchaseValue}", dayString);
 
                 var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
                 return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, 200, message: "El cupon fue redimido con exito");
