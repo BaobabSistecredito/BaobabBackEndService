@@ -6,7 +6,7 @@ namespace BaobabBackEndService.Services.Coupons
 {
     public interface ICouponsServices
     {
-        IEnumerable<Coupon> GetCoupons();
+        ResponseUtils<Coupon> GetCoupons(int pageNumber, int pageSize);
         Task<Coupon> GetCoupon(string id);
         Task<ResponseUtils<Coupon>> GetCouponsAsync(string searchType, string value);
         Task<ResponseUtils<Coupon>> CreateCoupon(CouponDTO coupon);

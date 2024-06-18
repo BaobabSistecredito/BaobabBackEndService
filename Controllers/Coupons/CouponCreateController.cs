@@ -7,6 +7,7 @@ using BaobabBackEndService.Services.Coupons;
 using System.Globalization;
 using BaobabBackEndService.DTOs;
 using Microsoft.AspNetCore.Authorization;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndService.Controllers
 {
@@ -16,9 +17,11 @@ namespace BaobabBackEndService.Controllers
     public class CouponCreateController : ControllerBase
     {
         private readonly ICouponsServices _couponsService;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public CouponCreateController(ICouponsServices couponsService)
+        public CouponCreateController(ICouponsServices couponsService,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _couponsService = couponsService;
         }
 
@@ -36,10 +39,11 @@ namespace BaobabBackEndService.Controllers
                 {
                     return StatusCode(422, response);
                 }
-                return StatusCode(201,response);
+                return StatusCode(201, response);
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return StatusCode(422, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al crear el cupón: " + ex.Message));
             }
         }

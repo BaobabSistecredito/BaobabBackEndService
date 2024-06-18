@@ -6,9 +6,9 @@ namespace BaobabBackEndService.Utils
     public class PaginationInfo<T>
     {
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-        public int TotalRecords { get; set; } = 100;
-        public int TotalPages { get; set; } = 10;
+        public int PageSize { get; set; } = 1;
+        public int TotalRecords { get; set; } = 1;
+        public int TotalPages { get; set; } = 1;
         public string NextPageUrl { get; set; } = string.Empty;
     }
 

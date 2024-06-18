@@ -2,6 +2,7 @@
 using AutoMapper;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.DTOs;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
@@ -13,13 +14,15 @@ namespace BaobabBackEndService.Services.categories
 {
     public class CategoryServices : ICategoriesServices
     {
+        private readonly SlackNotificationService _slackNotificationService;
         private readonly ICategoriesRepository _categoriesRepository;
         private readonly ICouponsRepository _couponsRepository;
         private readonly IMapper _mapper;
 
 
-        public CategoryServices(ICategoriesRepository categoriesRepository, ICouponsRepository couponsRepository, IMapper mapper)
+        public CategoryServices(ICategoriesRepository categoriesRepository, ICouponsRepository couponsRepository, IMapper mapper,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _categoriesRepository = categoriesRepository;
             _couponsRepository = couponsRepository;
             _mapper = mapper;
@@ -51,6 +54,7 @@ namespace BaobabBackEndService.Services.categories
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Category>(false, null, 404, message: "Error al buscar la categoría en la base de datos: " + ex.InnerException.Message);
             }
         }
@@ -92,6 +96,7 @@ namespace BaobabBackEndService.Services.categories
             }
             catch (DbUpdateException ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Category>(false, null, 500, message: "Error al actualizar la categoría en la base de datos: " + ex.InnerException.Message);
             }
 
@@ -145,6 +150,7 @@ namespace BaobabBackEndService.Services.categories
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Category>(false, null, 500, $"Error: {ex.Message}");
             }
         }

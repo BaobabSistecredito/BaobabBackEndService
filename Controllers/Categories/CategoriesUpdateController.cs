@@ -4,6 +4,7 @@ using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using Microsoft.AspNetCore.Authorization;
 using BaobabBackEndService.Services.categories;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndSerice.Controllers
 {
@@ -12,9 +13,11 @@ namespace BaobabBackEndSerice.Controllers
     public class CategoriesUpdateController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public CategoriesUpdateController(ICategoriesServices categoryService)
+        public CategoriesUpdateController(ICategoriesServices categoryService,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _categoryService = categoryService;
         }
 
@@ -35,6 +38,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return StatusCode(422, new ResponseUtils<Category>(false, message: "Ocurrió un error al actualizar la categoría: " + ex.Message));
             }
         }

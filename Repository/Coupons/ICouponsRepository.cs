@@ -31,7 +31,8 @@ namespace BaobabBackEndService.Repository.Coupons
     Continuemos con el siguiente paso Alli en este archivo...
     */
 
-    IEnumerable<Coupon> GetCoupons();
+    IEnumerable<Coupon> GetAllCoupons();
+    int GetTotalRecords();
     Task<Coupon> GetCouponAsync(int id);
     Coupon CreateCoupon(Coupon coupon);
     Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
@@ -42,8 +43,8 @@ namespace BaobabBackEndService.Repository.Coupons
     Task<CouponUpdateDTO> UpdateCoupon(int couponId, CouponUpdateDTO coupon);
     // --------------------- CREATE RECORD IN 'ChangesHistory':
     Task<ChangeHistory> AddNewChange(ChangeHistory newChange);
-        // ------------------- GET Coupons & Categoy:
-        Task<IEnumerable<Coupon>> GetCouponAndCategoyAsync();
+    // ------------------- GET Coupons & Categoy:
+    Task<IEnumerable<Coupon>> GetCouponAndCategoyAsync();
     Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId);
     Task<IEnumerable<Coupon>> GetCouponByTitleSearchAsync(string value);
     Task<IEnumerable<Coupon>> GetCouponByCouponCodeSearchAsync(string value);
@@ -52,5 +53,6 @@ namespace BaobabBackEndService.Repository.Coupons
     Task UpdateStatusCouponAsync(Coupon coupons);
     Coupon CuponCode(string CodeCoupon);
     Task<MassiveCoupon> CrearPoll(MassiveCoupon massiveCoupon);
-    Task<Coupon> RedencionCupon(Coupon coupon);  }
+    Task<Coupon> RedencionCupon(Coupon coupon);
+  }
 }
