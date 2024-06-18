@@ -26,8 +26,7 @@ namespace BaobabBackEndSerice.Controllers
         {
             try
             {
-
-                throw new InvalidOperationException("Esta es una pruba con el fin de probar el slack");
+                //throw new InvalidOperationException("Esta es error controlado con el fin de probar el slack");
                 return _categoryService.GetAllCategories();
             }
             catch (Exception ex)

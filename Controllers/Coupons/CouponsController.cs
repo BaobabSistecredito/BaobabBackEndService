@@ -32,7 +32,7 @@ namespace BaobabBackEndSerice.Controllers
         private readonly SlackNotificationService _slackNotificationService;
 
 
-        public CouponsController(ICouponsServices couponsService,SlackNotificationService slackNotificationService)
+        public CouponsController(ICouponsServices couponsService, SlackNotificationService slackNotificationService)
         {
             _slackNotificationService = slackNotificationService;
             _couponsService = couponsService;
@@ -96,7 +96,7 @@ namespace BaobabBackEndSerice.Controllers
         {
             try
             {
-
+                //throw new InvalidOperationException("Esta es error controlado con el fin de probar el slack");
                 var searchResult = await _couponsService.FilterSearch(search);
                 if (!searchResult.IsSuccessful)
                 {
