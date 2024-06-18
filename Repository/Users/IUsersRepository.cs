@@ -12,5 +12,7 @@ namespace BaobabBackEndService.Repository.Users
         Task<MarketingUser> GetMarketingUserByEmail(MarketingUser user);
         // ------------------------ ADD NEW USER:
         Task<MarketingUser> AddNewUser(MarketingUser newUser);
+        // ------------------------ GET USER BY ID:
+        Task<MarketingUser> GetMarketingUserById(int id);
     }
 }

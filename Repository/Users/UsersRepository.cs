@@ -28,5 +28,10 @@ namespace BaobabBackEndService.Repository.Users
             await _context.SaveChangesAsync();
             return newUser;
         }
+        // ------------------------ GET USER BY ID:
+        public async Task<MarketingUser> GetMarketingUserById(int id)
+        {
+            return await _context.MarketingUsers.FirstOrDefaultAsync(m => m.Id == id);
+        }
     }
 }
