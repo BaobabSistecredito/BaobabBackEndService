@@ -38,7 +38,7 @@ namespace BaobabBackEndService.Repository.Coupons
         Para ver los detalles de la interfaz que define los métodos del repositorio, consulta el archivo Service/Coupons/ICouponsRepository.
         Continuemos con el siguiente paso Alli en este archivo...
         */
-        
+
         public async Task<Coupon> GetCouponAsync(int id)
         {
             return await _context.Coupons.FindAsync(id);
@@ -69,9 +69,17 @@ namespace BaobabBackEndService.Repository.Coupons
             return await _context.Coupons.FirstOrDefaultAsync(c => c.Title == title);
         }
 
-        public IEnumerable<Coupon> GetCoupons()
+        public IEnumerable<Coupon> GetAllCoupons()
         {
-            return _context.Coupons.Include(c => c.Category).Include(c => c.MarketingUser).ToList();
+            return _context.Coupons
+                .Include(c => c.Category)
+                .Include(c => c.MarketingUser)
+                .ToList();
+        }
+
+        public int GetTotalRecords()
+        {
+            return _context.Coupons.Count();
         }
         // ------------------- GET MassiveCoupon:
         public async Task<MassiveCoupon> GetMassiveCouponByCouponId(int couponId)
@@ -150,7 +158,7 @@ namespace BaobabBackEndService.Repository.Coupons
             await _context.SaveChangesAsync();
             return coupon;
         }
-        
+
 
         // --------------------- UPDATE COUPON:
         public async Task<CouponUpdateDTO> UpdateCoupon(int couponId, CouponUpdateDTO coupon)
@@ -159,7 +167,7 @@ namespace BaobabBackEndService.Repository.Coupons
             // Se busca el cupón para actualizar:
             var existCoupon = await _context.Coupons.FindAsync(couponId);
             // Se confirma que se haya encontrado el cupón:
-            if(existCoupon == null)
+            if (existCoupon == null)
             {
                 return null;
             }
@@ -177,7 +185,7 @@ namespace BaobabBackEndService.Repository.Coupons
             await _context.SaveChangesAsync();
             return newChange;
         }
-        
+
         public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid)
         {
             return await _context.Coupons.FirstOrDefaultAsync(c => c.CategoryId == categoryid && c.StatusCoupon == "Activo");

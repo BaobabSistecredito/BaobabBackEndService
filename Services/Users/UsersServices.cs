@@ -3,6 +3,7 @@ using BaobabBackEndService.Utils;
 using BaobabBackEndService.Repository.Users;
 using BaobabBackEndService.DTOs;
 using BaobabBackEndService.ExternalServices.Jwt;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndService.Services.Users
 {
@@ -10,9 +11,12 @@ namespace BaobabBackEndService.Services.Users
     {
         private readonly IJwtService _jwtService;
         private readonly IUsersRepository _usersRepository;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public UsersServices(IUsersRepository usersRepository, IJwtService jwtService)
+
+        public UsersServices(IUsersRepository usersRepository, IJwtService jwtService, SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _usersRepository = usersRepository;
             _jwtService = jwtService;
 
@@ -45,6 +49,7 @@ namespace BaobabBackEndService.Services.Users
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<MarketingUser>(false, null, 500, message: $"Error interno del servidor: {ex.Message}");
             }
         }
@@ -60,7 +65,7 @@ namespace BaobabBackEndService.Services.Users
 
             var token = _jwtService.GenerateJwtToken(validateUSer);
 
-            return new ResponseUtils<string>(true, new List<string> { token },200);
+            return new ResponseUtils<string>(true, new List<string> { token }, 200);
 
         }
 

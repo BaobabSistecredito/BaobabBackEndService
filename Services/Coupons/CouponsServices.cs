@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.DTOs;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +16,14 @@ namespace BaobabBackEndService.Services.Coupons
 {
     public class CouponsServices : ICouponsServices
     {
+        private readonly SlackNotificationService _slackNotificationService;
         private readonly ICouponsRepository _couponsRepository;
         private readonly IMapper _mapper;
 
 
-        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper)
+        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper, SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _couponsRepository = couponsRepository;
             _mapper = mapper;
         }
@@ -45,9 +48,26 @@ namespace BaobabBackEndService.Services.Coupons
             return await _couponsRepository.GetCouponAndCategoyAsync();
         }
 
-        public IEnumerable<Coupon> GetCoupons()
+        public ResponseUtils<Coupon> GetCoupons(int pageNumber, int pageSize)
         {
-            return _couponsRepository.GetCoupons();
+            var totalRecords = _couponsRepository.GetTotalRecords();
+            var coupons = _couponsRepository.GetAllCoupons()
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            var paginationInfo = new PaginationInfo<Coupon>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = totalPages,
+                NextPageUrl = pageNumber < totalPages ? $"api/coupons?pageNumber={pageNumber + 1}&pageSize={pageSize}" : null
+            };
+
+            return new ResponseUtils<Coupon>(true, coupons, 200, "Se ha generado correctamente", null, paginationInfo);
         }
 
         public async Task<Coupon> GetCoupon(string id)
@@ -98,6 +118,7 @@ namespace BaobabBackEndService.Services.Coupons
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Coupon>(false, null, 422, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
         }
@@ -273,6 +294,7 @@ namespace BaobabBackEndService.Services.Coupons
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Coupon>(false, null, 400, $"Error: {ex.Message}");
             }
         }
@@ -347,6 +369,7 @@ namespace BaobabBackEndService.Services.Coupons
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Coupon>(false, null, 422, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
         }        //redencion de cupon
@@ -354,7 +377,6 @@ namespace BaobabBackEndService.Services.Coupons
         {
 
             var validate = await ValidateCoupon(redeemRequest.CodeCoupon, redeemRequest.PurchaseValue);
-
             if (validate.IsSuccessful)
             {
 
@@ -396,7 +418,7 @@ namespace BaobabBackEndService.Services.Coupons
             }
             else
             {
-                return new ResponseUtils<MassiveCoupon>(false, null, 400, message: "El cupon no es valido");
+                return new ResponseUtils<MassiveCoupon>(false, null, validate.StatusCode, message: validate.Message);
             }
 
         }

@@ -30,6 +30,7 @@ namespace BaobabBackEndService.Controllers.Coupons
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return StatusCode(500, new ResponseUtils<Coupon>(false, code: 500, message: $"Errors: {ex.Message}"));
             }
         }
@@ -47,7 +48,7 @@ namespace BaobabBackEndService.Controllers.Coupons
             catch (Exception ex)
             {
                 /* En caso de error, se llama a la clase '_slackNotification' y su método 'SendNotification()' en el cual se le envía el mensaje de error generado por el sistema */
-                await _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema:: {ex.Message}");
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return StatusCode(500, ex);
             }
         }

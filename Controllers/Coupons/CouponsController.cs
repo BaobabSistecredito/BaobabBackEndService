@@ -4,6 +4,7 @@ using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndSerice.Controllers
 {
@@ -28,9 +29,12 @@ namespace BaobabBackEndSerice.Controllers
         Continuemos con el siguiente paso...
         */
         private readonly ICouponsServices _couponsService;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public CouponsController(ICouponsServices couponsService)
+
+        public CouponsController(ICouponsServices couponsService,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _couponsService = couponsService;
         }
 
@@ -56,17 +60,10 @@ namespace BaobabBackEndSerice.Controllers
         */
 
         [HttpGet]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> GetCoupons()
+        public IActionResult GetCoupons([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            try
-            {
-                var result = _couponsService.GetCoupons();
-                return new ResponseUtils<Coupon>(true, new List<Coupon>(result),200, "Cupones listados exitosamente");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(422, new ResponseUtils<Category>(false, null, 500, $"Errors: {ex.Message}"));
-            }
+            var response = _couponsService.GetCoupons(pageNumber, pageSize);
+            return Ok(response);
         }
         // ----------------------- GET COUPON & CATEGORY:
         //REVISAR DE QUIEN ES ESTO PLEASE
@@ -88,6 +85,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Coupon>(false, null, 500, $"Error: {ex.Message}");
             }
         }
@@ -110,6 +108,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return StatusCode(500, new ResponseUtils<Category>(false, null, 500, $"Errors: {ex.Message}"));
             }
         }

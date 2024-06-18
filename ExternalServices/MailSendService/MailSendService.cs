@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace BaobabBackEndService.ExternalServices.MailSendService
 {
     public class MailSendService : IMailSendService
@@ -14,7 +9,7 @@ namespace BaobabBackEndService.ExternalServices.MailSendService
 
         private readonly string? FromEmail;//correo de mailsender
 
-        public MailSendService(HttpClient httpClient,IConfiguration configuration)
+        public MailSendService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             ApiUrl = configuration["MailerSend:APIURL"];
@@ -23,37 +18,35 @@ namespace BaobabBackEndService.ExternalServices.MailSendService
         }
 
 
-        public async Task<string> SendEmailAsync(string toEmail,string CodeCoupon,string PurchaseId,string PurchaseValue,string RedemptionDate )
+        public async Task<string> SendEmailAsync(string toEmail, string CodeCoupon, string PurchaseId, string PurchaseValue, string RedemptionDate)
         {
             var request = new
             {
-                from = new {email = FromEmail,},
-                    to = new[] {new {email = toEmail}},
-                    subject = "Haz redimido tu cupón",
-                    variables = new[] {new {email = toEmail,substitutions = new []{
+                from = new { email = FromEmail, },
+                to = new[] { new { email = toEmail } },
+                subject = "Haz redimido tu cupón",
+                variables = new[] {new {email = toEmail,substitutions = new []{
                         new { var = "CodeCoupon", value = CodeCoupon },
                         new { var = "PurchaseId", value = PurchaseId },
                         new { var = "PurchaseValue", value = PurchaseValue },
                         new { var = "RedemptionDate", value = RedemptionDate }
                     }}},
-                
-                    template_id = "0r83ql3x53zlzw1j" 
+
+                template_id = "0r83ql3x53zlzw1j"
             };
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer",ApiKey); 
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", ApiKey);
 
             try
             {
-                var result = await _httpClient.PostAsJsonAsync(ApiUrl,request);
+                var result = await _httpClient.PostAsJsonAsync(ApiUrl, request);
                 result.EnsureSuccessStatusCode();
 
                 return "Se ha enviado con exito";
-                
+
             }
             catch (HttpRequestException ex)
             {
                 return "Error" + ex.Message;
-                
-                throw new ApplicationException ("Error al tratar de enviar el correo");
             }
         }
     }

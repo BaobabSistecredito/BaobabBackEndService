@@ -4,17 +4,20 @@ using BaobabBackEndSerice.Models;
 using Microsoft.EntityFrameworkCore;
 using BaobabBackEndService.Utils;
 using BaobabBackEndService.Services.MassiveCoupons;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndSerice.Controllers
 {
     [ApiController]
     [Route("/api/massivecoupons")]
-    
+
     public class MassiveCouponsController : Controller
     {
         private readonly IMassiveCouponsServices _massivecouponService;
-        public MassiveCouponsController(IMassiveCouponsServices massivecouponService)
+        private readonly SlackNotificationService _slackNotificationService;
+        public MassiveCouponsController(IMassiveCouponsServices massivecouponService,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService; 
             _massivecouponService = massivecouponService;
         }
 
@@ -27,6 +30,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<MassiveCoupon>(false, null, 500, $"Error: {ex.Message}");
             }
         }
@@ -41,6 +45,7 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<MassiveCoupon>(false, null, 500, $"Error: {ex.Message}");
             }
         }
