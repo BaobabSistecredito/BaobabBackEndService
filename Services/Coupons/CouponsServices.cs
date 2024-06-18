@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.DTOs;
-using BaobabBackEndService.ExternalServices.MailSendService;
 using BaobabBackEndService.Repository.Coupons;
-using BaobabBackEndService.Repository.Users;
 using BaobabBackEndService.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -17,18 +15,14 @@ namespace BaobabBackEndService.Services.Coupons
 {
     public class CouponsServices : ICouponsServices
     {
-        private readonly IUsersRepository _usersRepository;
         private readonly ICouponsRepository _couponsRepository;
         private readonly IMapper _mapper;
-        private readonly IMailSendService _emailSendService;
 
 
-        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper, IMailSendService emailSendService,IUsersRepository usersRepository)
+        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper)
         {
             _couponsRepository = couponsRepository;
-            _usersRepository = usersRepository;
             _mapper = mapper;
-            _emailSendService = emailSendService;
         }
 
         /*
@@ -53,8 +47,6 @@ namespace BaobabBackEndService.Services.Coupons
 
         public IEnumerable<Coupon> GetCoupons()
         {
-            // Lógica de negocio para obtene rtodos los cupones
-
             return _couponsRepository.GetCoupons();
         }
 
@@ -133,50 +125,38 @@ namespace BaobabBackEndService.Services.Coupons
         // ----------------------- EDIT ACTION:
         public async Task<ResponseUtils<CouponUpdateDTO>> EditCoupon(int marketingUserId, int couponId, CouponUpdateDTO coupon)
         {
-            // Se trae toda la información del cupón:
-            var entireCoupon = await _couponsRepository.GetCouponAsync(couponId);
-            // Se trae la información del usuario de marketing:
-            var MarketingUserInfo = await _usersRepository.GetMarketingUserById(marketingUserId);
-            // Se confirma el rol del usuario o que el usuario sea el mismo que haya creado el cupón:
-            if(entireCoupon.MarketingUserId == marketingUserId || MarketingUserInfo.Role == "Admin")
+            // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
+            var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(couponId);
+            // Condicional que determina si se ha encontrado el cupón:
+            if (existCoupon == null)
             {
-                // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
-                var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(couponId);
-                // Condicional que determina si se ha encontrado el cupón:
-                if(existCoupon == null)
+                // Se envía la información para actualizar el cupón:
+                var response = await _couponsRepository.UpdateCoupon(couponId, coupon);
+                // Se confirma si fue posible actualizar el cupón:
+                if (response != null)
                 {
-                    // Se envía la información para actualizar el cupón:
-                    var response = await _couponsRepository.UpdateCoupon(couponId, coupon);
-                    // Se confirma si fue posible actualizar el cupón:
-                    if(response != null)
+                    // Se crea una instancia del modelo 'ChangeHistory' con la información requerida para crear un nuevo registro en la entidad:
+                    var newChange = new ChangeHistory
                     {
-                        // Se crea una instancia del modelo 'ChangeHistory' con la información requerida para crear un nuevo registro en la entidad:
-                        var newChange = new ChangeHistory
-                        {
-                            ModifiedTable = "Coupons",
-                            ModifiedRecordId = couponId,
-                            Date = DateTime.Now,
-                            MarketingUserId = marketingUserId,
-                            ModifiedType = "Editado"
-                        };
-                        // Se crea un nuevo registro en la entidad 'ChangesHistory':
-                        await _couponsRepository.AddNewChange(newChange);
-                        // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                        return new ResponseUtils<CouponUpdateDTO>(true, new List<CouponUpdateDTO> { coupon }, 200, message: "¡Cupón actualizado!");
-                    }
-                    else
-                    {
-                        return new ResponseUtils<CouponUpdateDTO>(false, null, 400, message: "¡El cupón no existe!");
-                    }
+                        ModifiedTable = "Coupons",
+                        ModifiedRecordId = couponId,
+                        Date = DateTime.Now,
+                        MarketingUserId = marketingUserId,
+                        ModifiedType = "Editado"
+                    };
+                    // Se crea un nuevo registro en la entidad 'ChangesHistory':
+                    await _couponsRepository.AddNewChange(newChange);
+                    // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
+                    return new ResponseUtils<CouponUpdateDTO>(true, new List<CouponUpdateDTO> { coupon }, 200, message: "¡Cupón actualizado!");
                 }
                 else
                 {
-                    return new ResponseUtils<CouponUpdateDTO>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
+                    return new ResponseUtils<CouponUpdateDTO>(false, null, 400, message: "¡El cupón no existe!");
                 }
             }
             else
             {
-                return new ResponseUtils<CouponUpdateDTO>(false, null, 401, message: "¡No tienes autorización para editar este cupón!");
+                return new ResponseUtils<CouponUpdateDTO>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
             }
         }
 
@@ -300,11 +280,10 @@ namespace BaobabBackEndService.Services.Coupons
         //funcion para buscar, Filtrar o mostrar cuponen
         public async Task<ResponseUtils<Coupon>> FilterSearch(string Search)
         {
-            
-            var capitalized = Search.Substring(0,1).ToUpper() + Search.Substring(1);
+
             var Cupones = await _couponsRepository.GetCouponsAsync();
 
-            if (capitalized == "Activo" || capitalized == "Inactivo" || capitalized == "Creado" || capitalized == "Vencido" || capitalized == "Agotado")
+            if (Search == "Activo" || Search == "Inactivo" || Search == "Creado" || Search == "Vencido" || Search == "Agotado")
             {
                 Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
                 return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Se ha encotrado la informacion");
@@ -312,9 +291,9 @@ namespace BaobabBackEndService.Services.Coupons
             else
             {
                 //buscador
-                if (!string.IsNullOrEmpty(capitalized))
+                if (!string.IsNullOrEmpty(Search))
                 {
-                    Cupones = Cupones.Where(x => x.CouponCode.ToLower() == capitalized.ToLower()).ToList();
+                    Cupones = Cupones.Where(x => x.CouponCode.ToLower() == Search.ToLower()).ToList();
                     if (!Cupones.Any())
                     {
                         return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
@@ -370,23 +349,22 @@ namespace BaobabBackEndService.Services.Coupons
             {
                 return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
-        }       
-        
-         //redencion de cupon
+        }        //redencion de cupon
         public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemDTO redeemRequest)
         {
-            var validate = true;
 
-            if (/* validate.Status */ validate == true)
+            var validate = await ValidateCoupon(redeemRequest.CodeCoupon, redeemRequest.PurchaseValue);
+
+            if (validate.Status)
             {
-                var CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
+
+                Coupon CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
 
                 //validar si el cupon es null
                 if (CuponValido == null)
                 {
                     return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no existe en la base de datos");
                 }
-
                 //cambiar estado a agotado
                 if (CuponValido.NumberOfAvailableUses == 0)
                 {
@@ -412,12 +390,6 @@ namespace BaobabBackEndService.Services.Coupons
 
                 MassiveCoupon massiveCoupon = _mapper.Map<MassiveCoupon>(redeemRequest);
                 massiveCoupon.CouponId = CuponValido.Id;
-
-                DateTime Day = DateTime.Now;
-                string dayString = Day.ToString();
-
-                var result = await _emailSendService.SendEmailAsync(redeemRequest.UserEmail,redeemRequest.CodeCoupon,$"{redeemRequest.PurchaseId}",$"{redeemRequest.PurchaseValue}",dayString);
-                Console.WriteLine(result);
 
                 var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
                 return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, 200, message: "Todo oki");
