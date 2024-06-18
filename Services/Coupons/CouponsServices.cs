@@ -47,8 +47,6 @@ namespace BaobabBackEndService.Services.Coupons
 
         public IEnumerable<Coupon> GetCoupons()
         {
-            // Lógica de negocio para obtene rtodos los cupones
-
             return _couponsRepository.GetCoupons();
         }
 
@@ -130,12 +128,12 @@ namespace BaobabBackEndService.Services.Coupons
             // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
             var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(couponId);
             // Condicional que determina si se ha encontrado el cupón:
-            if(existCoupon == null)
+            if (existCoupon == null)
             {
                 // Se envía la información para actualizar el cupón:
                 var response = await _couponsRepository.UpdateCoupon(couponId, coupon);
                 // Se confirma si fue posible actualizar el cupón:
-                if(response != null)
+                if (response != null)
                 {
                     // Se crea una instancia del modelo 'ChangeHistory' con la información requerida para crear un nuevo registro en la entidad:
                     var newChange = new ChangeHistory
@@ -354,18 +352,19 @@ namespace BaobabBackEndService.Services.Coupons
         }        //redencion de cupon
         public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemDTO redeemRequest)
         {
-            var validate = true;
 
-            if (/* validate.Status */ validate == true)
+            var validate = await ValidateCoupon(redeemRequest.CodeCoupon, redeemRequest.PurchaseValue);
+
+            if (validate.Status)
             {
-                var CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
+
+                Coupon CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
 
                 //validar si el cupon es null
                 if (CuponValido == null)
                 {
                     return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no existe en la base de datos");
                 }
-
                 //cambiar estado a agotado
                 if (CuponValido.NumberOfAvailableUses == 0)
                 {
