@@ -4,11 +4,12 @@ using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponsController : ControllerBase
     {
         /*
@@ -28,9 +29,12 @@ namespace BaobabBackEndSerice.Controllers
         Continuemos con el siguiente paso...
         */
         private readonly ICouponsServices _couponsService;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public CouponsController(ICouponsServices couponsService)
+
+        public CouponsController(ICouponsServices couponsService,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _couponsService = couponsService;
         }
 
@@ -56,17 +60,19 @@ namespace BaobabBackEndSerice.Controllers
         */
 
         [HttpGet]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> GetCoupons()
+        public IActionResult GetCoupons([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            try
-            {
-                var result = _couponsService.GetCoupons();
-                return new ResponseUtils<Coupon>(true, new List<Coupon>(result), null, "todo oki");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Errors: {ex.Message}"));
-            }
+            var response = _couponsService.GetCoupons(pageNumber, pageSize);
+            return Ok(response);
+        }
+        // ----------------------- GET COUPON & CATEGORY:
+        //REVISAR DE QUIEN ES ESTO PLEASE
+        [HttpGet]
+        [Route("couponsAndCategories")]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> GetCouponsAndCategory()
+        {
+            var result = await _couponsService.GetCouponAndCategory();
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(result), 200, "¡Listado de cupones!");
         }
 
         [HttpGet("{searchType}/{value}")]
@@ -79,29 +85,31 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, null, null, $"Error: {ex.Message}");
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Coupon>(false, null, 500, $"Error: {ex.Message}");
             }
         }
 
         //Buscador y search
-        [HttpGet("{Search}")]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string Search)
+        [HttpGet("{search}")]
+        public async Task<ActionResult<ResponseUtils<Coupon>>> SearchFilter(string search)
         {
             try
             {
 
-                var SearchResult = await _couponsService.FilterSearch(Search);
-                if (!SearchResult.Status)
+                var searchResult = await _couponsService.FilterSearch(search);
+                if (!searchResult.IsSuccessful)
                 {
-                    return StatusCode(400, SearchResult);
+                    return StatusCode(400, searchResult);
                 }
 
-                return Ok(SearchResult);
+                return Ok(searchResult);
 
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Category>(false, null, null, $"Errors: {ex.Message}"));
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return StatusCode(500, new ResponseUtils<Category>(false, null, 500, $"Errors: {ex.Message}"));
             }
         }
 

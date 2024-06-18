@@ -1,5 +1,8 @@
 
+using AutoMapper;
 using BaobabBackEndSerice.Models;
+using BaobabBackEndService.DTOs;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 using BaobabBackEndService.Repository.Categories;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
@@ -11,19 +14,24 @@ namespace BaobabBackEndService.Services.categories
 {
     public class CategoryServices : ICategoriesServices
     {
+        private readonly SlackNotificationService _slackNotificationService;
         private readonly ICategoriesRepository _categoriesRepository;
         private readonly ICouponsRepository _couponsRepository;
+        private readonly IMapper _mapper;
 
-        public CategoryServices(ICategoriesRepository categoriesRepository, ICouponsRepository couponsRepository)
+
+        public CategoryServices(ICategoriesRepository categoriesRepository, ICouponsRepository couponsRepository, IMapper mapper,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _categoriesRepository = categoriesRepository;
             _couponsRepository = couponsRepository;
+            _mapper = mapper;
         }
 
         public ResponseUtils<Category> GetAllCategories()
         {
             var result = _categoriesRepository.GetCategories();
-            return new ResponseUtils<Category>(false, new List<Category>(result), null, message: "Todo");
+            return new ResponseUtils<Category>(true, new List<Category>(result), 200, message: "Categorias encontradas");
 
         }
 
@@ -32,21 +40,22 @@ namespace BaobabBackEndService.Services.categories
 
             if (!int.TryParse(number, out int parseNumber))
             {
-                return new ResponseUtils<Category>(false, message: "Dato ingresado no es valido.");
+                return new ResponseUtils<Category>(false, null, 400, "Dato ingresado no valido");
             }
 
             try
             {
                 if (parseNumber == 1)
                 {
-                    return new ResponseUtils<Category>(true, new List<Category>(await _categoriesRepository.GetCategoriesAsync("Activo")), message: "Se encontro el status buscado correctamente."); //llamada base de datos
+                    return new ResponseUtils<Category>(true, new List<Category>(await _categoriesRepository.GetCategoriesAsync("Activo")), 200, message: "Se encontro el status buscado correctamente."); //llamada base de datos
                 }
 
-                return new ResponseUtils<Category>(true, new List<Category>(await _categoriesRepository.GetCategoriesAsync("Inactivo")), message: "Se encontro el estatus buscado correctamente.");
+                return new ResponseUtils<Category>(true, new List<Category>(await _categoriesRepository.GetCategoriesAsync("Inactivo")), 200, message: "Se encontro el estatus buscado correctamente.");
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, message: "Error buscar el estado de la categoría en la base de datos: " + ex.InnerException.Message);
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Category>(false, null, 404, message: "Error al buscar la categoría en la base de datos: " + ex.InnerException.Message);
             }
         }
 
@@ -56,24 +65,24 @@ namespace BaobabBackEndService.Services.categories
         }
 
 
-        public async Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryRequest category)
+        public async Task<ResponseUtils<Category>> UpdateCategory(string id, CategoryDTO category)
         {
             // Validaciones de entrada por id
             if (!int.TryParse(id, out int num) || num <= 0)
             {
-                return new ResponseUtils<Category>(false, message: "ID de categoría no válido.");
+                return new ResponseUtils<Category>(false, null, 400, message: "ID de categoría no válido.");
             }
 
             // Buscar la categoría en la base de datos
             var result = await _categoriesRepository.GetCategoryByIdAsync(num);
             if (result == null)
             {
-                return new ResponseUtils<Category>(false, message: "No se encontró la categoría para actualizar.");
+                return new ResponseUtils<Category>(false, null, 404, message: "No se encontró la categoría para actualizar.");
             }
             bool validateCategoryStatusChange = await ValidateCategoryStatusChange(num);
             if (category.Status == "Inactivo" && !validateCategoryStatusChange)
             {
-                return new ResponseUtils<Category>(false, message: "La categoria no puede ser desactivada ya que tiene cupones activos asignados");
+                return new ResponseUtils<Category>(false, null, 409, message: "La categoria no puede ser desactivada ya que tiene cupones activos asignados");
             }
 
             // Actualizar la categoría
@@ -83,48 +92,31 @@ namespace BaobabBackEndService.Services.categories
             try
             {
                 await _categoriesRepository.UpdateCategoryAsync(result);
-                return new ResponseUtils<Category>(true, new List<Category> { result }, message: "La categoría se actualizó correctamente.");
+                return new ResponseUtils<Category>(true, new List<Category> { result }, 200, message: "La categoría se actualizó correctamente.");
             }
             catch (DbUpdateException ex)
             {
-                return new ResponseUtils<Category>(false, message: "Error al actualizar la categoría en la base de datos: " + ex.InnerException.Message);
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Category>(false, null, 500, message: "Error al actualizar la categoría en la base de datos: " + ex.InnerException.Message);
             }
 
 
         }
 
-        public async Task<ResponseUtils<Category>> CreateCategoria(Category category)
+        public async Task<ResponseUtils<Category>> CreateCategoria(CategoryDTO category)
         {
             var existeName = await _categoriesRepository.GetCategoryByNameAsync(category.CategoryName);
 
             if (existeName != null)
             {
-                return new ResponseUtils<Category>(false, message: "El nombre de la categoria ya existe");
+                return new ResponseUtils<Category>(false, null, 409, message: "El nombre de la categoria ya existe");
 
             }
-
-
-            /* if (string.IsNullOrWhiteSpace(category.CategoryName) || category.CategoryName == null)
-            {
-                return new ResponseUtils<Category>(false, message: "El nombre de la categoria es un campo obligatorio");
-
-            } */
-
-
-            //crear categoria
-            /* if (category.Status == "Activo" || category.Status == "Inactivo")
-            {
-            }
-            else
-            {
-                return new ResponseUtils<Category>(false, message: "El estado ingresado no es permitido ");
-            } */
 
             //pasar datos a minuscula
-            category.CategoryName = category.CategoryName.ToLower();
-            category.Status = category.Status;
+            Category newCategory = _mapper.Map<Category>(category);
 
-            return new ResponseUtils<Category>(true, new List<Category> { _categoriesRepository.CreateCategory(category) }, null, message: "Todo oki");
+            return new ResponseUtils<Category>(true, new List<Category> { _categoriesRepository.CreateCategory(newCategory) }, 201, message: "Categoria creada exitosamente!");
         }
 
         // ----------------------- SEARCH ACTION:
@@ -143,7 +135,7 @@ namespace BaobabBackEndService.Services.categories
                     if (categories.Any())
                     {
                         // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                        return new ResponseUtils<Category>(true, new List<Category>(categories), message: "¡Categorías filtradas!");
+                        return new ResponseUtils<Category>(true, new List<Category>(categories), 200, message: "¡Categorías filtradas!");
                     }
                     else
                     {
@@ -158,7 +150,8 @@ namespace BaobabBackEndService.Services.categories
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Category>(false, null, 500, $"Error: {ex.Message}");
             }
         }
         // -------------------------------------------------------------------------

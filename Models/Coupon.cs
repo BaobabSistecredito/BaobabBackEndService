@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
 namespace BaobabBackEndSerice.Models
 {
   public class Coupon
@@ -16,7 +19,12 @@ namespace BaobabBackEndSerice.Models
     public float MinPurchaseRange { get; set; }
     public float MaxPurchaseRange { get; set; }
     public string? CouponCode { get; set; }
+    [Required]
     public int CategoryId { get; set; }
     public int MarketingUserId { get; set; }
+    [JsonIgnore]
+    public List<MassiveCoupon>? MassiveCoupons { get; set; }
+    public Category? Category { get; set; }
+    public MarketingUser? MarketingUser { get; set; }
   }
 }

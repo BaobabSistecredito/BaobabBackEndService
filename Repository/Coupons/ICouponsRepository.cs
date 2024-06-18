@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
+using BaobabBackEndService.DTOs;
 
 namespace BaobabBackEndService.Repository.Coupons
 {
@@ -30,17 +31,20 @@ namespace BaobabBackEndService.Repository.Coupons
     Continuemos con el siguiente paso Alli en este archivo...
     */
 
-    IEnumerable<Coupon> GetCoupons();
+    IEnumerable<Coupon> GetAllCoupons();
+    int GetTotalRecords();
     Task<Coupon> GetCouponAsync(int id);
     Coupon CreateCoupon(Coupon coupon);
     Task<Coupon> GetCouponByCouponCodeAsync(string couponCode);
     Task<Coupon> GetCouponByTitleAsync(string title);
     // ------------------- GET MassiveCoupon:
-    Task<MassiveCoupon> GetMassiveCouponByCouponId(Coupon coupon);
+    Task<MassiveCoupon> GetMassiveCouponByCouponId(int couponId);
     // --------------------- UPDATE COUPON:
-    Task<Coupon> UpdateCoupon(Coupon coupon);
+    Task<CouponUpdateDTO> UpdateCoupon(int couponId, CouponUpdateDTO coupon);
     // --------------------- CREATE RECORD IN 'ChangesHistory':
     Task<ChangeHistory> AddNewChange(ChangeHistory newChange);
+    // ------------------- GET Coupons & Categoy:
+    Task<IEnumerable<Coupon>> GetCouponAndCategoyAsync();
     Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId);
     Task<IEnumerable<Coupon>> GetCouponByTitleSearchAsync(string value);
     Task<IEnumerable<Coupon>> GetCouponByCouponCodeSearchAsync(string value);

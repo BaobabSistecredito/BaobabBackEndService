@@ -85,8 +85,8 @@ CREATE TABLE MassiveCoupons(
     Id INT NOT NULL AUTO_INCREMENT UNIQUE PRIMARY KEY,
     MassiveCouponCode VARCHAR(255) UNIQUE,
     CouponId INT,
-    UserEmail VARCHAR(125) UNIQUE,
-    PurchaseId VARCHAR(125) UNIQUE,
+    UserEmail VARCHAR(125),
+    PurchaseId VARCHAR(125),
     RedemptionDate DATETIME,
     PurchaseValue FLOAT,
     FOREIGN KEY (CouponId) REFERENCES Coupons(Id)
@@ -145,19 +145,16 @@ CREATE TABLE MarketingUsers(
     UserName VARCHAR(255),
     Password VARCHAR(255),
     EmployeeId INT,
-    Uuid CHAR(36)
+    Email VARCHAR(150)
 );
+-- INSERTAR DATOS:
+INSERT INTO MarketingUsers (UserName, Password, EmployeeId, Email) VALUES 
+('test', '123', 7, 'test@gmail.com'),
+('prueba', '123', 8, 'prueba@gmail.com'),
+('user', '123', 9, 'user@gmail.com');
 
--- INSERTAR DATOS:
-INSERT INTO MarketingUsers (UserName, Password, EmployeeId) VALUES 
-('pedro_pablo', '123', 1),
-('jaimito', '123', 2),
-('user', '123', 3);
--- INSERTAR DATOS:
-INSERT INTO MarketingUsers (UserName, Password, EmployeeId) VALUES 
-('pedrooooo', '123', 4),
-('jaimitoooooo', '123', 5),
-('userrrrr', '123', 6);
+-- EDITAR CAMPO:
+UPDATE MarketingUsers SET Email = 'user2@gmail.com' WHERE EmployeeId = 3;
 
 -- ELIMINAR TABLA:
 DROP TABLE MarketingUsers;
@@ -165,33 +162,23 @@ DROP TABLE MarketingUsers;
 -- ELIMINAR COLUMNA:
 ALTER TABLE MarketingUsers DROP COLUMN Uuid;
 
+-- AGREGAR NUEVO CAMPO:
+ALTER TABLE MarketingUsers ADD COLUMN Role ENUM("Admin", "User");
+
 -- ---------------------------------------------------------------------------------
 
 -- CREAR TABLA:
 CREATE TABLE ChangesHistory(
-    Id INT AUTO_INCREMENT UNIQUE NOT NULL PRIMARY KEY,
+    Id INT AUTO_INCREMENT UNIQUE PRIMARY KEY,
     ModifiedTable ENUM("Coupons", "Categories"),
-    IdModifiedTable INT,
-    ChangeDate DATETIME,
-    IdMarketingUser INT,
-    FOREIGN KEY (IdMarketingUser) REFERENCES MarketingUsers(Id)
+    ModifiedRecordId INT,
+    Date DATETIME,
+    ModifiedType ENUM("Editado", "Creado", "Eliminado"),
+    MarketingUserId INT,
+    FOREIGN KEY (MarketingUserId) REFERENCES MarketingUsers(Id)
 );
-
--- MODIFICAR NOMBRE DE UN CAMPO:
-ALTER TABLE ChangesHistory CHANGE COLUMN IdModifiedTable IdModifiedRecord INT;
 
 -- ELIMINAR TABLA:
 DROP TABLE ChangesHistory;
 
 -- ---------------------------------------------------------------------------------
--- TRIGGERS:
--- DELIMITER //
-
--- CREATE TRIGGER GenerateUUID 
--- BEFORE INSERT ON MarketingUsers
--- FOR EACH ROW
--- BEGIN
---     SET NEW.Uuid = UUID();
--- END//
-
--- DELIMITER ;

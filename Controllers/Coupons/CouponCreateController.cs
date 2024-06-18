@@ -5,22 +5,28 @@ using BaobabBackEndService.Utils;
 using System.Collections.Generic;
 using BaobabBackEndService.Services.Coupons;
 using System.Globalization;
+using BaobabBackEndService.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
-namespace BaobabBackEndSerice.Controllers
+namespace BaobabBackEndService.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("/api/coupons")]
     public class CouponCreateController : ControllerBase
     {
         private readonly ICouponsServices _couponsService;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public CouponCreateController(ICouponsServices couponsService)
+        public CouponCreateController(ICouponsServices couponsService,SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _couponsService = couponsService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseUtils<Coupon>>> CreateCoupon(CouponRequest request)
+        public async Task<ActionResult<ResponseUtils<Coupon>>> CreateCoupon(CouponDTO request)
         {
             /* if (!ModelState.IsValid)
             {
@@ -29,15 +35,16 @@ namespace BaobabBackEndSerice.Controllers
             try
             {
                 var response = await _couponsService.CreateCoupon(request);
-                if (!response.Status)
+                if (!response.IsSuccessful)
                 {
                     return StatusCode(422, response);
                 }
-                return Ok(response);
+                return StatusCode(201, response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al actualizar el cupón: " + ex.Message));
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return StatusCode(422, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al crear el cupón: " + ex.Message));
             }
         }
     }

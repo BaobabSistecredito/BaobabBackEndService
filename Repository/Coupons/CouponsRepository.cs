@@ -6,16 +6,22 @@ using BaobabBackEndSerice.Data;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using Microsoft.EntityFrameworkCore;
+using BaobabBackEndService.DTOs;
+using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BaobabBackEndService.Repository.Coupons
 {
     public class CouponsRepository : ICouponsRepository
     {
         private readonly BaobabDataBaseContext _context;
+        private readonly IMapper _mapper;
 
-        public CouponsRepository(BaobabDataBaseContext context)
+        public CouponsRepository(BaobabDataBaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         /*
         Parte 3:
@@ -40,7 +46,7 @@ namespace BaobabBackEndService.Repository.Coupons
 
         public async Task<IEnumerable<Coupon>> GetCouponByIdAsync(int couponId)
         {
-            return await _context.Coupons.Where(c => c.Id == couponId).ToListAsync();
+            return await _context.Coupons.Where(c => c.Id == couponId).Include(c => c.Category).Include(c => c.MarketingUser).ToListAsync();
         }
 
         public async Task<IEnumerable<Coupon>> GetCouponByTitleSearchAsync(string value)
@@ -63,22 +69,36 @@ namespace BaobabBackEndService.Repository.Coupons
             return await _context.Coupons.FirstOrDefaultAsync(c => c.Title == title);
         }
 
-        public IEnumerable<Coupon> GetCoupons()
+        public IEnumerable<Coupon> GetAllCoupons()
         {
-            return _context.Coupons.ToList();
+            return _context.Coupons
+                .Include(c => c.Category)
+                .Include(c => c.MarketingUser)
+                .ToList();
+        }
+
+        public int GetTotalRecords()
+        {
+            return _context.Coupons.Count();
         }
         // ------------------- GET MassiveCoupon:
-        public async Task<MassiveCoupon> GetMassiveCouponByCouponId(Coupon coupon)
+        public async Task<MassiveCoupon> GetMassiveCouponByCouponId(int couponId)
         {
-            return await _context.MassiveCoupons.FirstOrDefaultAsync(mc => mc.CouponId == coupon.Id);
+            return await _context.MassiveCoupons.Include(c => c.Coupon).FirstOrDefaultAsync(mc => mc.CouponId == couponId);
         }
         // ---------------------------------------
 
         public async Task<IEnumerable<Coupon>> GetCouponsAsync()
         {
-            return await _context.Coupons.ToListAsync();
+            return await _context.Coupons.Include(c => c.Category).Include(c => c.MarketingUser).ToListAsync();
         }
 
+        // ------------------- GET Coupons & Categoy:
+        public async Task<IEnumerable<Coupon>> GetCouponAndCategoyAsync()
+        {
+            return await _context.Coupons.Include(c => c.Category).ToListAsync();
+        }
+        // -----------------------------------------
         /*
         Parte 5:
 
@@ -138,14 +158,25 @@ namespace BaobabBackEndService.Repository.Coupons
             await _context.SaveChangesAsync();
             return coupon;
         }
-        
+
 
         // --------------------- UPDATE COUPON:
-        public async Task<Coupon> UpdateCoupon(Coupon coupon)
+        public async Task<CouponUpdateDTO> UpdateCoupon(int couponId, CouponUpdateDTO coupon)
         {
-            _context.Coupons.Update(coupon);
-            await _context.SaveChangesAsync();
-            return coupon;
+            // _context.Coupons.Update(coupon);
+            // Se busca el cupón para actualizar:
+            var existCoupon = await _context.Coupons.FindAsync(couponId);
+            // Se confirma que se haya encontrado el cupón:
+            if (existCoupon == null)
+            {
+                return null;
+            }
+            else
+            {
+                _mapper.Map(coupon, existCoupon);
+                await _context.SaveChangesAsync();
+                return coupon;
+            }
         }
         // --------------------- ADD NEW CHANGE:
         public async Task<ChangeHistory> AddNewChange(ChangeHistory newChange)
@@ -154,7 +185,7 @@ namespace BaobabBackEndService.Repository.Coupons
             await _context.SaveChangesAsync();
             return newChange;
         }
-        
+
         public async Task<Coupon> SearchCouponsByCategoryAsync(int categoryid)
         {
             return await _context.Coupons.FirstOrDefaultAsync(c => c.CategoryId == categoryid && c.StatusCoupon == "Activo");

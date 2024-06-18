@@ -2,17 +2,22 @@ using Microsoft.AspNetCore.Mvc;
 using BaobabBackEndSerice.Models;
 using BaobabBackEndService.Utils;
 using BaobabBackEndService.Services.categories;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 namespace BaobabBackEndSerice.Controllers
 {
-    [Route("api/v1/[controller]")]
+
     [ApiController]
+    [Route("/api/categories")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public CategoriesController(ICategoriesServices categoryService)
+
+        public CategoriesController(ICategoriesServices categoryService, SlackNotificationService slackNotificationService)
         {
+            _slackNotificationService = slackNotificationService;
             _categoryService = categoryService;
         }
 
@@ -21,11 +26,14 @@ namespace BaobabBackEndSerice.Controllers
         {
             try
             {
+
+                throw new InvalidOperationException("Esta es una pruba con el fin de probar el slack");
                 return _categoryService.GetAllCategories();
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Category>(false, null, 500, $"Error: {ex.Message}");
             }
         }
 
@@ -39,9 +47,9 @@ namespace BaobabBackEndSerice.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Category>(false, null, 500, $"Error: {ex.Message}");
             }
         }
-
     }
 }

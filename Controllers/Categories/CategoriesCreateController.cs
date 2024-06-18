@@ -9,53 +9,40 @@ using BaobabBackEndService.Services.categories;
 using BaobabBackEndService.Utils;
 using BaobabBackEndSerice.Models;
 using System.Globalization;
+using BaobabBackEndService.DTOs;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 
 
 
 namespace BaobabBackEndService.Controllers
 {
-    [Route("api/v1/[controller]")]
     [ApiController]
+    [Route("/api/categories")]
 
     public class CategoriesCreateController : ControllerBase
     {
         private readonly ICategoriesServices _categoryService;
+        private readonly SlackNotificationService _slackNotificationService;
 
-        public CategoriesCreateController(ICategoriesServices categoryService)
-        {
+        public CategoriesCreateController(ICategoriesServices categoryService,SlackNotificationService slackNotificationService)
+        {   
+            _slackNotificationService = slackNotificationService;
             _categoryService = categoryService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<ResponseUtils<Category>>> CrearCategory(CategoryRequest request)
+        public async Task<ActionResult<ResponseUtils<Category>>> CrearCategory(CategoryDTO request)
         {
             try
             {
-
-                var Category = new Category
-                {
-                    CategoryName = request.CategoryName,
-                    Status = request.Status
-                };
-
-                var respuesta = await _categoryService.CreateCategoria(Category);
-
-                if (!respuesta.Status)
-                {
-                    return StatusCode(422, respuesta);
-                }
-
-
-                return Ok(respuesta);
-
+                var respuesta = await _categoryService.CreateCategoria(request);
+                return StatusCode(respuesta.StatusCode, respuesta);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al crear la categoria: " + ex.Message));
-
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return StatusCode(422, new ResponseUtils<Coupon>(false, message: "Ocurrió un error al crear la categoria: " + ex.Message));
             }
-
-
         }
 
 
@@ -67,7 +54,4 @@ namespace BaobabBackEndService.Controllers
 
     }
 
-    public interface IActionResult<T>
-    {
-    }
 }

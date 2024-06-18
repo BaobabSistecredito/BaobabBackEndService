@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using AutoMapper;
 using BaobabBackEndSerice.Models;
+using BaobabBackEndService.DTOs;
+using BaobabBackEndService.ExternalServices.MailSendService;
+using BaobabBackEndService.ExternalServices.SlackNotificationService;
 using BaobabBackEndService.Repository.Coupons;
 using BaobabBackEndService.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +17,20 @@ namespace BaobabBackEndService.Services.Coupons
 {
     public class CouponsServices : ICouponsServices
     {
+        private readonly SlackNotificationService _slackNotificationService;
         private readonly ICouponsRepository _couponsRepository;
+        private readonly IMailSendService _mailSendService;
 
-        public CouponsServices(ICouponsRepository couponsRepository)
+        private readonly IMapper _mapper;
+
+
+        public CouponsServices(ICouponsRepository couponsRepository, IMapper mapper, SlackNotificationService slackNotificationService, IMailSendService mailSendService)
         {
+            _slackNotificationService = slackNotificationService;
             _couponsRepository = couponsRepository;
+            _mapper = mapper;
+            _mailSendService = mailSendService;
+
         }
 
         /*
@@ -34,11 +47,32 @@ namespace BaobabBackEndService.Services.Coupons
         Continuemos con el siguiente paso Alli en este archivo...
         */
 
-        public IEnumerable<Coupon> GetCoupons()
+        // ----------------------- GET COUPON & CATEGORY:
+        public async Task<IEnumerable<Coupon>> GetCouponAndCategory()
         {
-            // Lógica de negocio para obtene rtodos los cupones
+            return await _couponsRepository.GetCouponAndCategoyAsync();
+        }
 
-            return _couponsRepository.GetCoupons();
+        public ResponseUtils<Coupon> GetCoupons(int pageNumber, int pageSize)
+        {
+            var totalRecords = _couponsRepository.GetTotalRecords();
+            var coupons = _couponsRepository.GetAllCoupons()
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+            var paginationInfo = new PaginationInfo<Coupon>
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = totalPages,
+                NextPageUrl = pageNumber < totalPages ? $"api/coupons?pageNumber={pageNumber + 1}&pageSize={pageSize}" : null
+            };
+
+            return new ResponseUtils<Coupon>(true, coupons, 200, "Se ha generado correctamente", null, paginationInfo);
         }
 
         public async Task<Coupon> GetCoupon(string id)
@@ -55,7 +89,7 @@ namespace BaobabBackEndService.Services.Coupons
             {
                 if (!int.TryParse(searchType, out int parseSearchType))
                 {
-                    return new ResponseUtils<Coupon>(false, message: "Dato ingresado no es valido.");
+                    return new ResponseUtils<Coupon>(false, null, 400, message: "Dato ingresado no es valido.");
                 }
 
                 List<Coupon> coupons;
@@ -65,7 +99,7 @@ namespace BaobabBackEndService.Services.Coupons
                     case 1:
                         if (!int.TryParse(value, out int couponId))
                         {
-                            return new ResponseUtils<Coupon>(false, message: "No se encontraron coincidencias en la base de datos.");
+                            return new ResponseUtils<Coupon>(false, null, 404, message: "No se encontraron coincidencias en la base de datos.");
                         }
                         coupons = new List<Coupon>(await _couponsRepository.GetCouponByIdAsync(couponId));
                         break;
@@ -76,90 +110,79 @@ namespace BaobabBackEndService.Services.Coupons
                         coupons = new List<Coupon>(await _couponsRepository.GetCouponByCouponCodeSearchAsync(value));
                         break;
                     default:
-                        return new ResponseUtils<Coupon>(false, message: "Dato ingresado no es válido.");
+                        return new ResponseUtils<Coupon>(false, null, 404, message: "Dato ingresado no es válido.");
                 }
 
                 if (coupons == null || !coupons.Any())
                 {
-                    return new ResponseUtils<Coupon>(false, message: "No se encontraron cupones con los criterios de búsqueda proporcionados.");
+                    return new ResponseUtils<Coupon>(false, null, 404, message: "No se encontraron cupones con los criterios de búsqueda proporcionados.");
                 }
 
-                return new ResponseUtils<Coupon>(true, coupons, message: "Se encontraron los cupones correctamente.");
+                return new ResponseUtils<Coupon>(true, coupons, 200, message: "Se encontraron los cupones correctamente.");
 
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Coupon>(false, null, 422, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
         }
 
-        public async Task<ResponseUtils<Coupon>> CreateCoupon(CouponRequest request)
+        public async Task<ResponseUtils<Coupon>> CreateCoupon(CouponDTO request)
         {
-            var coupon = new Coupon
-            {
-                Title = request.Title,
-                Description = request.Description,
-                StartDate = DateTime.Parse(request.StartDate),
-                ExpiryDate = DateTime.Parse(request.ExpiryDate),
-                ValueDiscount = request.ValueDiscount,
-                TypeDiscount = request.TypeDiscount,
-                NumberOfAvailableUses = request.NumberOfAvailableUses,
-                TypeUsability = request.TypeUsability,
-                MinPurchaseRange = request.MinPurchaseRange,
-                MaxPurchaseRange = request.MaxPurchaseRange,
-                CouponCode = request.CouponCode,
-                CategoryId = request.CategoryId,
-                MarketingUserId = request.MarketingUserId
-            };
+            var coupon = _mapper.Map<Coupon>(request);//se pasa el dato al mapper y ya
 
             var existingCodeCoupon = await _couponsRepository.GetCouponByCouponCodeAsync(coupon.CouponCode);
             var existingTitleCoupon = await _couponsRepository.GetCouponByTitleAsync(coupon.Title);
             if (existingCodeCoupon != null)
             {
-                return new ResponseUtils<Coupon>(false, message: "El codigo Del cupon ya existe");
+                return new ResponseUtils<Coupon>(false, null, 409, message: "El codigo Del cupon ya existe");
             }
             if (existingTitleCoupon != null)
             {
-                return new ResponseUtils<Coupon>(false, message: "El Titulo Del cupon ya existe");
+                return new ResponseUtils<Coupon>(false, null, 409, message: "El Titulo Del cupon ya existe");
             }
 
             coupon.CreationDate = DateTime.Now;
             coupon.StatusCoupon = "Creado";
 
-            return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, null, message: "Todo oki");
+            return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, 201, message: "Cupon exitosamente creado!");
         }
         // ----------------------- EDIT ACTION:
-        public async Task<ResponseUtils<Coupon>> EditCoupon(int marketingUserId, Coupon coupon)
+        public async Task<ResponseUtils<CouponUpdateDTO>> EditCoupon(int marketingUserId, int couponId, CouponUpdateDTO coupon)
         {
-            try
+            // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
+            var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(couponId);
+            // Condicional que determina si se ha encontrado el cupón:
+            if (existCoupon == null)
             {
-                // Se confirma si el cupón existe en la tabla 'MassiveCoupons':
-                var existCoupon = await _couponsRepository.GetMassiveCouponByCouponId(coupon);
-                // Condicional que determina si se ha encontrado el cupón:
-                if(existCoupon == null)
+                // Se envía la información para actualizar el cupón:
+                var response = await _couponsRepository.UpdateCoupon(couponId, coupon);
+                // Se confirma si fue posible actualizar el cupón:
+                if (response != null)
                 {
-                    // Se actualiza la entidad 'Coupons' en la base de datos:
-                    await _couponsRepository.UpdateCoupon(coupon);
                     // Se crea una instancia del modelo 'ChangeHistory' con la información requerida para crear un nuevo registro en la entidad:
-                    var newChange = new ChangeHistory {
+                    var newChange = new ChangeHistory
+                    {
                         ModifiedTable = "Coupons",
-                        IdModifiedRecord = coupon.Id,
-                        ChangeDate = DateTime.Now,
-                        IdMarketingUser = marketingUserId
+                        ModifiedRecordId = couponId,
+                        Date = DateTime.Now,
+                        MarketingUserId = marketingUserId,
+                        ModifiedType = "Editado"
                     };
                     // Se crea un nuevo registro en la entidad 'ChangesHistory':
                     await _couponsRepository.AddNewChange(newChange);
                     // Retorno de la respuesta éxitosa con la estructura de la clase 'ResponseUtils':
-                    return new ResponseUtils<Coupon>(true, new List<Coupon>{coupon}, 200, message: "¡Cupón actualizado!");
+                    return new ResponseUtils<CouponUpdateDTO>(true, new List<CouponUpdateDTO> { coupon }, 200, message: "¡Cupón actualizado!");
                 }
                 else
                 {
-                    return new ResponseUtils<Coupon>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
+                    return new ResponseUtils<CouponUpdateDTO>(false, null, 400, message: "¡El cupón no existe!");
                 }
             }
-            catch (Exception ex)
+            else
             {
-                return new ResponseUtils<Coupon>(false, null, 500, message: $"Error interno del servidor: {ex.Message}");
+                return new ResponseUtils<CouponUpdateDTO>(false, null, 406, message: "¡El cupón ya fue redimido, no es posible actualizarlo!");
             }
         }
 
@@ -197,7 +220,7 @@ namespace BaobabBackEndService.Services.Coupons
                                         }
                                         else
                                         {
-                                            return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                            return new ResponseUtils<Coupon>(false, null, 409, message: "¡El rango de la compra no cumple los requerimientos!");
                                         }
                                     }
                                     else
@@ -210,18 +233,18 @@ namespace BaobabBackEndService.Services.Coupons
                                         }
                                         else
                                         {
-                                            return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                            return new ResponseUtils<Coupon>(false, null, 409, message: "¡El rango de la compra no cumple los requerimientos!");
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    return new ResponseUtils<Coupon>(false, null, 406, message: "¡El cupón ha expirado!");
+                                    return new ResponseUtils<Coupon>(false, null, 409, message: "¡El cupón ha expirado!");
                                 }
                             }
                             else
                             {
-                                return new ResponseUtils<Coupon>(false, null, 406, message: "Cupón sin usos disponibles!");
+                                return new ResponseUtils<Coupon>(false, null, 409, message: "Cupón sin usos disponibles!");
                             }
                         }
                         else
@@ -241,7 +264,7 @@ namespace BaobabBackEndService.Services.Coupons
                                     }
                                     else
                                     {
-                                        return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                        return new ResponseUtils<Coupon>(false, null, 409, message: "¡El rango de la compra no cumple los requerimientos!");
                                     }
                                 }
                                 else
@@ -254,28 +277,29 @@ namespace BaobabBackEndService.Services.Coupons
                                     }
                                     else
                                     {
-                                        return new ResponseUtils<Coupon>(false, null, 406, message: "¡El rango de la compra no cumple los requerimientos!");
+                                        return new ResponseUtils<Coupon>(false, null, 409, message: "¡El rango de la compra no cumple los requerimientos!");
                                     }
                                 }
                             }
                             else
                             {
-                                return new ResponseUtils<Coupon>(false, null, 406, message: "¡El cupón ha expirado!");
+                                return new ResponseUtils<Coupon>(false, null, 409, message: "¡El cupón ha expirado!");
                             }
                         }
                     }
                     else
                     {
-                        return new ResponseUtils<Coupon>(false, null, 406, message: "¡Cupón no activo!");
+                        return new ResponseUtils<Coupon>(false, null, 409, message: "¡Cupón no activo!");
                     }
                 }
                 else
                 {
-                    return new ResponseUtils<Coupon>(false, null, 404, message: "¡Cupón no encontrado!");
+                    return new ResponseUtils<Coupon>(false, null, 400, message: "¡Cupón no encontrado!");
                 }
             }
             catch (Exception ex)
             {
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
                 return new ResponseUtils<Coupon>(false, null, 400, $"Error: {ex.Message}");
             }
         }
@@ -288,10 +312,8 @@ namespace BaobabBackEndService.Services.Coupons
 
             if (Search == "Activo" || Search == "Inactivo" || Search == "Creado" || Search == "Vencido" || Search == "Agotado")
             {
-
                 Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
-                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Se ha encotrado la informacion");
-
+                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Se ha encotrado la informacion");
             }
             else
             {
@@ -301,11 +323,11 @@ namespace BaobabBackEndService.Services.Coupons
                     Cupones = Cupones.Where(x => x.CouponCode.ToLower() == Search.ToLower()).ToList();
                     if (!Cupones.Any())
                     {
-                        return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
+                        return new ResponseUtils<Coupon>(false, null, 404, message: "El cupon no fue encontrado");
                     }
                 }
             }
-            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo oki");
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Cupones encontrados correctamente");
         }
 
         public async Task<ResponseUtils<Coupon>> EditCouponStatus(string id, string status)
@@ -313,12 +335,12 @@ namespace BaobabBackEndService.Services.Coupons
 
             if (!int.TryParse(id, out int couponId) || !int.TryParse(status, out int statusNum))
             {
-                return new ResponseUtils<Coupon>(false, message: "El parametro ingresado no es valido");
+                return new ResponseUtils<Coupon>(false, null, 400, message: "El parametro ingresado no es valido");
             }
             var coupon = await _couponsRepository.GetCouponAsync(couponId);
             if (coupon == null)
             {
-                return new ResponseUtils<Coupon>(false, message: "El cupon no fue encontrado");
+                return new ResponseUtils<Coupon>(false, null, 404, message: "El cupon no fue encontrado");
             }
 
             switch (statusNum)
@@ -343,72 +365,69 @@ namespace BaobabBackEndService.Services.Coupons
                     break;
 
                 default:
-                    return new ResponseUtils<Coupon>(false, message: "El parametro ingresado no es valido");
+                    return new ResponseUtils<Coupon>(false, null, 400, message: "El parametro ingresado no es valido");
             }
             try
             {
                 await _couponsRepository.UpdateStatusCouponAsync(coupon);
-                return new ResponseUtils<Coupon>(true, null, null, message: "Todo oki");
+                return new ResponseUtils<Coupon>(true, null, 200, message: "Cupon editado exitosamente");
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Coupon>(false, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
+                _slackNotificationService.SendNotification($"Ha ocurrido un error en el sistema: {ex.Message}\nStack Trace: {ex.StackTrace}");
+                return new ResponseUtils<Coupon>(false, null, 422, message: "Error buscar el cupon en la base de datos: " + ex.InnerException.Message);
             }
         }        //redencion de cupon
-        public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemRequest redeemRequest)
+        public async Task<ResponseUtils<MassiveCoupon>> RedeemCoupon(RedeemDTO redeemRequest)
         {
-            //ResponseUtils<Coupon> validate = ValidateCoupon(RedeemRequest.CodeCoupon, RedeemRequest.PurchaseValue);
-            var validate = true;
 
-            if(/* validate.Status */ validate ==true)
+            var validate = await ValidateCoupon(redeemRequest.CodeCoupon, redeemRequest.PurchaseValue);
+            if (validate.IsSuccessful)
             {
-                var CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
+
+                Coupon CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);
 
                 //validar si el cupon es null
-                if(CuponValido == null)
+                if (CuponValido == null)
                 {
-                    return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no existe en la base de datos");                    
+                    return new ResponseUtils<MassiveCoupon>(false, null, 404, message: "El cupon no existe en la base de datos");
                 }
-
                 //cambiar estado a agotado
-                if(CuponValido.NumberOfAvailableUses == 0)
+                if (CuponValido.NumberOfAvailableUses == 0)
                 {
                     CuponValido.StatusCoupon = "Agotado";
                     await _couponsRepository.RedencionCupon(CuponValido);
-                    return new ResponseUtils<MassiveCoupon>(false, message: "El cupon esta Agotado");                    
+                    return new ResponseUtils<MassiveCoupon>(false, null, 409, message: "El cupon esta Agotado");
                 }
 
                 //Cambiar estado a Vencido
-                if(DateTime.Now > CuponValido.ExpiryDate)
+                if (DateTime.Now > CuponValido.ExpiryDate)
                 {
                     CuponValido.StatusCoupon = "Vencido";
                     await _couponsRepository.RedencionCupon(CuponValido);
-                    return new ResponseUtils<MassiveCoupon>(false, message: "El cupon esta Vencido");    
+                    return new ResponseUtils<MassiveCoupon>(false, null, 409, message: "El cupon esta Vencido");
                 }
 
 
-                if(CuponValido.TypeUsability == "Limitada" && CuponValido.NumberOfAvailableUses >0)
+                if (CuponValido.TypeUsability == "Limitada" && CuponValido.NumberOfAvailableUses > 0)
                 {
-                    CuponValido.NumberOfAvailableUses = CuponValido.NumberOfAvailableUses-1;
+                    CuponValido.NumberOfAvailableUses = CuponValido.NumberOfAvailableUses - 1;
                     await _couponsRepository.RedencionCupon(CuponValido);
-                              
                 }
 
-                MassiveCoupon massiveCoupon= new MassiveCoupon
-                {
-                    MassiveCouponCode = redeemRequest.CodeCoupon+1,
-                    CouponId = CuponValido.Id,
-                    UserEmail = redeemRequest.UserEmail,
-                    RedemptionDate = DateTime.Now,
-                    PurchaseId = redeemRequest.PurchaseId,
-                    PurchaseValue = redeemRequest.PurchaseValue
-                };
+                MassiveCoupon massiveCoupon = _mapper.Map<MassiveCoupon>(redeemRequest);
+                massiveCoupon.CouponId = CuponValido.Id;
+                DateTime Day = DateTime.Now;
+                string dayString = Day.ToString();
+
+                var result = await _mailSendService.SendEmailAsync(redeemRequest.UserEmail, redeemRequest.CodeCoupon, $"{redeemRequest.PurchaseId}", $"{redeemRequest.PurchaseValue}", dayString);
 
                 var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
-                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, null, message: "Todo oki");
-
-            }else{
-                return new ResponseUtils<MassiveCoupon>(false, message: "El cupon no es valido");                    
+                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, 200, message: "El cupon fue redimido con exito");
+            }
+            else
+            {
+                return new ResponseUtils<MassiveCoupon>(false, null, validate.StatusCode, message: validate.Message);
             }
 
         }
