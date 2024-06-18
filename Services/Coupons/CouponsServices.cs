@@ -122,7 +122,7 @@ namespace BaobabBackEndService.Services.Coupons
             coupon.CreationDate = DateTime.Now;
             coupon.StatusCoupon = "Creado";
 
-            return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, null, message: "Todo oki");
+            return new ResponseUtils<Coupon>(true, new List<Coupon> { _couponsRepository.CreateCoupon(coupon) }, 200, message: "Todo oki");
         }
         // ----------------------- EDIT ACTION:
         public async Task<ResponseUtils<Coupon>> EditCoupon(int marketingUserId, Coupon coupon)
@@ -306,7 +306,7 @@ namespace BaobabBackEndService.Services.Coupons
             {
 
                 Cupones = Cupones.Where(x => x.StatusCoupon == Search).ToList();
-                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Se ha encotrado la informacion");
+                return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Se ha encotrado la informacion");
 
             }
             else
@@ -321,7 +321,7 @@ namespace BaobabBackEndService.Services.Coupons
                     }
                 }
             }
-            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), null, message: "Todo oki");
+            return new ResponseUtils<Coupon>(true, new List<Coupon>(Cupones), 200, message: "Todo oki");
         }
 
         public async Task<ResponseUtils<Coupon>> EditCouponStatus(string id, string status)
@@ -364,7 +364,7 @@ namespace BaobabBackEndService.Services.Coupons
             try
             {
                 await _couponsRepository.UpdateStatusCouponAsync(coupon);
-                return new ResponseUtils<Coupon>(true, null, null, message: "Todo oki");
+                return new ResponseUtils<Coupon>(true, null, 200, message: "Todo oki");
             }
             catch (Exception ex)
             {
@@ -413,7 +413,7 @@ namespace BaobabBackEndService.Services.Coupons
                 massiveCoupon.CouponId = CuponValido.Id;
 
                 var CreatePoll = await _couponsRepository.CrearPoll(massiveCoupon);
-                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll }, null, message: "Todo oki");
+                return new ResponseUtils<MassiveCoupon>(true, new List<MassiveCoupon> { CreatePoll } ,200, message: "Todo oki");
 
             }
             else

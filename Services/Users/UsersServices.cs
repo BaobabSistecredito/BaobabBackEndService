@@ -52,10 +52,6 @@ namespace BaobabBackEndService.Services.Users
         public async Task<ResponseUtils<string>> UserLoginAsync(UserLoginDTO user)
         {
             MarketingUser validateUSer = await _usersRepository.UserLoginAsync(user);
-            Console.WriteLine("-------------------------------------------------");
-            Console.WriteLine(validateUSer.Password);
-            Console.WriteLine(user.Password);
-            Console.WriteLine("-------------------------------------------------");
             var EncriptedPassword = new PasswordHasher().VerifyPassword(validateUSer.Password, user.Password);
             if (validateUSer == null || !EncriptedPassword)
             {

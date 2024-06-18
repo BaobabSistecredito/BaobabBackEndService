@@ -28,7 +28,7 @@ namespace BaobabBackEndService.Services.categories
         public ResponseUtils<Category> GetAllCategories()
         {
             var result = _categoriesRepository.GetCategories();
-            return new ResponseUtils<Category>(false, new List<Category>(result), null, message: "Todo");
+            return new ResponseUtils<Category>(false, new List<Category>(result), 200, message: "Todo");
 
         }
 
@@ -111,7 +111,7 @@ namespace BaobabBackEndService.Services.categories
             //pasar datos a minuscula
             Category newCategory = _mapper.Map<Category>(category);
 
-            return new ResponseUtils<Category>(true, new List<Category> { _categoriesRepository.CreateCategory(newCategory) }, null, message: "Todo oki");
+            return new ResponseUtils<Category>(true, new List<Category> { _categoriesRepository.CreateCategory(newCategory) }, 201, message: "Todo oki");
         }
 
         // ----------------------- SEARCH ACTION:
@@ -145,7 +145,7 @@ namespace BaobabBackEndService.Services.categories
             }
             catch (Exception ex)
             {
-                return new ResponseUtils<Category>(false, null, null, $"Error: {ex.Message}");
+                return new ResponseUtils<Category>(false, null, 500, $"Error: {ex.Message}");
             }
         }
         // -------------------------------------------------------------------------
