@@ -355,7 +355,7 @@ namespace BaobabBackEndService.Services.Coupons
 
             var validate = await ValidateCoupon(redeemRequest.CodeCoupon, redeemRequest.PurchaseValue);
 
-            if (validate.Status)
+            if (validate.IsSuccessful)
             {
 
                 Coupon CuponValido = _couponsRepository.CuponCode(redeemRequest.CodeCoupon);

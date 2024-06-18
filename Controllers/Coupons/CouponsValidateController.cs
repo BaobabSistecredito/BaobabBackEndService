@@ -27,7 +27,7 @@ namespace BaobabBackEndService.Controllers.Coupons
         {
             try{
                 var response = await _couponService.ValidateCoupon(request.CouponCode, request.PurchaseValue);
-                if (!response.Status)
+                if (!response.IsSuccessful)
                 {
                     return StatusCode(409, response);
                 }

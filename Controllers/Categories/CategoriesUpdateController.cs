@@ -27,7 +27,7 @@ namespace BaobabBackEndSerice.Controllers
             try
             {
                 var response = await _categoryService.UpdateCategory(id, category);
-                if (!response.Status)
+                if (!response.IsSuccessful)
                 {
                     return StatusCode(409, response);
                 }
